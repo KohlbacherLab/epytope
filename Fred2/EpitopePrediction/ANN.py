@@ -15,7 +15,7 @@ import csv
 import sys
 import tempfile
 import contextlib
-import cStringIO
+import io
 
 from abc import abstractmethod
 
@@ -88,7 +88,7 @@ def capture_stdout(target):
         sys.stdout = old
 
 try:
-    class MHCNuggetsPredictor_class1_2_0(AANNEpitopePrediction):
+    class MHCNuggetsPredictor_class1_2_0(AANNEpitopePrediction, metaclass=SignatureCheckerMeta):
         """
         Implements MHCNuggets Class I
 
@@ -97,7 +97,6 @@ try:
             Rohit Bhattacharya, Ashok Sivakumar, Collin Tokheim, Violeta Beleva Guthrie, Valsamo Anagnostou,
             Victor E. Velculescu, Rachel Karchin (2017) bioRxiv
         """
-        __metaclass__ = SignatureCheckerMeta
         __alleles = frozenset(
             ["HLA-A*01:01", "HLA-A*02:01", "HLA-A*02:02", "HLA-A*02:03", "HLA-A*02:04", "HLA-A*02:05", "HLA-A*02:06",
              "HLA-A*02:07", "HLA-A*02:08", "HLA-A*02:09", "HLA-A*02:10", "HLA-A*02:11", "HLA-A*02:12", "HLA-A*02:14",
@@ -190,7 +189,7 @@ try:
                 alleles = self.supportedAlleles
             else:
                 # filter for supported alleles
-                alleles = filter(lambda a: a in self.supportedAlleles, alleles)
+                alleles = [a for a in alleles if a in self.supportedAlleles]
             alleles = self.convert_alleles(alleles)
 
             # prepare results dictionary
@@ -202,7 +201,7 @@ try:
                 peptide_objects[str(peptide)] = peptide
 
             # group peptides by length
-            pep_groups = peptide_objects.keys()
+            pep_groups = list(peptide_objects.keys())
             pep_groups.sort(key=len)
             for length, peps in itertools.groupby(pep_groups, key=len):
                 if length not in self.supportedLength:
@@ -222,7 +221,7 @@ try:
                     allele_repr = self.revert_allele_repr(a)
 
                     # workaround for mhcnuggets file i/o buffer bug
-                    mhcnuggets_output = cStringIO.StringIO()
+                    mhcnuggets_output = io.StringIO()
                     with capture_stdout(mhcnuggets_output):
                         mhcnuggets_predict(class_='I',
                                             peptides_path=tmp_input_file,
@@ -235,7 +234,7 @@ try:
                     for row in reader:
                         if row[0] == 'peptide,ic50':
                             break
-                        print ' '.join(row)
+                        print(' '.join(row))
 
                     # assign binding affinities
                     for row in reader:
@@ -262,11 +261,11 @@ try:
                                                             names=['Seq', 'Method'])
             return df_result
 except BadSignatureException:
-    print "Class MHCNuggetsPredictor_class1_2_0 cannot be constructed, because of a bad method signature (predict)"
+    print("Class MHCNuggetsPredictor_class1_2_0 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
-    class MHCNuggetsPredictor_class1_2_3_2(MHCNuggetsPredictor_class1_2_0):
+    class MHCNuggetsPredictor_class1_2_3_2(MHCNuggetsPredictor_class1_2_0, metaclass=SignatureCheckerMeta):
         """
         Implements MHCNuggets Class I
 
@@ -275,7 +274,6 @@ try:
             Rohit Bhattacharya, Ashok Sivakumar, Collin Tokheim, Violeta Beleva Guthrie, Valsamo Anagnostou,
             Victor E. Velculescu, Rachel Karchin (2017) bioRxiv
         """
-        __metaclass__ = SignatureCheckerMeta
         __alleles = frozenset(["HLA-A*01:01", "HLA-A*02:01", "HLA-A*02:02", "HLA-A*02:03", "HLA-A*02:05", "HLA-A*02:06", "HLA-A*02:07",
                                "HLA-A*02:11", "HLA-A*02:12", "HLA-A*02:16", "HLA-A*02:17", "HLA-A*02:19", "HLA-A*02:50", "HLA-A*03:01",
                                "HLA-A*03:19", "HLA-A*11:01", "HLA-A*23:01", "HLA-A*24:01", "HLA-A*24:02", "HLA-A*24:03", "HLA-A*25:01",
@@ -340,11 +338,11 @@ try:
 
         # predict(): same workaround for mhcnuggets file i/o buffer bug needed here
 except BadSignatureException:
-    print "Class MHCNuggetsPredictor_class1_2_3_2 cannot be constructed, because of a bad method signature (predict)"
+    print("Class MHCNuggetsPredictor_class1_2_3_2 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
-    class MHCNuggetsPredictor_class2_2_0(AANNEpitopePrediction):
+    class MHCNuggetsPredictor_class2_2_0(AANNEpitopePrediction, metaclass=SignatureCheckerMeta):
         """
         Implements MHCNuggets Class II
 
@@ -353,7 +351,6 @@ try:
             Rohit Bhattacharya, Ashok Sivakumar, Collin Tokheim, Violeta Beleva Guthrie, Valsamo Anagnostou,
             Victor E. Velculescu, Rachel Karchin (2017) bioRxiv
         """
-        __metaclass__ = SignatureCheckerMeta
         __alleles = frozenset(["HLA-DPA1*01:03-DPB1*02:01", "HLA-DPA1*01:03-DPB1*03:01", "HLA-DPA1*01:03-DPB1*04:01",
                                "HLA-DPA1*01:03-DPB1*04:02", "HLA-DPA1*02:01-DPB1*01:01", "HLA-DPA1*02:01-DPB1*05:01",
                                "HLA-DPA1*02:02-DPB1*05:01", "HLA-DPA1*03:01-DPB1*04:02", "HLA-DPB1*01:01",
@@ -474,7 +471,7 @@ try:
                 alleles = self.supportedAlleles
             else:
                 # filter for supported alleles
-                alleles = filter(lambda a: a in self.supportedAlleles, alleles)
+                alleles = [a for a in alleles if a in self.supportedAlleles]
             alleles = self.convert_alleles(alleles)
 
             # prepare results dictionary
@@ -486,7 +483,7 @@ try:
                 peptide_objects[str(peptide)] = peptide
 
             # group peptides by length
-            pep_groups = peptide_objects.keys()
+            pep_groups = list(peptide_objects.keys())
             pep_groups.sort(key=len)
             for length, peps in itertools.groupby(pep_groups, key=len):
                 if length not in self.supportedLength:
@@ -506,7 +503,7 @@ try:
                     allele_repr = self.revert_allele_repr(a)
 
                     # workaround for mhcnuggets file i/o buffer bug
-                    mhcnuggets_output = cStringIO.StringIO()
+                    mhcnuggets_output = io.StringIO()
                     with capture_stdout(mhcnuggets_output):
                         mhcnuggets_predict(class_='II',
                                         peptides_path=tmp_input_file,
@@ -519,7 +516,7 @@ try:
                     for row in reader:
                         if row[0] == 'peptide,ic50':
                             break
-                        print ' '.join(row)
+                        print(' '.join(row))
 
                     for row in reader:
                         content = row[0].split(',')
@@ -545,10 +542,10 @@ try:
                                                             names=['Seq', 'Method'])
             return df_result
 except BadSignatureException:
-    print "Class MHCNuggetsPredictor_class2_2_0 cannot be constructed, because of a bad method signature (predict)"
+    print("Class MHCNuggetsPredictor_class2_2_0 cannot be constructed, because of a bad method signature (predict)")
 
 try:
-    class MHCNuggetsPredictor_class2_2_3_2(MHCNuggetsPredictor_class2_2_0):
+    class MHCNuggetsPredictor_class2_2_3_2(MHCNuggetsPredictor_class2_2_0, metaclass=SignatureCheckerMeta):
         """
         Implements MHCNuggets Class II
 
@@ -557,7 +554,6 @@ try:
             Rohit Bhattacharya, Ashok Sivakumar, Collin Tokheim, Violeta Beleva Guthrie, Valsamo Anagnostou,
             Victor E. Velculescu, Rachel Karchin (2017) bioRxiv
         """
-        __metaclass__ = SignatureCheckerMeta
         __alleles = frozenset(["HLA-DPA1*01:03-DPB1*02:01", "HLA-DPA1*01:03-DPB1*03:01", "HLA-DPA1*01:03-DPB1*04:01",
                                "HLA-DPA1*01:03-DPB1*04:02", "HLA-DPA1*02:01-DPB1*01:01", "HLA-DPA1*02:01-DPB1*05:01",
                                "HLA-DPA1*02:02-DPB1*05:01", "HLA-DPA1*03:01-DPB1*04:02", "HLA-DPB1*01:01",
@@ -654,11 +650,11 @@ try:
 
         # predict(): same workaround for mhcnuggets file i/o buffer bug needed here
 except BadSignatureException:
-    print "Class MHCNuggetsPredictor_class2_2_3_2 cannot be constructed, because of a bad method signature (predict)"
+    print("Class MHCNuggetsPredictor_class2_2_3_2 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
-    class MHCFlurryPredictor_1_2_2(AANNEpitopePrediction):
+    class MHCFlurryPredictor_1_2_2(AANNEpitopePrediction, metaclass=SignatureCheckerMeta):
         """
         Implements MHCFlurry
 
@@ -667,7 +663,6 @@ try:
              "MHCflurry: Open-Source Class I MHC Binding Affinity Prediction," Cell Systems, 2018.
               Available at: https://www.cell.com/cell-systems/fulltext/S2405-4712(18)30232-1.
         """
-        __metaclass__ = SignatureCheckerMeta
         __alleles = frozenset(
             ["HLA-A*01:01", "HLA-A*02:01", "HLA-A*02:02", "HLA-A*02:03", "HLA-A*02:05", "HLA-A*02:06", "HLA-A*02:07",
              "HLA-A*02:11", "HLA-A*02:12", "HLA-A*02:16", "HLA-A*02:17", "HLA-A*02:19", "HLA-A*02:50", "HLA-A*03:01",
@@ -753,7 +748,7 @@ try:
                 alleles = self.supportedAlleles
             else:
                 # filter for supported alleles
-                alleles = filter(lambda a: a in self.supportedAlleles, alleles)
+                alleles = [a for a in alleles if a in self.supportedAlleles]
             alleles = self.convert_alleles(alleles)
 
             # test mhcflurry models are available => download if not
@@ -801,11 +796,11 @@ try:
                                                             names=['Seq', 'Method'])
             return df_result
 except BadSignatureException:
-    print "Class MHCFlurryPredictor_1_2_2 cannot be constructed, because of a bad method signature (predict)"
+    print("Class MHCFlurryPredictor_1_2_2 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
-    class MHCFlurryPredictor_1_4_3(MHCFlurryPredictor_1_2_2):
+    class MHCFlurryPredictor_1_4_3(MHCFlurryPredictor_1_2_2, metaclass=SignatureCheckerMeta):
         """
         Implements MHCFlurry
 
@@ -814,7 +809,6 @@ try:
              "MHCflurry: Open-Source Class I MHC Binding Affinity Prediction," Cell Systems, 2018.
               Available at: https://www.cell.com/cell-systems/fulltext/S2405-4712(18)30232-1.
         """
-        __metaclass__ = SignatureCheckerMeta
         # retrieved with `mhcflurry-predict --list-supported-alleles`
         __alleles = frozenset(["HLA-A*01:01", "HLA-A*02:01", "HLA-A*02:02", "HLA-A*02:03", "HLA-A*02:05",
                                "HLA-A*02:06", "HLA-A*02:07", "HLA-A*02:11", "HLA-A*02:12", "HLA-A*02:16",
@@ -880,4 +874,4 @@ try:
             else:
                 return Allele(name)
 except BadSignatureException:
-    print "Class MHCFlurryPredictor_1_4_3 cannot be constructed, because of a bad method signature (predict)"
+    print("Class MHCFlurryPredictor_1_4_3 cannot be constructed, because of a bad method signature (predict)")
