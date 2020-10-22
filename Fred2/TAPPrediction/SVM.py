@@ -8,7 +8,7 @@
 
 """
 
-import svmlight
+# import svmlight
 import collections
 import itertools
 import warnings

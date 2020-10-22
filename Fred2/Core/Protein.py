@@ -13,7 +13,6 @@
 import itertools
 
 from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
 
 from Fred2.Core.Base import MetadataLogger
 from Fred2.Core.Variant import VariationType
@@ -44,7 +43,7 @@ class Protein(MetadataLogger, Seq):
         """
         # Init parent type:
         MetadataLogger.__init__(self)
-        Seq.__init__(self, _seq.upper(), IUPAC.IUPACProtein)
+        Seq.__init__(self, _seq.upper())
         # Init own member:
         if vars is None:
             self.vars = dict()

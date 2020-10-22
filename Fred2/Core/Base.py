@@ -17,11 +17,10 @@ import inspect
 import os
 import subprocess
 from collections import defaultdict
-from string import maketrans
 import warnings
 
 
-COMPLEMENT = maketrans('atgcATGC', 'tacgTACG')
+COMPLEMENT = str.maketrans('atgcATGC', 'tacgTACG')
 
 
 class MetadataLogger(object):

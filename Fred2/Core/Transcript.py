@@ -11,7 +11,6 @@
 import itertools
 
 from Bio.Seq import Seq
-from Bio.Alphabet import generic_rna
 
 from Fred2.Core.Base import MetadataLogger
 from Fred2.Core.Variant import VariationType
@@ -43,7 +42,7 @@ class Transcript(MetadataLogger, Seq):
         :type vars: dict(int,:class:`Fred2.Core.Variant.Variant`)
         """
         MetadataLogger.__init__(self)
-        Seq.__init__(self, seq.upper(), generic_rna)
+        Seq.__init__(self, seq.upper())
         self.gene_id = gene_id
         self.transcript_id = Transcript.newid() if transcript_id is None else transcript_id
         self.vars = dict() if vars is None else vars
