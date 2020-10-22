@@ -13,7 +13,6 @@
 import collections
 
 from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
 
 from Fred2.Core import MetadataLogger
 from Fred2.Core.Protein import Protein
@@ -36,7 +35,7 @@ class Peptide(MetadataLogger, Seq):
 
         """
         MetadataLogger.__init__(self)
-        Seq.__init__(self, seq.upper(), IUPAC.IUPACProtein)
+        Seq.__init__(self, seq.upper())
 
         # Enforce dict storage
         if protein_pos and \
