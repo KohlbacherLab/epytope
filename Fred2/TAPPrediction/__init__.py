@@ -7,7 +7,7 @@
 .. moduleauthor:: schubert
 """
 from Fred2.Core.Base import ATAPPrediction
-from Fred2.TAPPrediction.SVM import *
+# from Fred2.TAPPrediction.SVM import *
 from Fred2.TAPPrediction.PSSM import *
 
 try:
