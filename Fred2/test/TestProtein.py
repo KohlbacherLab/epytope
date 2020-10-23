@@ -96,7 +96,8 @@ class TestProteinClass(unittest.TestCase):
             self.assertTrue(len(trans.vars) > 0)
 
             # check sequence:
-            self.assertTrue(str(trans) > 5)
+            # TODO: Are we only testing for None type here? all strings are bigger than any int in python2
+            # self.assertTrue(str(trans) > 5)
 
             ### GET PROTS:
             # IGNORE invalid sequence lengths
@@ -122,7 +123,8 @@ class TestProteinClass(unittest.TestCase):
             self.assertEqual(len(set(e for subl in prot.vars.values() for e in subl)), len(orig.vars))
 
             # check sequence:
-            self.assertTrue(str(prot) > 2)
+            # TODO: Are we only testing for None type here? all strings are bigger than any int in python2
+            # self.assertTrue(str(prot) > 2)
 
         ## GENERATE Peptides:
         peptides = generate_peptides_from_proteins(proteins,2)
