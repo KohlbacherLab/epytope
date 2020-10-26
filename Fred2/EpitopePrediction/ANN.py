@@ -88,7 +88,7 @@ def capture_stdout(target):
         sys.stdout = old
 
 try:
-    class MHCNuggetsPredictor_class1_2_0(AANNEpitopePrediction, metaclass=SignatureCheckerMeta):
+    class MHCNuggetsPredictor_class1_2_0(AANNEpitopePrediction):
         """
         Implements MHCNuggets Class I
 
@@ -265,7 +265,7 @@ except BadSignatureException:
 
 
 try:
-    class MHCNuggetsPredictor_class1_2_3_2(MHCNuggetsPredictor_class1_2_0, metaclass=SignatureCheckerMeta):
+    class MHCNuggetsPredictor_class1_2_3_2(MHCNuggetsPredictor_class1_2_0):
         """
         Implements MHCNuggets Class I
 
@@ -342,7 +342,7 @@ except BadSignatureException:
 
 
 try:
-    class MHCNuggetsPredictor_class2_2_0(AANNEpitopePrediction, metaclass=SignatureCheckerMeta):
+    class MHCNuggetsPredictor_class2_2_0(AANNEpitopePrediction):
         """
         Implements MHCNuggets Class II
 
@@ -545,7 +545,7 @@ except BadSignatureException:
     print("Class MHCNuggetsPredictor_class2_2_0 cannot be constructed, because of a bad method signature (predict)")
 
 try:
-    class MHCNuggetsPredictor_class2_2_3_2(MHCNuggetsPredictor_class2_2_0, metaclass=SignatureCheckerMeta):
+    class MHCNuggetsPredictor_class2_2_3_2(MHCNuggetsPredictor_class2_2_0):
         """
         Implements MHCNuggets Class II
 
@@ -654,7 +654,7 @@ except BadSignatureException:
 
 
 try:
-    class MHCFlurryPredictor_1_2_2(AANNEpitopePrediction, metaclass=SignatureCheckerMeta):
+    class MHCFlurryPredictor_1_2_2(AANNEpitopePrediction):
         """
         Implements MHCFlurry
 
@@ -800,7 +800,7 @@ except BadSignatureException:
 
 
 try:
-    class MHCFlurryPredictor_1_4_3(MHCFlurryPredictor_1_2_2, metaclass=SignatureCheckerMeta):
+    class MHCFlurryPredictor_1_4_3(MHCFlurryPredictor_1_2_2):
         """
         Implements MHCFlurry
 
