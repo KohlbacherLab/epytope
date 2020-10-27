@@ -93,7 +93,7 @@ class EpitopeAssembly(object):
             cleave_pred = pred.predict(list(fragments.keys()))
             #cleave_site_df = cleave_pred.xs((slice(None), (cleavage_pos-1)))
             for i in set(cleave_pred.index.get_level_values(0)):
-                fragment = "".join(cleave_pred.ix[i]["Seq"])
+                fragment = "".join(cleave_pred.loc[i]["Seq"])
                 start, stop = fragments[fragment]
 
                 cleav_pos = len(str(start)) - 1
@@ -350,7 +350,7 @@ class ParetoEpitopeAssembly(object):
             cleave_pred = cl_pred.predict(list(fragments.keys()))
             #cleave_site_df = cleave_pred.xs((slice(None), (cleavage_pos-1)))
             for i in set(cleave_pred.index.get_level_values(0)):
-                fragment = "".join(cleave_pred.ix[i]["Seq"])
+                fragment = "".join(cleave_pred.loc[i]["Seq"])
                 start, stop = fragments[fragment]
 
                 cleav_pos = len(str(start)) - 1
