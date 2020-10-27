@@ -135,7 +135,7 @@ class OptiTope(object):
             p = tup[0]
             seq = str(p)
             peps[seq] = p
-            for a, s in itr.izip(res_df.columns, tup[1:]):
+            for a, s in zip(res_df.columns, tup[1:]):
                 if method in ["smm", "smmpmbec", "arb", "comblibsidney"]:
                     try:
                         thr = min(1., max(0.0, 1.0 - math.log(self.__thresh.get(a.name),
