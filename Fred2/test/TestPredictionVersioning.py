@@ -48,11 +48,11 @@ class TestCaseEpitopePrediction(unittest.TestCase):
     def test_epitope_prediction_unsupported_version(self):
         print(EpitopePredictorFactory("BIMAS", version="4.0").predict(self.peptides_mhcI, self.mhcI))
 
-    def test_TAP_prediction_specific_version(self):
-        print(TAPPredictorFactory("SVMTAP", version="1.0").predict(self.peptides_mhcI))
+    #def test_TAP_prediction_specific_version(self):
+    #    print(TAPPredictorFactory("SVMTAP", version="1.0").predict(self.peptides_mhcI))
 
-    def test_TAP_prediction_no_version(self):
-        print(TAPPredictorFactory("SVMTAP").predict(self.peptides_mhcI))
+    #def test_TAP_prediction_no_version(self):
+    #    print(TAPPredictorFactory("SVMTAP").predict(self.peptides_mhcI))
 
     def test_TAP_prediction_available_methods(self):
         print(TAPPredictorFactory.available_methods())
