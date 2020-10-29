@@ -57,6 +57,7 @@ class AExternalHLATyping(AHLATyping, AExternal):
             _command = self.command
 
         if output is None:
+            #TODO: watch out for file mode.
             tmp_output = NamedTemporaryFile(delete=False)
             output = tmp_output.name
             tmp_output.close()

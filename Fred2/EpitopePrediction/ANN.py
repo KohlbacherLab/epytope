@@ -211,6 +211,7 @@ try:
                 peps = list(peps)
 
                 # write peptides temporarily, new line separated
+                #TODO: watch out for file mode.
                 tmp_input_file = tempfile.NamedTemporaryFile().name
                 with open(tmp_input_file, 'wb') as file:
                     for peptide in peps:
@@ -493,6 +494,7 @@ try:
                 peps = list(peps)
 
                 # write peptides temporarily, new line separated
+                #TODO: watch out for file mode.
                 tmp_input_file = tempfile.NamedTemporaryFile().name
                 with open(tmp_input_file, 'wb') as file:
                     for peptide in peps:
