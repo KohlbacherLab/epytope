@@ -180,6 +180,7 @@ class EpitopeAssembly(object):
         :return: An order list of the :class:`~Fred2.Core.Peptide.Peptide` (based on the sting-of-beads ordering)
         :rtype: list(:class:`~Fred2.Core.Peptide.Peptide`)
         """
+        #TODO: watch out for file mode.
         tmp_conf = NamedTemporaryFile(delete=False)
         tmp_prob = NamedTemporaryFile(delete=False)
         tmp_out = NamedTemporaryFile(delete=False)

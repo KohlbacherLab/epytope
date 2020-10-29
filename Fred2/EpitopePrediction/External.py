@@ -138,8 +138,9 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                 continue
             peps = list(peps)
             for i in range(0, len(peps), chunksize):
+                #TODO: watch out for file mode. Should tmp_out also be in text mode?
                 tmp_out = NamedTemporaryFile(delete=False)
-                tmp_file = NamedTemporaryFile(delete=False)
+                tmp_file = NamedTemporaryFile(mode="r+", delete=False)
                 self.prepare_input(peps[i:i+chunksize], tmp_file)
                 #            tmp_file.write("\n".join(">pepe_%i\n%s"%(i, p) for i, p in enumerate(peps))
                 #                           if self.name.lower() in ["netmhcii","netctlpan"] else "\n".join(peps))
