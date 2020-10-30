@@ -7,8 +7,8 @@ __author__ = 'mohr,walzer'
 
 
 import unittest
-from Fred2.Distance2Self.Distance2Self import Distance2Self
-from Fred2.Distance2Self.DistanceMatrix import DistanceMatrix
+#from Fred2.Distance2Self.Distance2Self import Distance2Self
+#from Fred2.Distance2Self.DistanceMatrix import DistanceMatrix
 from Fred2.Core.Peptide import Peptide
 from Fred2.Core.Protein import Protein
 from Fred2.Data import DistanceMatrices
