@@ -262,8 +262,8 @@ class NetChop_3_1(AExternalCleavageSitePrediction, AExternal):
 
         for i in range(0, len(peps), chunksize):
             #TODO: take a close look at the file mode.
-            tmp_out = NamedTemporaryFile(delete=False)
-            tmp_file = NamedTemporaryFile(delete=False)
+            tmp_out = NamedTemporaryFile(mode="r+", delete=False)
+            tmp_file = NamedTemporaryFile(mode="r+", delete=False)
             self.prepare_input(peps[i:i+chunksize], tmp_file)
             tmp_file.close()
 
