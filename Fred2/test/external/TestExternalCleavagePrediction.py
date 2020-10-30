@@ -13,8 +13,7 @@ class TestExternalCleavagePredictonClass(unittest.TestCase):
 
     def setUp(self):
         self.seqs = [Peptide("SYFPEISYFP"),
-                     Protein("IHTIEPFYSIHTIEPFYSIHTIEPFYSIHTIEPFYSIHTIEPFYS", transcript_id="ID-01", gene_id="FOXP3"),
-                     Transcript("")]
+                     Protein("IHTIEPFYSIHTIEPFYSIHTIEPFYSIHTIEPFYSIHTIEPFYS", transcript_id="ID-01", gene_id="FOXP3")]
         self.transcript = Transcript("")
 
     def test_peptide_cleavage_prediction_mixed_input(self):
@@ -29,7 +28,7 @@ class TestExternalCleavagePredictonClass(unittest.TestCase):
     def test_wrong_input(self):
         with self.assertRaises(ValueError):
             mo = CleavageSitePredictorFactory("NetChop")
-            mo.predict(self.seqs[2])
+            mo.predict(self.transcript)
 
     def test_path_option_and_optionl_parameters(self):
         netchop = CleavageSitePredictorFactory("NetChop")
