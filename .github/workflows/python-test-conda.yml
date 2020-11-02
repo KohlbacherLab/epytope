@@ -1,4 +1,4 @@
-name: Testing
+name: Unit tests without external tools
 
 on:
   push:
