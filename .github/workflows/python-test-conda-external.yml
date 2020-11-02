@@ -29,10 +29,10 @@ jobs:
       working-directory: ./fred-tools/
       run: |
         ./post.runner
-    - name: Set up Python 2.7
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 2.7
+        python-version: 3.7
     - name: Set conda package directory
       run: |
         mkdir /tmp/condapkgs
@@ -43,7 +43,7 @@ jobs:
         echo "PATH=$PATH"
     - name: Install test dependencies and dependencies that pip would build from source
       run: |
-        $CONDA/bin/conda create -p /tmp/condaenv -c conda-forge -c bioconda 'python<3' biopython svmlight==6.02 'tensorflow<2.0.0,>=1.1.0' 'markdown<=3.1' coincbc
+        $CONDA/bin/conda create -p /tmp/condaenv -c conda-forge -c bioconda 'python==3.7' biopython svmlight==6.02 'tensorflow==2.0.0' 'markdown==3.3.2' coincbc
         export PATH="/tmp/condaenv/bin:$PATH"
     - name: Activate conda environment
       run: |
