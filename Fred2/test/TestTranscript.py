@@ -1,3 +1,4 @@
+import itertools
 from unittest import TestCase
 
 __author__ = 'walzer,schubert'
@@ -11,6 +12,9 @@ from Fred2.Core import generate_proteins_from_transcripts
 
 class TestTranscript(TestCase):
     def setUp(self):
+        # make sure ids start counting at 0
+        Transcript.newid = itertools.count().__next__
+
         self.simple = Transcript("")
         self.simple_new = Transcript("")
         self.w_gid = Transcript("", gene_id="123")
