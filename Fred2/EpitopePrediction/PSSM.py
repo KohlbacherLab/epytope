@@ -81,7 +81,7 @@ class APSSMEpitopePrediction(AEpitopePrediction):
                 warnings.warn("Peptide length of %i is not supported by %s" % (length, self.name))
                 continue
 
-            for a in list(alleles_string.keys()):
+            for a in alleles_string.keys():
                 try:
                     pssm = __load_allele_model(a, length)
                 except ImportError:
@@ -611,14 +611,14 @@ class ARB(APSSMEpitopePrediction):
             alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(alleles), alleles)}
 
         result = {}
-        for length, peps in itertools.groupby(iter(pep_seqs.keys()), key=lambda x: len(x)):
+        for length, peps in itertools.groupby(pep_seqs.keys(), key=lambda x: len(x)):
             peps = list(peps)
             # dynamicaly import prediction PSSMS for alleles and predict
             if length not in self.supportedLength:
                 warnings.warn("Peptide length of %i is not supported by %s" % (length, self.name))
                 continue
 
-            for a in list(alleles_string.keys()):
+            for a in alleles_string.keys():
                 try:
                     pssm = __load_allele_model(a, length)
                 except ImportError:

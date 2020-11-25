@@ -332,7 +332,7 @@ class APSSMCleavageFragmentPredictor(ACleavageFragmentPrediction):
                 pep_seqs[str(p)] = p
 
         result = {self.name:{}}
-        for length, peps in itertools.groupby(iter(pep_seqs.keys()), key= lambda x: len(x)):
+        for length, peps in itertools.groupby(pep_seqs.keys(), key= lambda x: len(x)):
             peps = list(peps)
             #dynamicaly import prediction PSSMS for alleles and predict
             if length not in self.supportedLength:
@@ -438,7 +438,7 @@ class PSSMGinodi(APSSMCleavageFragmentPredictor):
                 pep_seqs[str(p)] = p
 
         result = {self.name: {}}
-        for length, peps in itertools.groupby(iter(pep_seqs.keys()), key=lambda x: len(x)):
+        for length, peps in itertools.groupby(pep_seqs.keys(), key=lambda x: len(x)):
             peps = list(peps)
             #dynamicaly import prediction PSSMS for alleles and predict
             if length not in self.supportedLength:

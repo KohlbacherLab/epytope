@@ -50,7 +50,7 @@ class TestProteinClass(unittest.TestCase):
         #     print pep, pep.transcripts.items()
 
         # get the number of peptides generated for each protein in self.prot_set and sum up
-        number_of_peps = sum(len(list(pep.proteins.keys())) for pep in pep_set)
+        number_of_peps = sum(len(pep.proteins.keys()) for pep in pep_set)
         # The total number of peptides of length 3 from all proteins in self.pro_set should be 14
         self.assertEqual(number_of_peps, 14)
 

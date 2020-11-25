@@ -85,7 +85,7 @@ class APluginRegister(abc.ABCMeta):
         return cls.registry[name][version]
 
     def __iter__(cls):
-        return iter(list(cls.registry.values()))
+        return iter(cls.registry.values())
 
     def __str__(cls):
         if cls in cls.registry:

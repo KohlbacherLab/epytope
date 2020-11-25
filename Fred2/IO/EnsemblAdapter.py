@@ -62,14 +62,14 @@ class EnsemblDB(ADBAdapter):
             recs = SeqIO.to_dict(sequence_file)
         if recs:
             self.collection.update(recs)
-            self.searchstring = '#'.join([str(x.seq) for x in list(self.collection.values())])
+            self.searchstring = '#'.join([str(x.seq) for x in self.collection.values()])
             self.accs = list(self.collection.keys())
             self.idx = list()
             self.idx.append(0)
             for i, v in enumerate(self.collection.values()):
                 self.idx.append(1 + self.idx[-1] + len(list(self.collection.values())[i].seq))
 
-            for i in list(recs.items()):
+            for i in recs.items():
                 ensg = None
                 enst = None
                 ensp = None
@@ -258,7 +258,7 @@ class EnsemblDB(ADBAdapter):
                 if index >= 0:
                     j = bisect.bisect(self.idx, index) - 1
                     ids[i] = self.accs[j]
-            return dict(list(zip(seq, ids)))
+            return dict(zip(seq, ids))
         return None
 
     def search_all(self, seq):
@@ -303,5 +303,5 @@ class EnsemblDB(ADBAdapter):
                     else:
                         ids[i] = ids[i] + ',' + self.accs[j]
                     index += searchstring_length
-            return dict(list(zip(seq, ids)))
+            return dict(zip(seq, ids))
         return None

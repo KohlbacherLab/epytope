@@ -19,7 +19,7 @@ except ImportError:
     pass
 
 
-class metaclassCleavageSite(type):
+class MetaclassCleavageSite(type):
     def __init__(cls, name, bases, nmspc):
         type.__init__(cls, name, bases, nmspc)
 
@@ -44,7 +44,7 @@ class metaclassCleavageSite(type):
                     "supported by FRED2 and inherits ACleavageSitePrediction.")
 
 
-class metaclassCleavageFragment(type):
+class MetaclassCleavageFragment(type):
     def __init__(cls, name, bases, nmspc):
         type.__init__(cls, name, bases, nmspc)
 
@@ -69,7 +69,7 @@ class metaclassCleavageFragment(type):
                     "supported by FRED2 and inherits ACleavageFragmentPrediction.")
 
 
-class CleavageSitePredictorFactory(metaclass=metaclassCleavageSite):
+class CleavageSitePredictorFactory(metaclass=MetaclassCleavageSite):
 
     @staticmethod
     def available_methods():
@@ -81,7 +81,7 @@ class CleavageSitePredictorFactory(metaclass=metaclassCleavageSite):
         return {k: sorted(versions.keys()) for k, versions in ACleavageSitePrediction.registry.items()}
 
 
-class CleavageFragmentPredictorFactory(metaclass=metaclassCleavageFragment):
+class CleavageFragmentPredictorFactory(metaclass=MetaclassCleavageFragment):
 
     @staticmethod
     def available_methods():

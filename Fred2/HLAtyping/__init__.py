@@ -7,7 +7,7 @@ except ImportError:
     pass
 
 
-class metaclassHLA(type):
+class MetaclassHLA(type):
     def __init__(cls, name, bases, nmspc):
         type.__init__(cls, name, bases, nmspc)
 
@@ -30,7 +30,7 @@ class metaclassHLA(type):
                                  "supported by FRED2 and inherits AHLATyping.")
 
 
-class HLATypingFactory(metaclass=metaclassHLA):
+class HLATypingFactory(metaclass=MetaclassHLA):
 
     @staticmethod
     def available_methods():

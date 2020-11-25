@@ -16,7 +16,7 @@ except ImportError:
     pass
 
 
-class metaclassTAP(type):
+class MetaclassTAP(type):
     def __init__(cls, name, bases, nmspc):
         type.__init__(cls, name, bases, nmspc)
 
@@ -39,7 +39,7 @@ class metaclassTAP(type):
                                  "supported by FRED2 and inherits ATAPPrediction.")
 
 
-class TAPPredictorFactory(metaclass=metaclassTAP):
+class TAPPredictorFactory(metaclass=MetaclassTAP):
 
     @staticmethod
     def available_methods():

@@ -138,8 +138,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                 continue
             peps = list(peps)
             for i in range(0, len(peps), chunksize):
-                #TODO: watch out for file mode. Should tmp_out also be in text mode?
-                tmp_out = NamedTemporaryFile(delete=False)
+                tmp_out = NamedTemporaryFile(mode="r+", delete=False)
                 tmp_file = NamedTemporaryFile(mode="r+", delete=False)
                 self.prepare_input(peps[i:i+chunksize], tmp_file)
                 #            tmp_file.write("\n".join(">pepe_%i\n%s"%(i, p) for i, p in enumerate(peps))
@@ -466,6 +465,8 @@ class NetMHC_4_0(NetMHC_3_4):
         result = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
         pos_factor = 3
+      # alleles = map(lambda x: x.split()[0], filter(lambda x: x.strip() != "", f.next()))
+      # f.next()
         alleles = [x.split()[0] for x in [x for x in next(f) if x.strip() != ""]]
         next(f)
         for l in f:
@@ -1392,7 +1393,7 @@ class NetMHCpan_2_8(AExternalEpitopePrediction):
         """
         result = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
-        alleles = list([x for x in next(f) if x != ""])
+        alleles = [x for x in next(f) if x != ""]
         next(f)
         ic_pos = 3
         for row in f:
@@ -1436,7 +1437,7 @@ class NetMHCpan_3_0(NetMHCpan_2_8):
         """
         result = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
-        alleles = list([x for x in next(f) if x != ""])
+        alleles = [x for x in next(f) if x != ""]
         next(f)
         ic_pos = 4
         for row in f:
@@ -1472,7 +1473,7 @@ class NetMHCpan_4_0(NetMHCpan_3_0):
         """
         result = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
-        alleles = list([x for x in next(f) if x != ""])
+        alleles = [x for x in next(f) if x != ""]
         next(f)
         ic_pos = 5
         for row in f:

@@ -20,7 +20,7 @@ except ImportError:
     pass
 
 
-class metaclassEpitope(type):
+class MetaclassEpitope(type):
     def __init__(cls, name, bases, nmspc):
         type.__init__(cls, name, bases, nmspc)
 
@@ -43,7 +43,7 @@ class metaclassEpitope(type):
                                  "supported by FRED2 and inherits AEpitopePredictor.")
 
 
-class EpitopePredictorFactory(metaclass=metaclassEpitope):
+class EpitopePredictorFactory(metaclass=MetaclassEpitope):
 
     @staticmethod
     def available_methods():

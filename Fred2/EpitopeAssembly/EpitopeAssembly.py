@@ -115,7 +115,7 @@ class EpitopeAssembly(object):
         self.__solver = SolverFactory(solver)
         model = ConcreteModel()
 
-        E = [x for x in list(seq_to_pep.keys()) if x != "Dummy"]
+        E = [x for x in seq_to_pep.keys() if x != "Dummy"]
         model.E = Set(initialize=E)
         model.E_prime = Set(initialize=list(seq_to_pep.keys()))
         model.ExE = Set(initialize=itr.permutations(E,2), dimen=2)
@@ -180,7 +180,6 @@ class EpitopeAssembly(object):
         :return: An order list of the :class:`~Fred2.Core.Peptide.Peptide` (based on the sting-of-beads ordering)
         :rtype: list(:class:`~Fred2.Core.Peptide.Peptide`)
         """
-        #TODO: watch out for file mode.
         tmp_conf = NamedTemporaryFile(delete=False)
         tmp_prob = NamedTemporaryFile(delete=False)
         tmp_out = NamedTemporaryFile(delete=False)
@@ -381,7 +380,7 @@ class ParetoEpitopeAssembly(object):
         self.__solver = SolverFactory(solver)
         model = ConcreteModel()
 
-        E = [x for x in list(seq_to_pep.keys()) if x != "Dummy"]
+        E = [x for x in seq_to_pep.keys() if x != "Dummy"]
         model.E = Set(initialize=E)
         model.E_prime = Set(initialize=list(seq_to_pep.keys()))
         model.ExE = Set(initialize=itr.permutations(E,2), dimen=2)

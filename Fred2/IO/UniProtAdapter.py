@@ -64,7 +64,7 @@ class UniProtDB:
             recs = SeqIO.to_dict(sequence_file)
         if recs:
             self.collection.update(recs)
-            self.searchstring = '#'.join([str(x.seq) for x in list(self.collection.values())]).decode('ascii')
+            self.searchstring = '#'.join([str(x.seq) for x in self.collection.values()]).decode('ascii')
             self.accs = list(self.collection.keys())
             self.idx = list()
             self.idx.append(0)
@@ -120,7 +120,7 @@ class UniProtDB:
                 if index >= 0:
                     j = bisect.bisect(self.idx, index) - 1
                     ids[i] = self.accs[j]
-            return dict(list(zip(seq, ids)))
+            return dict(zip(seq, ids))
         return None
 
     def search_all(self, seq):
@@ -163,5 +163,5 @@ class UniProtDB:
                     else:
                         ids[i] = ids[i] + ',' + self.accs[j]
                     index += searchstring_length
-            return dict(list(zip(seq, ids)))
+            return dict(zip(seq, ids))
         return None
