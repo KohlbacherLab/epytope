@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest]
+        python-version: [3.5, 3.6, 3.7, 3.8]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -29,10 +30,10 @@ jobs:
       working-directory: ./fred-tools/
       run: |
         ./post.runner
-    - name: Set up Python 3.7
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
     - name: Set conda package directory
       run: |
         mkdir /tmp/condapkgs
