@@ -339,7 +339,7 @@ class ParetoEpitopeAssembly(object):
                     fragments[frag] = (start_str, stop_str)
                     fragments[garf] = (stop_str, start_str)
 
-            epi_pred = ep_pred.predict(generate_peptides_from_proteins(list(fragments.keys()), length), alleles=_alleles)
+            epi_pred = ep_pred.predict(generate_peptides_from_proteins(fragments.keys(), length), alleles=_alleles)
             for index,row in epi_pred.iterrows():
                 nof_epis = sum(comparator(row[a],threshold.get(a.name, 0)) for a in _alleles) \
 

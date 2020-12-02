@@ -214,7 +214,7 @@ class EnsemblDB(ADBAdapter):
             :param str name: The complete path with file name where the fasta is going to be written
             """
         with open(name, "w") as output:
-            SeqIO.write(list(self.collection.values()), output, "fasta")
+            SeqIO.write(self.collection.values(), output, "fasta")
 
     def exists(self, seq):
         """
