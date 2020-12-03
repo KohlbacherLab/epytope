@@ -50,7 +50,7 @@ class EnsemblDB(ADBAdapter):
         recs = sequence_file
         if not isinstance(sequence_file, dict) and not isinstance(sequence_file, list):
             try:
-                with open(sequence_file, 'rb') as f:
+                with open(sequence_file, 'r') as f:
                     if sequence_file.endswith('.fa') or sequence_file.endswith('.fasta'):
                         recs = SeqIO.to_dict(SeqIO.parse(f, "fasta"))
                     else:  # assume it is a dat file
@@ -62,12 +62,12 @@ class EnsemblDB(ADBAdapter):
             recs = SeqIO.to_dict(sequence_file)
         if recs:
             self.collection.update(recs)
-            self.searchstring = '#'.join([str(x.seq) for x in self.collection.values()]).decode('ascii')
-            self.accs = self.collection.keys()
+            self.searchstring = '#'.join([str(x.seq) for x in self.collection.values()])
+            self.accs = list(self.collection.keys())
             self.idx = list()
             self.idx.append(0)
             for i, v in enumerate(self.collection.values()):
-                self.idx.append(1 + self.idx[-1] + len(self.collection.values()[i].seq))
+                self.idx.append(1 + self.idx[-1] + len(list(self.collection.values())[i].seq))
 
             for i in recs.items():
                 ensg = None

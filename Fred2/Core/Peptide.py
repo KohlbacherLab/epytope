@@ -13,7 +13,6 @@
 import collections
 
 from Bio.Seq import Seq
-from Bio.Alphabet import IUPAC
 
 from Fred2.Core import MetadataLogger
 from Fred2.Core.Protein import Protein
@@ -36,16 +35,16 @@ class Peptide(MetadataLogger, Seq):
 
         """
         MetadataLogger.__init__(self)
-        Seq.__init__(self, seq.upper(), IUPAC.IUPACProtein)
+        Seq.__init__(self, seq.upper())
 
         # Enforce dict storage
         if protein_pos and \
-                any(not isinstance(p, Protein) or any(not isinstance(i, (int, long)) for i in pos) for p, pos in
-                    protein_pos.iteritems()):
+                any(not isinstance(p, Protein) or any(not isinstance(i, int) for i in pos) for p, pos in
+                    protein_pos.items()):
             raise TypeError("The proteins_pos given to a Peptide object should be dict(Protein,list(int))")
-        self.proteins = dict() if protein_pos is None else {p.transcript_id:p for p in protein_pos.iterkeys()}
+        self.proteins = dict() if protein_pos is None else {p.transcript_id:p for p in protein_pos.keys()}
         self.proteinPos = collections.defaultdict(list) if protein_pos is None else {p.transcript_id: pos for p, pos in
-                                                                                     protein_pos.iteritems()}
+                                                                                     protein_pos.items()}
 
     def __getitem__(self, index):
         """
@@ -67,7 +66,7 @@ class Peptide(MetadataLogger, Seq):
             start, stop, step = index.indices(len(self))
             if start > stop:
                 raise ValueError("start has to be greater than stop")
-            protPos = {self.proteins[tId]: [p+(start-p) for p in pos] for tId, pos in self.proteinPos.iteritems()}
+            protPos = {self.proteins[tId]: [p+(start-p) for p in pos] for tId, pos in self.proteinPos.items()}
             return Peptide(seq, protein_pos=protPos)
 
     def __repr__(self):
@@ -81,7 +80,7 @@ class Peptide(MetadataLogger, Seq):
                 lines.append("\tVARIANTS:")
                 for var in self.get_variants_by_protein(t_id):
                     lines.append("\t%s" % var)
-        for p in self.proteins.itervalues():
+        for p in self.proteins.values():
             p_id = p.transcript_id
             lines.append("in PROTEIN: %s" % p_id)
         return '\n'.join(lines)
@@ -94,7 +93,7 @@ class Peptide(MetadataLogger, Seq):
         :return: A list of :class:`~Fred2.Core.Protein.Protein`
         :rtype: list(:class:`~Fred2.Core.Protein.Protein`)
         """
-        return self.proteins.values()
+        return list(self.proteins.values())
 
     def get_protein(self, transcript_id):
         """
@@ -115,7 +114,7 @@ class Peptide(MetadataLogger, Seq):
         :return: A list of :class:`~Fred2.Core.Transcript.Transcript`
         :rtype: list(:class:`~Fred2.Core.Transcript.Transcript`)
         """
-        return [p.orig_transcript for p in self.proteins.itervalues()]
+        return [p.orig_transcript for p in self.proteins.values()]
 
     def get_transcript(self, transcript_id):
         """
@@ -157,7 +156,7 @@ class Peptide(MetadataLogger, Seq):
             fs = []
             shift = 0
             for start_pos in self.proteinPos[transcript_id]:
-                for i in xrange(start_pos):
+                for i in range(start_pos):
                     for v in p.vars.get(i, []):
                         if v.type in [VariationType.FSDEL, VariationType.FSINS]:
                             shift = (v.get_shift()+shift) % 3
@@ -165,7 +164,7 @@ class Peptide(MetadataLogger, Seq):
                                 fs.append(v)
                             else:
                                 fs = []
-                for j in xrange(start_pos, start_pos+len(self)):
+                for j in range(start_pos, start_pos+len(self)):
                     for v in p.vars.get(j, []):
                         var.append(v)
             fs.extend(var)
@@ -199,7 +198,7 @@ class Peptide(MetadataLogger, Seq):
             var = dict()
             fs = dict()
             shift = 0
-            for i in xrange(protein_pos):
+            for i in range(protein_pos):
                 for v in p.vars.get(i, []):
                     if v.type in [VariationType.FSDEL, VariationType.FSINS]:
                         shift = (v.get_shift()+shift) % 3
@@ -207,7 +206,7 @@ class Peptide(MetadataLogger, Seq):
                             fs.setdefault(i - protein_pos, []).append(v)
                         else:
                             fs.clear()
-            for j in xrange(protein_pos, protein_pos+len(self)):
+            for j in range(protein_pos, protein_pos+len(self)):
                 for v in p.vars.get(j, []):
                     var.setdefault(j - protein_pos, []).append(v)
             fs.update(var)

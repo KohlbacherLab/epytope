@@ -28,7 +28,7 @@ class TestExternalCleavagePredictonClass(unittest.TestCase):
     def test_wrong_input(self):
         with self.assertRaises(ValueError):
             mo = CleavageSitePredictorFactory("NetChop")
-            mo.predict(self.seqs[0])
+            mo.predict(self.transcript)
 
     def test_path_option_and_optionl_parameters(self):
         netchop = CleavageSitePredictorFactory("NetChop")
@@ -37,7 +37,7 @@ class TestExternalCleavagePredictonClass(unittest.TestCase):
             try_path = try_path.strip('"')
             exe_try = os.path.join(try_path, exe).strip()
             if os.path.isfile(exe_try) and os.access(exe_try, os.X_OK):
-                print exe_try
+                print(exe_try)
                 netchop.predict(self.seqs, path=exe_try, options="-v 1")
 
 if __name__ == '__main__':
