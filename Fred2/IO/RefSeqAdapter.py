@@ -35,7 +35,7 @@ class RefSeqAdapter(ADBAdapter):
                         refseq_records[rid].dbxrefs.append(ridv)
                         refseq_records[rid].id = rid
                     else:
-                        print('claaaash!!')  # TODO no clashes in v.66 but ever?! use logging.warning or something
+                        logging.warning('Clash!')  # TODO no clashes in v.66 but ever?! use logging.warning or something
         except:
             pass
         return refseq_records
