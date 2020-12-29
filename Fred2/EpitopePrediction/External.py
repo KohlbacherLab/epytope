@@ -114,13 +114,13 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                 c_a = 0
                 allele_groups.append(allele_group)
                 if str(allales_string[a]) not in self.supportedAlleles:
-                    logging.warn("Allele %s is not supported by %s" % (str(allales_string[a]), self.name))
+                    logging.warning("Allele %s is not supported by %s" % (str(allales_string[a]), self.name))
                     allele_group = []
                     continue
                 allele_group = [a]
             else:
                 if str(allales_string[a]) not in self.supportedAlleles:
-                    logging.warn("Allele %s is not supported by %s" % (str(allales_string[a]), self.name))
+                    logging.warning("Allele %s is not supported by %s" % (str(allales_string[a]), self.name))
                     continue
                 allele_group.append(a)
                 c_a += 1
@@ -133,7 +133,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
         pep_groups.sort(key=len)
         for length, peps in itertools.groupby(pep_groups, key=len):
             if length not in self.supportedLength:
-                logging.warn("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
+                logging.warning("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
                                                                                        self.name, length))
                 continue
             peps = list(peps)
@@ -1918,16 +1918,16 @@ class NetMHCstabpan_1_0(AExternalEpitopePrediction):
         with open(file, "r") as f:
             f = csv.reader(f, delimiter='\t')
             alleles = [x for x in next(f) if x.strip() != ""]
-            print(alleles)
+            logging.warning(alleles)
             ic_pos = 4
             offset = 3
             header = next(f)
-            print("\t".join(header))
+            logging.warning("\t".join(header))
             if "Aff(nM)" in header:
                 ic_pos = 9
                 offset = 8
             for row in f:
-                print("\t".join(row))
+                logging.warning("\t".join(row))
                 pep_seq = row[1]
                 for i, a in enumerate(alleles):
                     result[a][pep_seq] = float(row[ic_pos +i*offset])

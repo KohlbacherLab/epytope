@@ -205,7 +205,7 @@ try:
             pep_groups.sort(key=len)
             for length, peps in itertools.groupby(pep_groups, key=len):
                 if length not in self.supportedLength:
-                    logging.warn("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
+                    logging.warning("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
                                                                                         self.name, length))
                     continue
                 peps = list(peps)
@@ -234,7 +234,7 @@ try:
                     for row in reader:
                         if row[0] == 'peptide,ic50':
                             break
-                        print(' '.join(row))
+                        logging.warning(' '.join(row))
 
                     # assign binding affinities
                     for row in reader:
@@ -261,7 +261,7 @@ try:
                                                             names=['Seq', 'Method'])
             return df_result
 except BadSignatureException:
-    print("Class MHCNuggetsPredictor_class1_2_0 cannot be constructed, because of a bad method signature (predict)")
+    logging.warning("Class MHCNuggetsPredictor_class1_2_0 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
@@ -338,7 +338,7 @@ try:
 
         # predict(): same workaround for mhcnuggets file i/o buffer bug needed here
 except BadSignatureException:
-    print("Class MHCNuggetsPredictor_class1_2_3_2 cannot be constructed, because of a bad method signature (predict)")
+    logging.warning("Class MHCNuggetsPredictor_class1_2_3_2 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
@@ -487,7 +487,7 @@ try:
             pep_groups.sort(key=len)
             for length, peps in itertools.groupby(pep_groups, key=len):
                 if length not in self.supportedLength:
-                    logging.warn("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
+                    logging.warning("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
                                                                                         self.name, length))
                     continue
                 peps = list(peps)
@@ -516,7 +516,7 @@ try:
                     for row in reader:
                         if row[0] == 'peptide,ic50':
                             break
-                        print(' '.join(row))
+                        logging.warning(' '.join(row))
 
                     for row in reader:
                         content = row[0].split(',')
@@ -542,7 +542,7 @@ try:
                                                             names=['Seq', 'Method'])
             return df_result
 except BadSignatureException:
-    print("Class MHCNuggetsPredictor_class2_2_0 cannot be constructed, because of a bad method signature (predict)")
+    logging.warning("Class MHCNuggetsPredictor_class2_2_0 cannot be constructed, because of a bad method signature (predict)")
 
 try:
     class MHCNuggetsPredictor_class2_2_3_2(MHCNuggetsPredictor_class2_2_0):
@@ -650,7 +650,7 @@ try:
 
         # predict(): same workaround for mhcnuggets file i/o buffer bug needed here
 except BadSignatureException:
-    print("Class MHCNuggetsPredictor_class2_2_3_2 cannot be constructed, because of a bad method signature (predict)")
+    logging.warning("Class MHCNuggetsPredictor_class2_2_3_2 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
@@ -772,7 +772,7 @@ try:
             peptides.sort(key=len)
             for length, peps in itertools.groupby(peptides, key=len):
                 if length not in self.supportedLength:
-                    logging.warn("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
+                    logging.warning("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
                                                                                         self.name, length))
                     continue
                 peps = list(peps)
@@ -801,7 +801,7 @@ try:
                                                             names=['Seq', 'Method'])
             return df_result
 except BadSignatureException:
-    print("Class MHCFlurryPredictor_1_2_2 cannot be constructed, because of a bad method signature (predict)")
+    logging.warning("Class MHCFlurryPredictor_1_2_2 cannot be constructed, because of a bad method signature (predict)")
 
 
 try:
@@ -879,4 +879,4 @@ try:
             else:
                 return Allele(name)
 except BadSignatureException:
-    print("Class MHCFlurryPredictor_1_4_3 cannot be constructed, because of a bad method signature (predict)")
+    logging.warning("Class MHCFlurryPredictor_1_4_3 cannot be constructed, because of a bad method signature (predict)")
