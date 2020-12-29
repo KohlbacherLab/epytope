@@ -56,7 +56,7 @@ class EnsemblDB(ADBAdapter):
                     else:  # assume it is a dat file
                         recs = SeqIO.to_dict(SeqIO.parse(open(sequence_file), 'swiss'))
             except:
-                logging.warn("Could not read file", UserWarning)
+                logging.warning("Could not read file")
                 return
         if isinstance(sequence_file, list):
             recs = SeqIO.to_dict(sequence_file)
@@ -101,7 +101,7 @@ class EnsemblDB(ADBAdapter):
                     if enst:
                         self.ensp2enst[ensp] = enst
                 if not ensg and not enst and not ensp:
-                    logging.warn("Unparsable filecontents", UserWarning)
+                    logging.warning("Unparsable filecontents")
         return
 
     def map_enst(self, enst):
@@ -135,7 +135,7 @@ class EnsemblDB(ADBAdapter):
         return {'Ensembl Gene ID': ensg, 'Ensembl Transcript ID': enst, 'Ensembl Protein ID': ensp}
 
     def map_ensg(self, ensg):
-        logging.warn('mapping ensg not implemented', NotImplementedError)
+        logging.warning('mapping ensg not implemented')
 
     def get_transcript_sequence(self, transcript_id, **kwargs):
         """
@@ -151,7 +151,7 @@ class EnsemblDB(ADBAdapter):
 
         if "type" in kwargs:
             if kwargs["type"] != EIdentifierTypes.ENSEMBL:
-                logging.warn("Could not infer the origin of transcript id" + str(transcript_id))
+                logging.warning("Could not infer the origin of transcript id" + str(transcript_id))
                 return None
 
         if transcript_id in self.collection:
@@ -173,7 +173,7 @@ class EnsemblDB(ADBAdapter):
 
         if "type" in kwargs:
             if kwargs["type"] != EIdentifierTypes.ENSEMBL:
-                logging.warn("Could not infer the origin of transcript id" + str(product_id))
+                logging.warning("Could not infer the origin of transcript id" + str(product_id))
                 return None
 
         if product_id in self.collection:
@@ -195,7 +195,7 @@ class EnsemblDB(ADBAdapter):
 
         if "type" in kwargs:
             if kwargs["type"] != EIdentifierTypes.ENSEMBL:
-                logging.warn("Could not infer the origin of transcript id" + str(transcript_id))
+                logging.warning("Could not infer the origin of transcript id" + str(transcript_id))
                 return None
 
         if transcript_id in self.collection:

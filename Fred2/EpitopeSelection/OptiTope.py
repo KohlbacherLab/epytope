@@ -105,7 +105,7 @@ class OptiTope(object):
         probs = {a.name:a.prob for a in _alleles}
         if verbosity:
             for a in _alleles:
-                print(a.name, a.prob)
+                logging.warning(f"{a.name} {a.prob}")
 
         #start constructing model
         self.__solver = SolverFactory(solver)
@@ -218,7 +218,7 @@ class OptiTope(object):
         #generate instance
         self.instance = model
         if self.__verbosity > 0:
-            print("MODEL INSTANCE")
+            logging.warning("MODEL INSTANCE")
             self.instance.pprint()
 
         #constraints

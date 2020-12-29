@@ -16,6 +16,8 @@ import itertools as itr
 import multiprocessing as mp
 import copy
 import math
+import logging
+import io
 
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
@@ -143,8 +145,12 @@ class EpitopeAssembly(object):
 
         self.instance = model
         if self.__verbosity > 0:
-            print("MODEL INSTANCE")
-            self.instance.pprint()
+            logging.warning("MODEL INSTANCE")
+
+            s = io.StringIO(self.instance.pprint())
+            logging.warning(s.getvalue())
+
+            #self.instance.pprint()
 
     def solve(self, options=None):
         """
@@ -304,7 +310,7 @@ class ParetoEpitopeAssembly(object):
         probs = {a.name:a.prob for a in _alleles}
         if verbosity:
             for a in _alleles:
-                print(a.name, a.prob)
+                logging.warning(f"{a.name} {a.prob}")
 
 
         #Generate model
@@ -424,7 +430,7 @@ class ParetoEpitopeAssembly(object):
         self.epsilons = [model.eps2, model.eps1]
         self.instance = model
         if self.__verbosity > 0:
-            print("MODEL INSTANCE")
+            logging.warning("MODEL INSTANCE")
             self.instance.pprint()
 
     def solve(self, eps=1e6, order=(0,1), options={}):
@@ -450,7 +456,7 @@ class ParetoEpitopeAssembly(object):
         objs[order[0]] = self.objectsives[order[0]].expr()
         if self.__verbosity > 0:
             res.write(num=1)
-            print("Objective {nof_obj}:{value}".format(nof_obj=order[0],value=objs[order[0]]))
+            logging.warning("Objective {nof_obj}:{value}".format(nof_obj=order[0],value=objs[order[0]]))
 
         self.objectsives[order[1]].activate()
         self.objectsives[order[0]].deactivate()
@@ -464,7 +470,7 @@ class ParetoEpitopeAssembly(object):
         objs[order[1]] = self.objectsives[order[1]].expr()
         if self.__verbosity > 0:
             res.write(num=1)
-            print("Objective {nof_obj}:{value}".format(nof_obj=order[1],value=objs[order[1]]))
+            logging.warning("Objective {nof_obj}:{value}".format(nof_obj=order[1],value=objs[order[1]]))
 
         return objs[0], objs[1], [self.__seq_to_pep[u] for u in
                                                        sorted(self.instance.u, key=lambda x: self.instance.u[x].value)]
@@ -798,7 +804,7 @@ class EpitopeAssemblyWithSpacer(object):
         probs = {a.name:a.prob for a in _alleles}
         if verbosity:
             for a in _alleles:
-                print(a.name, a.prob)
+                logging.warning(f"{a.name} {a.prob}")
 
 
         self.spacer = {}
