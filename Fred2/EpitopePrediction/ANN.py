@@ -212,7 +212,7 @@ try:
 
                 # write peptides temporarily, new line separated
                 tmp_input_file = tempfile.NamedTemporaryFile().name
-                with open(tmp_input_file, 'wb') as file:
+                with open(tmp_input_file, 'w') as file:
                     for peptide in peps:
                         file.write(peptide + "\n")
 
@@ -494,7 +494,7 @@ try:
 
                 # write peptides temporarily, new line separated
                 tmp_input_file = tempfile.NamedTemporaryFile().name
-                with open(tmp_input_file, 'wb') as file:
+                with open(tmp_input_file, 'w') as file:
                     for peptide in peps:
                         file.write(peptide + "\n")
 
