@@ -10,7 +10,7 @@ import unittest
 from Fred2.Core import Allele
 from Fred2.Core import Peptide
 
-#Preidctions
+# Predictions
 from Fred2.EpitopePrediction import EpitopePredictorFactory, AExternalEpitopePrediction
 
 
@@ -27,29 +27,29 @@ class TestCaseEpitopePrediction(unittest.TestCase):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
                 if not isinstance(model, AExternalEpitopePrediction):
-                    if all(a.name in model.supportedAlleles for a in self.mhcI):
+                    if all(a in model.supportedAlleles for a in self.mhcI):
                         res = model.predict(self.peptides_mhcI, alleles=self.mhcI)
 
     def test_single_peptide_input_mhcI(self):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
                 if not isinstance(model, AExternalEpitopePrediction):
-                    if all(a.name in model.supportedAlleles for a in self.mhcI):
-                        res = model.predict(self.peptides_mhcI[0], alleles=self.mhcI[0])
+                    if all(a in model.supportedAlleles for a in self.mhcI):
+                        res = model.predict(self.peptides_mhcI, alleles=self.mhcI)
 
     def test_multiple_peptide_input_mhcII(self):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
                 if not isinstance(model, AExternalEpitopePrediction):
-                    if all(a.name in model.supportedAlleles for a in self.mhcII) and m != "MHCIIMulti":
+                    if all(a in model.supportedAlleles for a in self.mhcII) and m != "MHCIIMulti":
                         res = model.predict(self.peptides_mhcII, alleles=self.mhcII)
 
     def test_single_peptide_input_mhcII(self):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
                 if not isinstance(model, AExternalEpitopePrediction):
-                    if all(a.name in model.supportedAlleles for a in self.mhcII):
-                        res = model.predict(self.peptides_mhcII[0], alleles=self.mhcII[1])
+                    if all(a in model.supportedAlleles for a in self.mhcII):
+                        res = model.predict(self.peptides_mhcII, alleles=self.mhcII)
 
 
 if __name__ == '__main__':
