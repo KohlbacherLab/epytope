@@ -752,10 +752,15 @@ try:
             alleles = self.convert_alleles(alleles)
 
             # test mhcflurry models are available => download if not
-            p = subprocess.Popen(['mhcflurry-downloads', 'path', 'models_class1'],
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.call(['mhcflurry-downloads', 'path', 'models_class1'],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             if p is not 0:
-                subprocess.call(['mhcflurry-downloads', 'fetch', 'models_class1'])
+                logging.warn("mhcflurry models must be downloaded, as they were not found locally.")
+                cp = subprocess.run(['mhcflurry-downloads', 'fetch', 'models_class1'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                if cp.returncode != 0:
+                    for line in cp.stdout.decode().splitlines():
+                        logging.error(line)
+                    raise RuntimeError("mhcflurry failed to download model file")
 
             # load model
             predictor = Class1AffinityPredictor.load()
