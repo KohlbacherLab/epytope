@@ -121,6 +121,16 @@ setup(
 
     # Run-time dependencies. (will be installed by pip when FRED2 is installed)
     # TODO: find alternative for SMVlight scikitlearn
-    install_requires=['setuptools>=18.2', 'pandas', 'pyomo>=4.0', 'PyMySQL', 'biopython', 'pyVCF', 'mhcflurry<=1.4.3', 'mhcnuggets'],
+    install_requires=[
+            'setuptools>=18.2',
+            'pandas',
+            'pyomo>=4.0',
+            'PyMySQL',
+            'biopython',
+            'pyVCF',
+            'mhcflurry<=1.4.3',
+            'mhcnuggets',
+            'h5py<=2.10.0',         # mhcnuggets fails to read model with newer versions
+            ],
 
 )
