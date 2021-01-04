@@ -24,7 +24,7 @@ from Fred2.Core.Allele import Allele, CombinedAllele, MouseAllele
 from Fred2.Core.Peptide import Peptide
 from Fred2.Core.Result import EpitopePredictionResult
 from Fred2.Core.Base import AEpitopePrediction, AExternal
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, mkstemp
 
 
 class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
@@ -138,11 +138,13 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                 continue
             peps = list(peps)
             for i in range(0, len(peps), chunksize):
-                tmp_out = NamedTemporaryFile(mode="r+", delete=False)
+                # Create a temporary file for subprocess to write to. The
+                # handle is not needed on the python end, as only the path will
+                # be passed to the subprocess.
+                _, tmp_out_path = mkstemp()
+                # Create a temporary file to be used for the peptide input
                 tmp_file = NamedTemporaryFile(mode="r+", delete=False)
                 self.prepare_input(peps[i:i+chunksize], tmp_file)
-                #            tmp_file.write("\n".join(">pepe_%i\n%s"%(i, p) for i, p in enumerate(peps))
-                #                           if self.name.lower() in ["netmhcii","netctlpan"] else "\n".join(peps))
                 tmp_file.close()
 
                 # generate cmd command
@@ -151,24 +153,24 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                         stdo = None
                         stde = None
                         cmd = _command.format(peptides=tmp_file.name, alleles=",".join(allele_group),
-                                              options="" if options is None else options, out=tmp_out.name, length=str(length))
+                                              options="" if options is None else options, out=tmp_out_path, length=str(length))
                         p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                             stderr=subprocess.PIPE)
-                        # p.wait() communicate already waits for the process https://docs.python.org/2.7/library/subprocess.html#subprocess.Popen.communicate
+                                             stderr=subprocess.STDOUT)
                         stdo, stde = p.communicate()
                         stdr = p.returncode
                         if stdr > 0:
-                            raise RuntimeError("Unsuccessful execution of " + cmd + " (EXIT!=0) with error: " + stde)
+                            raise RuntimeError("Unsuccessful execution of " + cmd + " (EXIT!=0) with output:\n" + stdo.decode())
+                        if os.path.getsize(tmp_out_path) == 0:
+                            raise RuntimeError("Unsuccessful execution of " + cmd + " (empty output file) with output:\n" + stdo.decode())
                     except Exception as e:
                         raise RuntimeError(e)
 
-                    res_tmp = self.parse_external_result(tmp_out.name)
+                    res_tmp = self.parse_external_result(tmp_out_path)
                     for al, ep_dict in res_tmp.items():
                         for p, v in ep_dict.items():
                             result[allales_string[al]][pep_seqs[p]] = v
                 os.remove(tmp_file.name)
-                tmp_out.close()
-                os.remove(tmp_out.name)
+                os.remove(tmp_out_path)
 
         if not result:
             raise ValueError("No predictions could be made with " + self.name +
