@@ -29,6 +29,10 @@
 import itertools as itr
 import copy
 import math
+import logging
+
+from io import StringIO
+import sys
 
 from pyomo.environ import ConcreteModel, Set, Param, Var, Constraint, PositiveIntegers, \
                           Binary, NonNegativeIntegers, Objective, maximize, NonNegativeReals
@@ -219,7 +223,14 @@ class OptiTope(object):
         self.instance = model
         if self.__verbosity > 0:
             logging.warning("MODEL INSTANCE")
+
+            old_stdout = sys.stdout
+            sys.stdout = pstring = StringIO()
             self.instance.pprint()
+            sys.stdout = old_stdout
+
+            logging.warning(pstring.getvalue())
+
 
         #constraints
         self.instance.IsAlleleCovConst.deactivate()

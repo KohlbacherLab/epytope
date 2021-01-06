@@ -17,7 +17,9 @@ import multiprocessing as mp
 import copy
 import math
 import logging
-import io
+
+from io import StringIO
+import sys
 
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
@@ -147,8 +149,12 @@ class EpitopeAssembly(object):
         if self.__verbosity > 0:
             logging.warning("MODEL INSTANCE")
 
-            s = io.StringIO(self.instance.pprint())
-            logging.warning(s.getvalue())
+            old_stdout = sys.stdout
+            sys.stdout = pstring = StringIO()
+            self.instance.pprint()
+            sys.stdout = old_stdout
+
+            logging.info(pstring.getvalue())
 
             #self.instance.pprint()
 
@@ -431,7 +437,15 @@ class ParetoEpitopeAssembly(object):
         self.instance = model
         if self.__verbosity > 0:
             logging.warning("MODEL INSTANCE")
+
+            old_stdout = sys.stdout
+            sys.stdout = pstring = StringIO()
             self.instance.pprint()
+            sys.stdout = old_stdout
+
+            logging.warning(pstring.getvalue())
+
+            #self.instance.pprint()
 
     def solve(self, eps=1e6, order=(0,1), options={}):
         """
