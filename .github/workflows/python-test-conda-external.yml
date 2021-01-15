@@ -17,26 +17,26 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        path: fred
+        path: epytope
     - uses: actions/checkout@v2
       with:
         repository: kohlbacherlab/fred-tools
         token: ${{ secrets.FRED_CI_PAT }}
-        path: fred-tools
-    - name: Install fred-tools system dependencies
+        path: epytope-tools
+    - name: Install epytope-tools system dependencies
       run:
         apt-fast install -y tcsh
-    - name: fred-tools post scripts
-      working-directory: ./fred-tools/
+    - name: epytope-tools post scripts
+      working-directory: ./epytope-tools/
       run: |
         ./post.runner
     - name: Set conda package directory
       run: |
         mkdir /tmp/condapkgs
         echo "CONDA_PKGS_DIRS=/tmp/condapkgs" >> $GITHUB_ENV
-    - name: Activate fred-tools
+    - name: Activate epytope-tools
       run: |
-        echo "$PWD/fred-tools/bin" >> $GITHUB_PATH
+        echo "$PWD/epytope-tools/bin" >> $GITHUB_PATH
         echo "PATH=$PATH"
     - name: Install test dependencies and dependencies that pip would build from source
       run: |
@@ -45,25 +45,25 @@ jobs:
     - name: Activate conda environment
       run: |
         echo "/tmp/condaenv/bin" >> $GITHUB_PATH
-    - name: Install FRED
+    - name: Install epytope
       run: |
-        pip install keras==2.3.1 ./fred/
+        pip install keras==2.3.1 ./epytope/
     - name: Set up test environment
       run: |
         conda install -p /tmp/condaenv -c conda-forge -c bioconda nose
     - name: Run Tests - Cleavage Prediction
-      working-directory: ./fred/
+      working-directory: ./epytope/
       continue-on-error: true
       run: |
         conda install -p /tmp/condaenv -c conda-forge -c bioconda nose
-        nosetests -v Fred2/test/external/TestExternalCleavagePrediction.py || echo "Cleavage Prediction" >> FAILED_TESTS
+        nosetests -v epytope/test/external/TestExternalCleavagePrediction.py || echo "Cleavage Prediction" >> FAILED_TESTS
     - name: Run Tests - Epitope Prediction
-      working-directory: ./fred/
+      working-directory: ./epytope/
       run: |
         conda install -p /tmp/condaenv -c conda-forge -c bioconda nose
-        nosetests -v Fred2/test/external/TestExternalEpitopePrediction.py || echo "Epitope Prediction" >> FAILED_TESTS
+        nosetests -v epytope/test/external/TestExternalEpitopePrediction.py || echo "Epitope Prediction" >> FAILED_TESTS
     - name: Validate Test Results
-      working-directory: ./fred/
+      working-directory: ./epytope/
       run: |
         if [ -e FAILED_TESTS ]; then
           echo "FAILED TESTS:" >&2
