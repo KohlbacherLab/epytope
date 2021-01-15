@@ -10,8 +10,8 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     readme = f.read()
 
-#d2s_src_dir = path.join(path.join('Fred2', 'Distance2Self'), 'src')
-#d2s_module = Extension('Fred2.d2s',
+#d2s_src_dir = path.join(path.join('epytope', 'Distance2Self'), 'src')
+#d2s_module = Extension('epytope.d2s',
 #                       define_macros=[('MAJOR_VERSION', '1'),
 #                                      ('MINOR_VERSION', '0')],
 #                       include_dirs=[d2s_src_dir],
@@ -22,11 +22,11 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 
 #data_files = list()
-# directories = glob.glob('Fred2/Data/svms/*/')
+# directories = glob.glob('epytope/Data/svms/*/')
 # for directory in directories:
 #     files = glob.glob(directory + '*')
 #     data_files.append((directory, files))
-#directories = glob.glob('Fred2/Data/examples/')
+#directories = glob.glob('epytope/Data/examples/')
 #for directory in directories:
 #    files = glob.glob(directory + '*')
 #    data_files.append((directory, files))
@@ -40,16 +40,16 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 # install unclear for data_files
 
 setup(
-    name='Fred2',
+    name='epytope',
 
     # Version:
-    version='2.0.7',
+    version='3.0.0',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=readme,
 
     # The project's main homepage.
-    url='https://github.com/Fred-2/Fred2',
+    url='https://github.com/KohlbacherLab/epytope',
 
     # Author details
     author='Benjamin Schubert, Mathias Walzer',
@@ -85,18 +85,18 @@ setup(
     # Specify  packages via find_packages() and exclude the tests and 
     # documentation:
     packages=find_packages(),
-    #packages=find_packages(exclude=['Fred2.test', 'Fred2.doc', 'Fred2.tutorials']),
+    #packages=find_packages(exclude=['epytope.test', 'epytope.doc', 'epytope.tutorials']),
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     #include_package_data=True,
     package_data={
-        'Fred2.Data.examples': ['*.*'],
-        'Fred2.Data.svms.svmtap': ['*'],
-        'Fred2.Data.svms.svmhc': ['*'],
-        'Fred2.Data.svms.unitope': ['*'],
-        #'Fred2.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
+        'epytope.Data.examples': ['*.*'],
+        'epytope.Data.svms.svmtap': ['*'],
+        'epytope.Data.svms.svmhc': ['*'],
+        'epytope.Data.svms.unitope': ['*'],
+        #'epytope.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
     },
 
     #package_data is a lie: http://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute
@@ -112,7 +112,7 @@ setup(
     # deinstallation does not work)
     #entry_points={
     #    'console_scripts': [
-    #        'epitopeprediction=Fred2.Apps.EpitopePrediction:main',
+    #        'epitopeprediction=epytope.Apps.EpitopePrediction:main',
     #    ],
     #},
 

@@ -1,11 +1,11 @@
 *.pyc
 *.DS_Store
-Fred2/doc/build/*
-Fred2/.idea/*
-Fred2.egg-info
+epytope/doc/build/*
+epytope/.idea/*
+epytope.egg-info
 build/*
 dist/*
 .pythoscope
 .idea
 *.pyc
-Fred2/tutorials/.ipynb_checkpoints/*
+epytope/tutorials/.ipynb_checkpoints/*
