@@ -36,12 +36,12 @@ class MetaclassCleavageSite(type):
             if version is None:
                 raise ValueError(
                     "Predictor %s is not known. Please verify that such an Predictor is " % _predictor +
-                    "supported by FRED2 and inherits ACleavageSitePrediction.")
+                    "supported by epytope and inherits ACleavageSitePrediction.")
             else:
                 raise ValueError(
                     "Predictor %s version %s is not known. Please verify that such an Predictor is " % (
                         _predictor, version) +
-                    "supported by FRED2 and inherits ACleavageSitePrediction.")
+                    "supported by epytope and inherits ACleavageSitePrediction.")
 
 
 class MetaclassCleavageFragment(type):
@@ -61,12 +61,12 @@ class MetaclassCleavageFragment(type):
             if version is None:
                 raise ValueError(
                     "Predictor %s is not known. Please verify that such an Predictor is " % _predictor +
-                    "supported by FRED2 and inherits ACleavageFragmentPrediction.")
+                    "supported by epytope and inherits ACleavageFragmentPrediction.")
             else:
                 raise ValueError(
                     "Predictor %s version %s is not known. Please verify that such an Predictor is " % (
                         _predictor, version) +
-                    "supported by FRED2 and inherits ACleavageFragmentPrediction.")
+                    "supported by epytope and inherits ACleavageFragmentPrediction.")
 
 
 class CleavageSitePredictorFactory(metaclass=MetaclassCleavageSite):

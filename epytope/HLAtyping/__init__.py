@@ -23,11 +23,11 @@ class MetaclassHLA(type):
         except KeyError as e:
             if version is None:
                 raise ValueError("Predictor %s is not known. Please verify that such an Predictor is " % _predictor +
-                                 "supported by FRED2 and inherits AHLATyping.")
+                                 "supported by epytope and inherits AHLATyping.")
             else:
                 raise ValueError("Predictor %s version %s is not known. Please verify that such an Predictor is " % (
                 _predictor, version) +
-                                 "supported by FRED2 and inherits AHLATyping.")
+                                 "supported by epytope and inherits AHLATyping.")
 
 
 class HLATypingFactory(metaclass=MetaclassHLA):

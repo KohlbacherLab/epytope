@@ -28,7 +28,7 @@ class MetadataLogger(object):
     This class provides a simple interface for assigning additional metadata to
     any object in our data model. Examples: storing ANNOVAR columns like depth,
     base count, dbSNP id, quality information for variants, additional prediction information
-    for peptides etc. This functionality is not used from core methods of FRED2.
+    for peptides etc. This functionality is not used from core methods of epytope.
 
     The saved values are accessed via :meth:`~epytope.Core.MetadataLogger.log_metadata` and
     :meth:`~epytope.Core.MetadataLogger.get_metadata`
@@ -317,7 +317,7 @@ class AExternal(object, metaclass=abc.ABCMeta):
             stdo, stde = p.communicate()
             stdr = p.returncode
             if stdr > 0:
-                raise RuntimeError("Could not check version of " + exe + " - Please check your installation and FRED2 "
+                raise RuntimeError("Could not check version of " + exe + " - Please check your installation and epytope "
                                                                          "wrapper implementation.")
         except Exception as e:
                 raise RuntimeError(e)

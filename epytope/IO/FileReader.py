@@ -202,7 +202,7 @@ def read_vcf(vcf_file, gene_filter=None, experimentalDesig=None):
 
     for num, record in enumerate(vl):
         c = record.CHROM.strip('chr')  # chrom
-        p = record.POS - 1  # vcf is 1-based & FRED2 0-based
+        p = record.POS - 1  # vcf is 1-based & epytope 0-based
         variation_dbid = record.ID  # e.g. rs0123
         r = str(record.REF)  # reference nuc (seq)
         v_list = record.ALT  # list of variants
@@ -261,7 +261,7 @@ def read_vcf(vcf_file, gene_filter=None, experimentalDesig=None):
                         tpos = 0
                         ppos = 0
 
-                        # get cds/protein positions and convert mutation syntax to FRED2 format
+                        # get cds/protein positions and convert mutation syntax to epytope format
                         if trans_coding != '':
                             positions = re.findall(r'\d+', trans_coding)
                             ppos = int(positions[0]) - 1
