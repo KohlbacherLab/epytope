@@ -143,7 +143,7 @@ try:
             else:
                 return "%s-%s%s%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
-        # Converts FRED2s internal allele representation into the format required by mhcnuggets
+        # Converts epytopes internal allele representation into the format required by mhcnuggets
         def convert_alleles(self, alleles):
             """
             Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele` representation
@@ -157,7 +157,7 @@ try:
             """
             return [self._represent(a) for a in alleles]
 
-        # Converts the internal mhcnuggets-class-1 HLA representation back into a FRED2 representation
+        # Converts the internal mhcnuggets-class-1 HLA representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
                 return MouseAllele(name)
@@ -316,7 +316,7 @@ try:
             else:
                 return "%s-%s%s:%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
-        # Converts the internal mhcnuggets-class-1 HLA representation back into a FRED2 representation
+        # Converts the internal mhcnuggets-class-1 HLA representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
                 return MouseAllele(name)
@@ -418,7 +418,7 @@ try:
             else:
                 return "%s-%s%s%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
-        # Converts FRED2s internal allele representation into the format required by mhcnuggets
+        # Converts epytopes internal allele representation into the format required by mhcnuggets
         def convert_alleles(self, alleles):
             """
             Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele` representation
@@ -432,7 +432,7 @@ try:
             """
             return [self._represent(a) for a in alleles]
 
-        # Converts the internal mhcnuggets-class-2 representation back into a FRED2 representation
+        # Converts the internal mhcnuggets-class-2 representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
                 return MouseAllele(name)
@@ -622,7 +622,7 @@ try:
             else:
                 return "%s-%s%s:%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
-        # Converts the internal mhcnuggets-class-2 representation back into a FRED2 representation
+        # Converts the internal mhcnuggets-class-2 representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
                 return MouseAllele(name)
@@ -703,7 +703,7 @@ try:
             else:
                 return "%s-%s%s%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
-        # Converts FRED2s internal allele representation into the format required by MHCFlurry
+        # Converts epytopes internal allele representation into the format required by MHCFlurry
         def convert_alleles(self, alleles):
             """
             Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele` representation
@@ -717,7 +717,7 @@ try:
             """
             return [self._represent(a) for a in alleles]
 
-        # Converts the internal MHCFlurry representation back into a FRED2 representation
+        # Converts the internal MHCFlurry representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
                 return MouseAllele(name)
@@ -860,7 +860,7 @@ try:
             else:
                 return "%s-%s*%s:%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
-        # Converts the internal MHCFlurry representation back into a FRED2 representation
+        # Converts the internal MHCFlurry representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
                 return MouseAllele(name)
