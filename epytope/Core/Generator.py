@@ -228,7 +228,7 @@ def generate_peptides_from_variants(vars, length, dbadapter, id_type, peptides=N
                 for s in _generate_combinations(tId, vs, seq, usedVs, offset, isReverse):
                     yield s
         else:
-            yield tId + ":FRED2_%i"%transOff, seq, usedVs
+            yield tId + ":epytope_%i"%transOff, seq, usedVs
 
     if not isinstance(dbadapter, ADBAdapter):
         raise TypeError("The given dbadapter is not of type ADBAdapter")
@@ -329,7 +329,7 @@ def generate_transcripts_from_variants(vars, dbadapter, id_type, db="hsapiens_ge
                 for s in _generate_combinations(tId, vs, seq, usedVs, offset, isReverse):
                     yield s
         else:
-            yield tId+":FRED2_%i"%transOff, seq, usedVs
+            yield tId+":epytope_%i"%transOff, seq, usedVs
 
     #1) get all transcripts and sort the variants to transcripts
 

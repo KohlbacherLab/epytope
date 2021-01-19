@@ -86,7 +86,7 @@ class TestProteinClass(unittest.TestCase):
             self.assertEqual(trans.gene_id, "gene_1")
 
             # check trans id name:
-            name = trans.transcript_id.split(":FRED2_")
+            name = trans.transcript_id.split(":epytope_")
             self.assertEqual(len(name), 2)
             self.assertTrue(name[0] == "tsc_1" or name[0] == "tsc_2")
             self.assertTrue(len(name[1]) == 1 and name[1].isdigit)
@@ -113,7 +113,7 @@ class TestProteinClass(unittest.TestCase):
             self.assertEqual(prot.gene_id, "gene_1")
 
             # check trans id name:
-            name = prot.transcript_id.split(":FRED2_")
+            name = prot.transcript_id.split(":epytope_")
             self.assertEqual(len(name), 2)
             self.assertTrue(name[0] == "tsc_1" or name[0] == "tsc_2")
             self.assertTrue(len(name[1]) == 1 and name[1].isdigit)
@@ -148,20 +148,20 @@ class TestProteinClass(unittest.TestCase):
         Output:
         -------
         PEPTIDE: PPGA
-            TRANSCRIPT: tsc_1:FRED2_3
+            TRANSCRIPT: tsc_1:epytope_3
                  Variant(15CC)
                  Variant(1C)
         PEPTIDE: KPPG
-            TRANSCRIPT: tsc_1:FRED2_3
+            TRANSCRIPT: tsc_1:epytope_3
                  Variant(1C)
         PEPTIDE: TKPP
-            TRANSCRIPT: tsc_1:FRED2_3
+            TRANSCRIPT: tsc_1:epytope_3
                  Variant(1C)
 
         PEPTIDE: KNPR
-            TRANSCRIPT: tsc_1:FRED2_0
+            TRANSCRIPT: tsc_1:epytope_0
         PEPTIDE: NPRG
-            TRANSCRIPT: tsc_1:FRED2_0
+            TRANSCRIPT: tsc_1:epytope_0
         """
         #TODO Somewhere here a print statement is called
         peps_trans1 = ["KNPR", "NPRG"]

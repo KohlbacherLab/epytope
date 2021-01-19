@@ -79,7 +79,7 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
 
-    # What FRED2 relates to:
+    # What epytope relates to:
     keywords='epitope prediction MHC FRED development',
 
     # Specify  packages via find_packages() and exclude the tests and 
@@ -119,7 +119,7 @@ setup(
     #ext_modules=[helloworld_module],
     #ext_modules=[d2s_module],
 
-    # Run-time dependencies. (will be installed by pip when FRED2 is installed)
+    # Run-time dependencies. (will be installed by pip when epytope is installed)
     # TODO: find alternative for SMVlight scikitlearn
     install_requires=[
             'setuptools>=18.2',

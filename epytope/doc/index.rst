@@ -6,9 +6,9 @@
 Welcome to epytope's documentation!
 =================================
 
-Welcome to the class and function documentation of FRED2. 
+Welcome to the class and function documentation of epytope.
 
-Tutorials on how to use FRED2 can be found at:
+Tutorials on how to use epytope can be found at:
 
 https://github.com/FRED-2/epytope/tree/master/epytope/tutorials.
 
