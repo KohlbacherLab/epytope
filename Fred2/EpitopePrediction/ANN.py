@@ -14,7 +14,6 @@ import subprocess
 import csv
 import sys
 import tempfile
-import contextlib
 import io
 
 from abc import abstractmethod
@@ -27,6 +26,7 @@ from mhcnuggets.src.predict import predict as mhcnuggets_predict
 from Fred2.Core import EpitopePredictionResult
 from Fred2.Core.Base import AEpitopePrediction
 from Fred2.Core.Allele import Allele, CombinedAllele, MouseAllele
+from Fred2.IO.Utils import capture_stdout
 
 import inspect
 
@@ -74,18 +74,6 @@ class AANNEpitopePrediction(AEpitopePrediction):
         :return: Returns a :class:`pandas.DataFrame` object with the prediction results
         :rtype: :class:`pandas.DataFrame`
         """
-
-
-@contextlib.contextmanager
-def capture_stdout(target):
-    """Captures stdout in target temporarily"""
-    # workaround for mhcnuggets file I/O buffer bug in version 2.0 and 2.3.2
-    old = sys.stdout
-    try:
-        sys.stdout = target
-        yield
-    finally:
-        sys.stdout = old
 
 try:
     class MHCNuggetsPredictor_class1_2_0(AANNEpitopePrediction):
@@ -234,7 +222,7 @@ try:
                     for row in reader:
                         if row[0] == 'peptide,ic50':
                             break
-                        logging.warning(' '.join(row))
+                        logging.info(' '.join(row))
 
                     # assign binding affinities
                     for row in reader:
