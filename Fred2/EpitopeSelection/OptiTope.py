@@ -39,6 +39,7 @@ from pyomo.environ import ConcreteModel, Set, Param, Var, Constraint, PositiveIn
 from pyomo.opt import SolverFactory, TerminationCondition
 
 from Fred2.Core.Result import EpitopePredictionResult
+from Fred2.IO.Utils import capture_stdout
 
 
 class OptiTope(object):
@@ -109,7 +110,7 @@ class OptiTope(object):
         probs = {a.name:a.prob for a in _alleles}
         if verbosity:
             for a in _alleles:
-                logging.warning(f"{a.name} {a.prob}")
+                logging.debug(f"{a.name} {a.prob}")
 
         #start constructing model
         self.__solver = SolverFactory(solver)
@@ -222,14 +223,13 @@ class OptiTope(object):
         #generate instance
         self.instance = model
         if self.__verbosity > 0:
-            logging.warning("MODEL INSTANCE")
+            logging.debug("MODEL INSTANCE")
 
-            old_stdout = sys.stdout
-            sys.stdout = pstring = StringIO()
-            self.instance.pprint()
-            sys.stdout = old_stdout
+            pstring = StringIO()
+            with capture_stdout(pstring):
+                self.instance.pprint()
 
-            logging.warning(pstring.getvalue())
+            logging.debug(pstring.getvalue())
 
 
         #constraints

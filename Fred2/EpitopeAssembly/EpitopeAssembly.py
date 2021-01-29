@@ -32,6 +32,7 @@ from Fred2.Core.Base import ACleavageSitePrediction, AEpitopePrediction
 from Fred2.Core import Peptide, Protein, Allele
 from Fred2.CleavagePrediction.PSSM import APSSMCleavageSitePredictor
 from Fred2.EpitopePrediction.PSSM import APSSMEpitopePrediction
+from Fred2.IO.Utils import capture_stdout
 
 
 class EpitopeAssembly(object):
@@ -147,14 +148,11 @@ class EpitopeAssembly(object):
 
         self.instance = model
         if self.__verbosity > 0:
-            logging.warning("MODEL INSTANCE")
-
-            old_stdout = sys.stdout
-            sys.stdout = pstring = StringIO()
-            self.instance.pprint()
-            sys.stdout = old_stdout
-
-            logging.info(pstring.getvalue())
+            logging.debug("MODEL INSTANCE")
+            pstring = StringIO()
+            with capture_stdout(pstring):
+                self.instance.pprint()
+            logging.debug(pstring.getvalue())
 
             #self.instance.pprint()
 
@@ -316,7 +314,7 @@ class ParetoEpitopeAssembly(object):
         probs = {a.name:a.prob for a in _alleles}
         if verbosity:
             for a in _alleles:
-                logging.warning(f"{a.name} {a.prob}")
+                logging.debug(f"{a.name} {a.prob}")
 
 
         #Generate model
@@ -436,14 +434,13 @@ class ParetoEpitopeAssembly(object):
         self.epsilons = [model.eps2, model.eps1]
         self.instance = model
         if self.__verbosity > 0:
-            logging.warning("MODEL INSTANCE")
+            logging.debug("MODEL INSTANCE")
 
-            old_stdout = sys.stdout
-            sys.stdout = pstring = StringIO()
-            self.instance.pprint()
-            sys.stdout = old_stdout
+            pstring = StringIO()
+            with capture_stdout(pstring):
+                self.instance.pprint()
 
-            logging.warning(pstring.getvalue())
+            logging.debug(pstring.getvalue())
 
             #self.instance.pprint()
 
@@ -470,7 +467,7 @@ class ParetoEpitopeAssembly(object):
         objs[order[0]] = self.objectsives[order[0]].expr()
         if self.__verbosity > 0:
             res.write(num=1)
-            logging.warning("Objective {nof_obj}:{value}".format(nof_obj=order[0],value=objs[order[0]]))
+            logging.debug("Objective {nof_obj}:{value}".format(nof_obj=order[0],value=objs[order[0]]))
 
         self.objectsives[order[1]].activate()
         self.objectsives[order[0]].deactivate()
@@ -484,7 +481,7 @@ class ParetoEpitopeAssembly(object):
         objs[order[1]] = self.objectsives[order[1]].expr()
         if self.__verbosity > 0:
             res.write(num=1)
-            logging.warning("Objective {nof_obj}:{value}".format(nof_obj=order[1],value=objs[order[1]]))
+            logging.debug("Objective {nof_obj}:{value}".format(nof_obj=order[1],value=objs[order[1]]))
 
         return objs[0], objs[1], [self.__seq_to_pep[u] for u in
                                                        sorted(self.instance.u, key=lambda x: self.instance.u[x].value)]
@@ -818,7 +815,7 @@ class EpitopeAssemblyWithSpacer(object):
         probs = {a.name:a.prob for a in _alleles}
         if verbosity:
             for a in _alleles:
-                logging.warning(f"{a.name} {a.prob}")
+                logging.debug(f"{a.name} {a.prob}")
 
 
         self.spacer = {}
