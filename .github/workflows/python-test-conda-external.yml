@@ -7,11 +7,11 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  run-nosetests:
+  tests-external:
     strategy:
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.6.12, 3.7.9]
+        python-version: [3.6, 3.7]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -38,30 +38,26 @@ jobs:
       run: |
         echo "$PWD/epytope-tools/bin" >> $GITHUB_PATH
         echo "PATH=$PATH"
-    - name: Install test dependencies and dependencies that pip would build from source
+    - name: Set up Python ${{ matrix.python-version }}
       run: |
-        $CONDA/bin/conda create -p /tmp/condaenv -c conda-forge -c bioconda python==${{ matrix.python-version }} biopython svmlight==6.02 'tensorflow==2.0.0' 'markdown==3.3.2' coincbc
-        export PATH="/tmp/condaenv/bin:$PATH"
+        $CONDA/bin/conda create -p /tmp/condaenv python==${{ matrix.python-version }}'.*'
     - name: Activate conda environment
       run: |
         echo "/tmp/condaenv/bin" >> $GITHUB_PATH
+        export PATH="/tmp/condaenv/bin:$PATH"
     - name: Install epytope
       run: |
-        pip install keras==2.3.1 ./epytope/
+        pip install ./epytope/
     - name: Set up test environment
       run: |
         conda install -p /tmp/condaenv -c conda-forge -c bioconda nose
     - name: Run Tests - Cleavage Prediction
       working-directory: ./epytope/
       continue-on-error: true
-      run: |
-        conda install -p /tmp/condaenv -c conda-forge -c bioconda nose
-        nosetests -v epytope/test/external/TestExternalCleavagePrediction.py || echo "Cleavage Prediction" >> FAILED_TESTS
+      run: nosetests -v epytope/test/external/TestExternalCleavagePrediction.py || echo "Cleavage Prediction" >> FAILED_TESTS
     - name: Run Tests - Epitope Prediction
       working-directory: ./epytope/
-      run: |
-        conda install -p /tmp/condaenv -c conda-forge -c bioconda nose
-        nosetests -v epytope/test/external/TestExternalEpitopePrediction.py || echo "Epitope Prediction" >> FAILED_TESTS
+      run: nosetests -v epytope/test/external/TestExternalEpitopePrediction.py || echo "Epitope Prediction" >> FAILED_TESTS
     - name: Validate Test Results
       working-directory: ./epytope/
       run: |
