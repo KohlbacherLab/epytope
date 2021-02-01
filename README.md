@@ -30,7 +30,7 @@ Dependencies
 - Biopython
 - pyVCF
 
-**Thrid-Party Software (not installed through pip)**
+**Third-Party Software (not installed through pip)**
    - NetMHC predictor family (NetMHC(pan)-(I/II), NetChop, NetCTL) (http://www.cbs.dtu.dk/services/software.php)
    - PickPocket (http://www.cbs.dtu.dk/services/software.php)
    - Integer Linear Programming Solver (recommended CBC: https://projects.coin-or.org/Cbc)
