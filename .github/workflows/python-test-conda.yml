@@ -7,11 +7,11 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  run-nosetests:
+  tests:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        python-version: [3.6.12, 3.7.9]
+        python-version: [3.6, 3.7]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -20,17 +20,17 @@ jobs:
       run: |
         mkdir /tmp/condapkgs
         echo "CONDA_PKGS_DIRS=/tmp/condapkgs" >> $GITHUB_ENV
-    - name: Install test dependencies and dependencies that pip would build from source
+    - name: Set up Python ${{ matrix.python-version }}
       run: |
-        $CONDA/bin/conda create -p /tmp/condaenv -c conda-forge -c bioconda python==${{ matrix.python-version }} biopython svmlight==6.02 'tensorflow==2.0.0' 'markdown==3.3.2' coincbc
-        export PATH="/tmp/condaenv/bin:$PATH"
+        $CONDA/bin/conda create -p /tmp/condaenv python==${{ matrix.python-version }}'.*'
     - name: Activate conda environment
       run: |
         echo "/tmp/condaenv/bin" >> $GITHUB_PATH
+        export PATH="/tmp/condaenv/bin:$PATH"
     - name: Install epytope
       run: |
-        pip install keras==2.3.1 .
+        pip install .
+    - name: Install Test dependencies
+      run: conda install -p /tmp/condaenv -c conda-forge -c bioconda nose nose-exclude coincbc
     - name: Run Tests
-      run: |
-        conda install -p /tmp/condaenv -c conda-forge -c bioconda nose nose-exclude
-        nosetests --exclude-dir=epytope/test/external epytope
+      run: nosetests --exclude-dir=epytope/test/external epytope
