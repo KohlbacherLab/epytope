@@ -43,7 +43,7 @@ setup(
     name='epytope',
 
     # Version:
-    version='3.0.0',
+    version='3.0.0rc1',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=readme,
@@ -73,14 +73,11 @@ setup(
         # The license as you wish (should match "license" above)
         'License :: OSI Approved :: BSD License',
 
-        # The supported Python versions (other than development version were 
-        # not yet tested. Especially we should check for Python 3 support
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3 :: Only',
     ],
 
     # What epytope relates to:
-    keywords='epitope prediction MHC FRED development',
+    keywords='epitope prediction MHC vaccine',
 
     # Specify  packages via find_packages() and exclude the tests and 
     # documentation:
