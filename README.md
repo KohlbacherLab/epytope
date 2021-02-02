@@ -35,7 +35,7 @@ Dependencies
    - PickPocket (http://www.cbs.dtu.dk/services/software.php)
    - Integer Linear Programming Solver (recommended CBC: https://projects.coin-or.org/Cbc)
 
-Please pay attanention to the different licensings of the third party tools.
+Please pay attention to the different licensing of third party tools.
 
 Getting Started
 ---------------
