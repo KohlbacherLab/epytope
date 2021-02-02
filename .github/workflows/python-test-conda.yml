@@ -2,9 +2,9 @@ name: Unit tests without external tools
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ main, develop ]
 
 jobs:
   tests:
