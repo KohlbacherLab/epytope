@@ -1,7 +1,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/fred2/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
 
 epytope - An Immunoinformatics Framework for Python
--------------------------------------------------
+---------------------------------------------------
 Copyright 2014 by Benjamin Schuber,  Mathias Walzer, Philipp Brachvogel, Andras Szolek, Christopher Mohr, and Oliver Kohlbacher
 
 
