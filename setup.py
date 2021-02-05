@@ -99,6 +99,10 @@ setup(
             #'epytope.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
     },
 
+    data_files = [
+            ('docs', ['CHANGELOG.md']),
+            ],
+
     #package_data is a lie: http://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute
 
     # 'package_data' is used to also install non package data files
