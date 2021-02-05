@@ -6,10 +6,6 @@ import glob
 
 here = path.abspath(path.dirname(__file__))
 
-# Get the long description from the relevant file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    readme = f.read()
-
 #d2s_src_dir = path.join(path.join('epytope', 'Distance2Self'), 'src')
 #d2s_module = Extension('epytope.d2s',
 #                       define_macros=[('MAJOR_VERSION', '1'),
@@ -89,11 +85,11 @@ setup(
     # have to be included in MANIFEST.in as well.
     #include_package_data=True,
     package_data={
-        'epytope.Data.examples': ['*.*'],
-        'epytope.Data.svms.svmtap': ['*'],
-        'epytope.Data.svms.svmhc': ['*'],
-        'epytope.Data.svms.unitope': ['*'],
-        #'epytope.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
+            'epytope.Data.examples': ['*.*'],
+            'epytope.Data.svms.svmtap': ['*'],
+            'epytope.Data.svms.svmhc': ['*'],
+            'epytope.Data.svms.unitope': ['*'],
+            #'epytope.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
     },
 
     #package_data is a lie: http://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute
