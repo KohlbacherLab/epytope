@@ -127,6 +127,26 @@ class EpitopePredictionResult(AResult):
         return EpitopePredictionResult(df)
 
 
+    def from_dict(d, peps, method):
+        """
+        Description
+        """
+        scoreType = numpy.asarray([list(m.keys()) for m in [metrics for a, metrics in d.items()]]).flatten()
+        alleles = numpy.asarray([numpy.repeat(a, len(set(scoreType))) for a in d]).flatten()
+        meth = numpy.repeat(method, len(scoreType))
+
+        multi_cols = pandas.MultiIndex.from_arrays([alleles, meth, scoreType], names=["Allele", "Method", "ScoreType"])
+        df = pandas.DataFrame(float(0), index=peps, columns=multi_cols)
+        df.index.name = 'Peptides'
+
+        # Fill DataFrame
+        for allele, metrics in d.items():
+            for metric, pep_scores in metrics.items():
+                for pep, score in dict(pep_scores).items(): # Avoid Null pointer exception due to none value of defaultdict
+                    df[allele][method][metric][pep] = score
+        return EpitopePredictionResult(df)
+
+
 class Distance2SelfResult(AResult):
     """
         Distance2Self prediction result

@@ -164,10 +164,12 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                     except Exception as e:
                         raise RuntimeError(e)
 
-                    res_tmp = self.parse_external_result(tmp_out_path)
+                    result = self.parse_external_result(tmp_out_path)
+                    """
                     for al, ep_dict in res_tmp.items():
                         for p, v in ep_dict.items():
                             result[allales_string[al]][pep_seqs[p]] = v
+                    """
                 os.remove(tmp_file.name)
                 os.remove(tmp_out_path)
 
@@ -175,10 +177,13 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
             raise ValueError("No predictions could be made with " + self.name +
                              " for given input. Check your epitope length and HLA allele combination.")
 
-
+        """
         df_result = EpitopePredictionResult.from_dict(result)
         df_result.index = pandas.MultiIndex.from_tuples([tuple((i, self.name)) for i in df_result.index],
                                                         names=['Seq', 'Method'])
+        """
+        df_result = EpitopePredictionResult.from_dict(result, pep_seqs.keys(), self.name)
+
         return df_result
 
 
@@ -1472,15 +1477,20 @@ class NetMHCpan_4_0(NetMHCpan_3_0):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
-        f = csv.reader(open(file, "r"), delimiter='\t')
+        f = csv.reader(open(file, "r"), delimiter = '\t')
+        affinites = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
         alleles = [x for x in next(f) if x != ""]
-        next(f)
-        ic_pos = 5
+        score_pos = 5
+        rank_pos = 7
         for row in f:
             pep_seq = row[1]
             for i, a in enumerate(alleles):
-                result[a][pep_seq] = float(row[ic_pos + i * 5])
+                if row[score_pos + i * 5] != "1-log50k":     # Avoid header column, only access raw and rank scores
+                    affinites[a][pep_seq] = 50000**(1-float(row[score_pos + i * 5])) # Affinity score is not supported by NetMHCpan 4, but can derived from 1-log_50k(affinity) value
+                    ranks[a][pep_seq] = float(row[rank_pos + i * 5])
+        # Create dictionary with hierarchy: {'Allele1': {'Affinity': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        result = {allele: {metric:(list(affinites.values())[j] if metric == "Affinity" else list(ranks.values())[j]) for metric in ["Affinity", "Rank"]} for j, allele in enumerate(alleles)}
         return result
 
 
