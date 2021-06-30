@@ -124,8 +124,12 @@ class EpitopePredictionResult(AResult):
             nans = ~true_zero & false_zero
             df[zero] = 0
             df[nans] = numpy.NaN
-        return EpitopePredictionResult(df)
 
+        df = EpitopePredictionResult(df)
+        # Merge result of 2 predictors per allele
+        df_merged = pandas.concat([allele[1] for allele in df.groupby(level=0, axis=1)], axis=1)
+    
+        return df_merged
 
     def from_dict(d, peps, method):
         """
@@ -142,7 +146,7 @@ class EpitopePredictionResult(AResult):
         # Fill DataFrame
         for allele, metrics in d.items():
             for metric, pep_scores in metrics.items():
-                for pep, score in dict(pep_scores).items(): # Avoid Null pointer exception due to none value of defaultdict
+                for pep, score in pep_scores.items():
                     df[allele][method][metric][pep] = score
         return EpitopePredictionResult(df)
 

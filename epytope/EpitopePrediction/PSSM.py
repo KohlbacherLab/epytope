@@ -89,19 +89,21 @@ class APSSMEpitopePrediction(AEpitopePrediction):
                     continue
 
                 if alleles_string[a] not in result:
-                    result[alleles_string[a]] = {}
+                    result[alleles_string[a]] = {self.name+'_score': {}}
                 ##here is the prediction and result object missing##
                 for p in peps:
                     score = sum(pssm[i].get(p[i], 0.0) for i in range(length)) + pssm.get(-1, {}).get("con", 0)
-                    result[alleles_string[a]][pep_seqs[p]] = score
+                    result[alleles_string[a]][self.name+'_score'][pep_seqs[p]] = score
 
         if not result:
             raise ValueError("No predictions could be made with "
                              + self.name + " for given input. Check your epitope length and HLA allele combination.")
 
-        df_result = EpitopePredictionResult.from_dict(result)
+        df_result = EpitopePredictionResult.from_dict(result, peps, self.name)
+        """
         df_result.index = pandas.MultiIndex.from_tuples([tuple((i, self.name)) for i in df_result.index],
                                                         names=['Seq', 'Method'])
+        """
         return df_result
 
 

@@ -468,12 +468,13 @@ class NetMHC_4_0(NetMHC_3_4):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
+        scores = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
         pos_factor = 3
       # alleles = map(lambda x: x.split()[0], filter(lambda x: x.strip() != "", f.next()))
       # f.next()
-        alleles = [x.split()[0] for x in [x for x in next(f) if x.strip() != ""]]
+        alleles = [x.split()[0][:5]+'*'+x.split()[0][5:7]+ ':' +x.split()[0][7:] for x in [x for x in next(f) if x.strip() != ""]]
         next(f)
         for l in f:
             if not l:
@@ -482,8 +483,12 @@ class NetMHC_4_0(NetMHC_3_4):
             for i, a in enumerate(alleles):
                 ic_50 = l[(i+1)*pos_factor]
                 sc = 1.0 - math.log(float(ic_50), 50000)
-                result[a][pep_seq] = sc if sc > 0.0 else 0.0
-        return dict(result)
+                rank = l[(i+1)*pos_factor +1]
+                scores[a][pep_seq] = sc if sc > 0.0 else 0.0
+                ranks[a][pep_seq] = rank
+        
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
+        return result
 
     def get_external_version(self, path=None):
         """
@@ -1478,19 +1483,19 @@ class NetMHCpan_4_0(NetMHCpan_3_0):
         :rtype: dict
         """
         f = csv.reader(open(file, "r"), delimiter = '\t')
-        affinites = defaultdict(defaultdict)
+        scores = defaultdict(defaultdict)
         ranks = defaultdict(defaultdict)
-        alleles = [x for x in next(f) if x != ""]
+        alleles = [x[:5]+'*'+x[5:] for x in next(f) if x != ""]
         score_pos = 5
         rank_pos = 7
         for row in f:
             pep_seq = row[1]
             for i, a in enumerate(alleles):
                 if row[score_pos + i * 5] != "1-log50k":     # Avoid header column, only access raw and rank scores
-                    affinites[a][pep_seq] = 50000**(1-float(row[score_pos + i * 5])) # Affinity score is not supported by NetMHCpan 4, but can derived from 1-log_50k(affinity) value
+                    scores[a][pep_seq] = row[score_pos + i * 5] 
                     ranks[a][pep_seq] = float(row[rank_pos + i * 5])
         # Create dictionary with hierarchy: {'Allele1': {'Affinity': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
-        result = {allele: {metric:(list(affinites.values())[j] if metric == "Affinity" else list(ranks.values())[j]) for metric in ["Affinity", "Rank"]} for j, allele in enumerate(alleles)}
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
         return result
 
 
