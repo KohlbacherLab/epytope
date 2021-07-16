@@ -81,6 +81,7 @@ class EpitopePredictionResult(AResult):
         :return: Filtered result object
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
+        """
         if isinstance(expressions, tuple):
             expressions = [expressions]
 
@@ -96,6 +97,9 @@ class EpitopePredictionResult(AResult):
         idx = [f for f in masks
                for _ in range(len(self.index.levels[1]))]
         return EpitopePredictionResult(self.loc[idx, :])
+        """
+        #TODO: has to be implemented
+        pass
 
     def merge_results(self, others):
         """
@@ -126,7 +130,7 @@ class EpitopePredictionResult(AResult):
             df[nans] = numpy.NaN
 
         df = EpitopePredictionResult(df)
-        # Merge result of 2 predictors per allele
+        # Merge result of multiple predictors in others per allele
         df_merged = pandas.concat([allele[1] for allele in df.groupby(level=0, axis=1)], axis=1)
     
         return df_merged

@@ -922,15 +922,18 @@ class NetMHCpan_2_4(AExternalEpitopePrediction):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(dict)
-        with open(file, "r") as f:
-            f = csv.reader(f, delimiter='\t')
-            alleles = f.next()[3:-1]
-            ic_pos = 3
-            for row in f:
-                pep_seq = row[1]
-                for i, a in enumerate(alleles):
-                    result[a][pep_seq] = float(row[ic_pos + i])
+        f = csv.reader(open(file, "r"), delimiter = '\t')
+        scores = defaultdict(defaultdict)
+        alleles = [x[:5]+'*'+x[5:] for x in next(f) if "HLA" in x]
+        score_pos = 3 
+        # Rank is not supported in command line tool of NetMHCpan 2.4
+        for row in f:
+            pep_seq = row[1]
+            for i, a in enumerate(alleles):
+                scores[a][pep_seq] = row[score_pos + i] 
+        # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
+        result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
+
         return result
 
     def get_external_version(self, path=None):
@@ -1402,15 +1405,21 @@ class NetMHCpan_2_8(AExternalEpitopePrediction):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
-        f = csv.reader(open(file, "r"), delimiter='\t')
-        alleles = [x for x in next(f) if x != ""]
+        f = csv.reader(open(file, "r"), delimiter = '\t')
+        scores = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
+        alleles = [x[:5]+'*'+x[5:] for x in next(f) if x != ""]
+        score_pos = 3
+        rank_pos = 5
         next(f)
-        ic_pos = 3
         for row in f:
             pep_seq = row[1]
             for i, a in enumerate(alleles):
-                result[a][pep_seq] = float(row[ic_pos + i * 3])
+                if row[score_pos + i * 3] != "1-log50k":     # Avoid header column, only access raw and rank scores
+                    scores[a][pep_seq] = row[score_pos + i * 3] 
+                    ranks[a][pep_seq] = float(row[rank_pos + i * 3])
+        # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
         return result
 
 
@@ -1446,15 +1455,21 @@ class NetMHCpan_3_0(NetMHCpan_2_8):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
-        f = csv.reader(open(file, "r"), delimiter='\t')
-        alleles = [x for x in next(f) if x != ""]
+        f = csv.reader(open(file, "r"), delimiter = '\t')
+        scores = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
+        alleles = [x[:5]+'*'+x[5:] for x in next(f) if x != ""]
+        score_pos = 4
+        rank_pos = 6
         next(f)
-        ic_pos = 4
         for row in f:
             pep_seq = row[1]
             for i, a in enumerate(alleles):
-                result[a][pep_seq] = float(row[ic_pos + i * 4])
+                if row[score_pos + i * 5] != "1-log50k":     # Avoid header column, only access raw and rank scores
+                    scores[a][pep_seq] = row[score_pos + i * 5] 
+                    ranks[a][pep_seq] = float(row[rank_pos + i * 5])
+        # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
         return result
 
 
@@ -1494,7 +1509,7 @@ class NetMHCpan_4_0(NetMHCpan_3_0):
                 if row[score_pos + i * 5] != "1-log50k":     # Avoid header column, only access raw and rank scores
                     scores[a][pep_seq] = row[score_pos + i * 5] 
                     ranks[a][pep_seq] = float(row[rank_pos + i * 5])
-        # Create dictionary with hierarchy: {'Allele1': {'Affinity': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
         return result
 
