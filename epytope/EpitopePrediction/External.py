@@ -17,6 +17,7 @@ import subprocess
 import csv
 import os
 import math
+import re
 
 from collections import defaultdict
 
@@ -165,11 +166,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                         raise RuntimeError(e)
 
                     result = self.parse_external_result(tmp_out_path)
-                    """
-                    for al, ep_dict in res_tmp.items():
-                        for p, v in ep_dict.items():
-                            result[allales_string[al]][pep_seqs[p]] = v
-                    """
+                 
                 os.remove(tmp_file.name)
                 os.remove(tmp_out_path)
 
@@ -177,11 +174,6 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
             raise ValueError("No predictions could be made with " + self.name +
                              " for given input. Check your epitope length and HLA allele combination.")
 
-        """
-        df_result = EpitopePredictionResult.from_dict(result)
-        df_result.index = pandas.MultiIndex.from_tuples([tuple((i, self.name)) for i in df_result.index],
-                                                        names=['Seq', 'Method'])
-        """
         df_result = EpitopePredictionResult.from_dict(result, pep_seqs.keys(), self.name)
 
         return df_result
@@ -1946,20 +1938,32 @@ class NetMHCstabpan_1_0(AExternalEpitopePrediction):
         result = defaultdict(dict)
         with open(file, "r") as f:
             f = csv.reader(f, delimiter='\t')
-            alleles = [x for x in next(f) if x.strip() != ""]
-            logging.warning(alleles)
-            ic_pos = 4
+            alleles = [x[:5]+'*'+x[5:] for x in next(f) if x != ""]
+            ranks = defaultdict(defaultdict)
+            rank_pos = 5
             offset = 3
             header = next(f)
             logging.warning("\t".join(header))
-            if "Aff(nM)" in header:
-                ic_pos = 9
+            if "Aff(nM)" in header:  # With option command line option '-ia', which includes prediction score in output file
+                score_pos = 6
+                rank_pos = 5
                 offset = 8
-            for row in f:
-                logging.warning("\t".join(row))
-                pep_seq = row[1]
-                for i, a in enumerate(alleles):
-                    result[a][pep_seq] = float(row[ic_pos +i*offset])
+                scores = defaultdict(defaultdict)
+                for row in f:
+                    pep_seq = row[1]
+                    for i, a in enumerate(alleles):
+                        scores[a][pep_seq] = row[score_pos + i * offset] 
+                        ranks[a][pep_seq] = float(row[rank_pos + i * offset])
+                        # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+                result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
+            else:
+                for row in f:
+                    pep_seq = row[1]
+                    for i, a in enumerate(alleles):
+                        ranks[a][pep_seq] = float(row[rank_pos + i * offset])
+                        # Create dictionary with hierarchy: {'Allele1':{'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+                result = {allele: {"Rank":list(ranks.values())[j]} for j, allele in enumerate(alleles)}
+
         return result
 
     def get_external_version(self, path=None):
@@ -2076,19 +2080,63 @@ class NetMHCII_2_2(AExternalEpitopePrediction):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
+        hla_pos = 0
+        pep_pos = 2
+        score_pos = 4
+        seen_peps = []
+        rows = []
+        alleles = []
+        scores = defaultdict(defaultdict)
         for r in f:
             if not r:
                 continue
-
+            
             row = r[0].split()
             if not len(row):
                 continue
-
+            
             if "HLA-" not in row[0]:
                 continue
-            result[row[0]][row[2]] = float(row[4])
+
+            scores[row[hla_pos]][row[pep_pos]] = float(row[score_pos])
+
+        result = {allele: {"Score":list(scores.values())[j]} for j, allele in enumerate(scores.keys())}
+        """
+        # Reconstruct Peptide input in order to find the best scoring core peptide
+        
+        for row in rows:
+            r1 = re.compile('.*' + row[pep_pos])
+            r2 = re.compile('.*' + row[pep_pos][:-1])
+            match1 = list(filter(r1.match, peps))
+            match2 = list(filter(r2.match, peps))
+            if len(match1) != 0:
+                continue
+            elif len(match1) == 0 and len(match2) != 0:
+                idx = [i for i,a in enumerate(peps) if a == match2[0]][0]
+                peps[idx] = match2[0] + row[pep_pos][-1:]
+            else:
+                peps.append(row[pep_pos])
+            
+            if row[hla_pos] not in alleles:
+                alleles.append(row[hla_pos])
+        
+       
+        # Pick best score of Core peptide
+        for row in rows:
+            print(row)
+            r = re.compile('.*' + row[pep_pos] + '*.')
+            match = list(filter(r.match, peps))
+            pep_idx = [i for i,p in enumerate(peps) if p == match[0]][0]
+            print(peps[pep_idx] in scores[row[hla_pos]].keys())
+            if peps[pep_idx] in scores[row[hla_pos]].keys():
+                scores[row[hla_pos]][peps[pep_idx]] = max(scores[row[hla_pos]][peps[pep_idx]], float(row[score_pos]))
+            else:
+                scores[row[hla_pos]][peps[pep_idx]] = float(row[score_pos])
+        print(scores)  
+        result = {allele: {"Score":list(scores.values())[j]} for j, allele in enumerate(scores.keys())}
+        print(result)
+        """
         return result
 
     def get_external_version(self, path=None):
@@ -3967,15 +4015,22 @@ class NetMHCIIpan_3_0(AExternalEpitopePrediction):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
+        scores = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
         alleles = [x.replace("*", "_").replace(":", "") for x in set([x for x in next(f) if x != ""])]
+        score_pos = 3
+        rank_pos = 5
+        offset = 3
         next(f)
-        ic_pos = 3
         for row in f:
             pep_seq = row[1]
             for i, a in enumerate(alleles):
-                result[a][pep_seq] = float(row[ic_pos + i * 3])
+                scores[a][pep_seq] = float(row[score_pos + i * offset])
+                ranks[a][pep_seq] = float(row[rank_pos + i * offset])
+                # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
+
         return result
 
     def get_external_version(self, path=None):
@@ -6496,14 +6551,20 @@ class PickPocket_1_1(AExternalEpitopePrediction):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
+        scores = defaultdict(defaultdict)
+        alleles = []
         with open(file, "r") as f:
             for row in f:
                 if row[0] in ["#", "-"] or row.strip() == "" or "pos" in row:
                     continue
                 else:
-                    s = row.split()
-                    result[s[1].replace("*", "")][s[2]] = float(s[4])
+                    allele, pep, score = row.split()[1], row.split()[2], row.split()[4]
+                    if allele not in alleles:
+                        alleles.append(allele)
+                    scores[allele][pep] = float(score)
+
+            result = {allele: {"Score": list(scores.values())[j]} for j, allele in enumerate(alleles)}
+
         return result
 
     def get_external_version(self, path=None):
@@ -6947,7 +7008,8 @@ class NetCTLpan_1_1(AExternalEpitopePrediction):
         :return: A dictionary containing the prediction results
         :rtype: dict
         """
-        result = defaultdict(defaultdict)
+        scores = defaultdict(defaultdict)
+        alleles = []
         with open(file, "r") as f:
             for l in f:
                 if l.startswith("#") or l.startswith("-") or l.strip() == "":
@@ -6955,9 +7017,15 @@ class NetCTLpan_1_1(AExternalEpitopePrediction):
                 row = l.strip().split()
                 if not row[0].isdigit():
                     continue
-
+            
                 epitope, allele, comb_score = row[3], row[2], row[7]
-                result[allele.replace("*", "")][epitope] = float(comb_score)
+                if allele not in alleles:
+                    alleles.append(allele)
+
+                scores[allele][epitope] = float(comb_score)
+
+        result = {allele: {"Score": list(scores.values())[j]} for j, allele in enumerate(alleles)}
+        
         return result
 
     def get_external_version(self, path=None):

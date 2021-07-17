@@ -146,12 +146,13 @@ class EpitopePredictionResult(AResult):
         multi_cols = pandas.MultiIndex.from_arrays([alleles, meth, scoreType], names=["Allele", "Method", "ScoreType"])
         df = pandas.DataFrame(float(0), index=peps, columns=multi_cols)
         df.index.name = 'Peptides'
-
+        
         # Fill DataFrame
         for allele, metrics in d.items():
             for metric, pep_scores in metrics.items():
                 for pep, score in pep_scores.items():
                     df[allele][method][metric][pep] = score
+        
         return EpitopePredictionResult(df)
 
 
