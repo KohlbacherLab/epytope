@@ -18,6 +18,7 @@ import io
 import math
 
 from abc import abstractmethod
+from enum import IntEnum
 
 import pandas
 from collections import defaultdict
@@ -230,7 +231,7 @@ try:
                         content = row[0].split(',')
                         # get original peptide object
                         peptide = content[0]
-                        binding_affinity = float(content[1])
+                        binding_affinity = float(content[Score_Position.MHCNUGGETS])
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][peptide] = 1.0
@@ -515,7 +516,7 @@ try:
                         content = row[0].split(',')
                         # get original peptide object
                         peptide = peptide_objects[content[0]]
-                        binding_affinity = float(content[1])
+                        binding_affinity = float(content[Score_Position.MHCNUGGETS])
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][peptide] = 1.0
@@ -786,7 +787,7 @@ try:
                 for a in alleles:
                     allele_repr = self.revert_allele_repr(a)
                     for p in peps:
-                        binding_affinity = predictor.predict(allele=a, peptides=[str(p)])[0]
+                        binding_affinity = predictor.predict(allele=a, peptides=[str(p)])[Score_Position.MHCFLURRY]
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][p] = 1.0
@@ -888,3 +889,9 @@ try:
                 return Allele(name)
 except BadSignatureException:
     logging.warning("Class MHCFlurryPredictor_1_4_3 cannot be constructed, because of a bad method signature (predict)")
+
+
+
+class Score_Position(IntEnum):
+    MHCNUGGETS = 1
+    MHCFLURRY = 0
