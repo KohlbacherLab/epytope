@@ -231,7 +231,7 @@ try:
                         content = row[0].split(',')
                         # get original peptide object
                         peptide = content[0]
-                        binding_affinity = float(content[Score_Position.MHCNUGGETS])
+                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS])
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][peptide] = 1.0
@@ -516,7 +516,7 @@ try:
                         content = row[0].split(',')
                         # get original peptide object
                         peptide = peptide_objects[content[0]]
-                        binding_affinity = float(content[Score_Position.MHCNUGGETS])
+                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS])
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][peptide] = 1.0
@@ -787,7 +787,7 @@ try:
                 for a in alleles:
                     allele_repr = self.revert_allele_repr(a)
                     for p in peps:
-                        binding_affinity = predictor.predict(allele=a, peptides=[str(p)])[Score_Position.MHCFLURRY]
+                        binding_affinity = predictor.predict(allele=a, peptides=[str(p)])[ScoreIndex.MHCFLURRY]
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][p] = 1.0
@@ -892,6 +892,9 @@ except BadSignatureException:
 
 
 
-class Score_Position(IntEnum):
+class ScoreIndex(IntEnum):
+    """
+    Specifies the score index from the parsed output format
+    """
     MHCNUGGETS = 1
     MHCFLURRY = 0

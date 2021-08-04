@@ -284,8 +284,8 @@ class NetMHC_3_4(AExternalEpitopePrediction):
         for l in f:
             if not l:
                 continue
-            pep_seq = l[Peptide_Position.NETMHC_3_4]
-            for ic_50, a in zip(l[Score_Position.NETMHC_3_0:], alleles):
+            pep_seq = l[PeptideIndex.NETMHC_3_4]
+            for ic_50, a in zip(l[ScoreIndex.NETMHC_3_0:], alleles):
                 sc = 1.0 - math.log(float(ic_50), 50000)
                 result[a][pep_seq] = sc if sc > 0.0 else 0.0
         return dict(result)
@@ -408,8 +408,8 @@ class NetMHC_3_0(NetMHC_3_4):
             for l in csvr:
                 if not l:
                     continue
-                pep_seq = l[Peptide_Position.NETMHC_3_0]
-                for ic_50, a in zip(l[Score_Position.NETMHC_3_0:], alleles):
+                pep_seq = l[PeptideIndex.NETMHC_3_0]
+                for ic_50, a in zip(l[ScoreIndex.NETMHC_3_0:], alleles):
                     sc = 1.0 - math.log(float(ic_50), 50000)
                     result[a][pep_seq] = sc if sc > 0.0 else 0.0
         if 'Average' in result:
@@ -471,7 +471,7 @@ class NetMHC_4_0(NetMHC_3_4):
         for l in f:
             if not l:
                 continue
-            pep_seq = l[Peptide_Position.NETMHC_4_0]
+            pep_seq = l[PeptideIndex.NETMHC_4_0]
             for i, a in enumerate(alleles):
                 ic_50 = l[(i+1) * Offset.NETMHC_4_0]
                 sc = 1.0 - math.log(float(ic_50), 50000)
@@ -919,9 +919,9 @@ class NetMHCpan_2_4(AExternalEpitopePrediction):
         alleles = [x[:5]+'*'+x[5:] for x in next(f) if "HLA" in x]
         # Rank is not supported in command line tool of NetMHCpan 2.4
         for row in f:
-            pep_seq = row[Peptide_Position.NETMHCPAN_2_4]
+            pep_seq = row[PeptideIndex.NETMHCPAN_2_4]
             for i, a in enumerate(alleles):
-                scores[a][pep_seq] = row[Score_Position.NETMHCPAN_2_4 + i] 
+                scores[a][pep_seq] = row[ScoreIndex.NETMHCPAN_2_4 + i] 
         # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
         result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
@@ -1402,11 +1402,11 @@ class NetMHCpan_2_8(AExternalEpitopePrediction):
         alleles = [x[:5]+'*'+x[5:] for x in next(f) if x != ""]
         next(f)
         for row in f:
-            pep_seq = row[Peptide_Position.NETMHCPAN_2_8]
+            pep_seq = row[PeptideIndex.NETMHCPAN_2_8]
             for i, a in enumerate(alleles):
-                if row[Score_Position.NETMHCPAN_2_8 + i * Offset.NETMHCPAN_2_8] != "1-log50k":     # Avoid header column, only access raw and rank scores
-                    scores[a][pep_seq] = row[Score_Position.NETMHCPAN_2_8 + i * Offset.NETMHCPAN_2_8] 
-                    ranks[a][pep_seq] = float(row[Rank_Position.NETMHCPAN_2_8 + i * Offset.NETMHCPAN_2_8])
+                if row[ScoreIndex.NETMHCPAN_2_8 + i * Offset.NETMHCPAN_2_8] != "1-log50k":     # Avoid header column, only access raw and rank scores
+                    scores[a][pep_seq] = row[ScoreIndex.NETMHCPAN_2_8 + i * Offset.NETMHCPAN_2_8] 
+                    ranks[a][pep_seq] = float(row[RankIndex.NETMHCPAN_2_8 + i * Offset.NETMHCPAN_2_8])
         # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
         return result
@@ -1450,11 +1450,11 @@ class NetMHCpan_3_0(NetMHCpan_2_8):
         alleles = [x[:5]+'*'+x[5:] for x in next(f) if x != ""]
         next(f)
         for row in f:
-            pep_seq = row[Peptide_Position.NETMHCPAN_3_0]
+            pep_seq = row[PeptideIndex.NETMHCPAN_3_0]
             for i, a in enumerate(alleles):
-                if row[Score_Position.NETMHCPAN_3_0 + i * Offset.NETMHCPAN_3_0] != "1-log50k":     # Avoid header column, only access raw and rank scores
-                    scores[a][pep_seq] = row[Score_Position.NETMHCPAN_3_0 + i * Offset.NETMHCPAN_3_0] 
-                    ranks[a][pep_seq] = float(row[Rank_Position.NETMHCPAN_3_0 + i * Offset.NETMHCPAN_3_0])
+                if row[ScoreIndex.NETMHCPAN_3_0 + i * Offset.NETMHCPAN_3_0] != "1-log50k":     # Avoid header column, only access raw and rank scores
+                    scores[a][pep_seq] = row[ScoreIndex.NETMHCPAN_3_0 + i * Offset.NETMHCPAN_3_0] 
+                    ranks[a][pep_seq] = float(row[RankIndex.NETMHCPAN_3_0 + i * Offset.NETMHCPAN_3_0])
         # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
         return result
@@ -1489,11 +1489,11 @@ class NetMHCpan_4_0(NetMHCpan_3_0):
         ranks = defaultdict(defaultdict)
         alleles = [x[:5]+'*'+x[5:] for x in next(f) if x != ""]
         for row in f:
-            pep_seq = row[Peptide_Position.NETMHCPAN_4_0]
+            pep_seq = row[PeptideIndex.NETMHCPAN_4_0]
             for i, a in enumerate(alleles):
-                if row[Score_Position.NETMHCPAN_4_0 + i * Offset.NETMHCPAN_4_0] != "1-log50k":     # Avoid header column, only access raw and rank scores
-                    scores[a][pep_seq] = row[Score_Position.NETMHCPAN_4_0 + i * Offset.NETMHCPAN_4_0] 
-                    ranks[a][pep_seq] = float(row[Rank_Position.NETMHCPAN_4_0 + i * Offset.NETMHCPAN_4_0])
+                if row[ScoreIndex.NETMHCPAN_4_0 + i * Offset.NETMHCPAN_4_0] != "1-log50k":     # Avoid header column, only access raw and rank scores
+                    scores[a][pep_seq] = row[ScoreIndex.NETMHCPAN_4_0 + i * Offset.NETMHCPAN_4_0] 
+                    ranks[a][pep_seq] = float(row[RankIndex.NETMHCPAN_4_0 + i * Offset.NETMHCPAN_4_0])
         # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
         return result
@@ -1940,17 +1940,17 @@ class NetMHCstabpan_1_0(AExternalEpitopePrediction):
             if "Aff(nM)" in header:  # With option command line option '-ia', which includes prediction score in output file
                 scores = defaultdict(defaultdict)
                 for row in f:
-                    pep_seq = row[Peptide_Position.NETMHCSTABPAN_1_0]
+                    pep_seq = row[PeptideIndex.NETMHCSTABPAN_1_0]
                     for i, a in enumerate(alleles):
-                        scores[a][pep_seq] = row[Score_Position.NETMHCSTABPAN_1_0 + i * Offset.NETMHCSTABPAN_1_0_W_SCORE] 
-                        ranks[a][pep_seq] = float(row[Rank_Position.NETMHCSTABPAN_1_0 + i * Offset.NETMHCSTABPAN_1_0_W_SCORE])
+                        scores[a][pep_seq] = row[ScoreIndex.NETMHCSTABPAN_1_0 + i * Offset.NETMHCSTABPAN_1_0_W_SCORE] 
+                        ranks[a][pep_seq] = float(row[RankIndex.NETMHCSTABPAN_1_0 + i * Offset.NETMHCSTABPAN_1_0_W_SCORE])
                         # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
                 result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
             else:
                 for row in f:
-                    pep_seq = row[Peptide_Position.NETMHCSTABPAN_1_0]
+                    pep_seq = row[PeptideIndex.NETMHCSTABPAN_1_0]
                     for i, a in enumerate(alleles):
-                        ranks[a][pep_seq] = float(row[Rank_Position.NETMHCSTABPAN_1_0 + i * Offset.NETMHCSTABPAN_1_0_WO_SCORE])
+                        ranks[a][pep_seq] = float(row[RankIndex.NETMHCSTABPAN_1_0 + i * Offset.NETMHCSTABPAN_1_0_WO_SCORE])
                         # Create dictionary with hierarchy: {'Allele1':{'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
                 result = {allele: {"Rank":list(ranks.values())[j]} for j, allele in enumerate(alleles)}
 
@@ -2080,10 +2080,10 @@ class NetMHCII_2_2(AExternalEpitopePrediction):
             if not len(row):
                 continue
             
-            if "HLA-" not in row[HLA_Position.NETMHCII_2_2]:
+            if "HLA-" not in row[HLAIndex.NETMHCII_2_2]:
                 continue
 
-            scores[row[HLA_Position.NETMHCII_2_2]][row[Peptide_Position.NETMHCII_2_2]] = float(row[Score_Position.NETMHCII_2_2])
+            scores[row[HLAIndex.NETMHCII_2_2]][row[PeptideIndex.NETMHCII_2_2]] = float(row[ScoreIndex.NETMHCII_2_2])
 
         result = {allele: {"Score":list(scores.values())[j]} for j, allele in enumerate(scores.keys())}
 
@@ -3971,10 +3971,10 @@ class NetMHCIIpan_3_0(AExternalEpitopePrediction):
         alleles = [x.replace("*", "_").replace(":", "") for x in set([x for x in next(f) if x != ""])]
         next(f)
         for row in f:
-            pep_seq = row[Peptide_Position.NETMHCIIPAN_3_0]
+            pep_seq = row[PeptideIndex.NETMHCIIPAN_3_0]
             for i, a in enumerate(alleles):
-                scores[a][pep_seq] = float(row[Score_Position.NETMHCIIPAN_3_0 + i * Offset.NETMHCIIPAN_3_0])
-                ranks[a][pep_seq] = float(row[Rank_Position.NETMHCIIPAN_3_0 + i * Offset.NETMHCIIPAN_3_0])
+                scores[a][pep_seq] = float(row[ScoreIndex.NETMHCIIPAN_3_0 + i * Offset.NETMHCIIPAN_3_0])
+                ranks[a][pep_seq] = float(row[RankIndex.NETMHCIIPAN_3_0 + i * Offset.NETMHCIIPAN_3_0])
                 # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
 
@@ -6505,7 +6505,7 @@ class PickPocket_1_1(AExternalEpitopePrediction):
                 if row[0] in ["#", "-"] or row.strip() == "" or "pos" in row:
                     continue
                 else:
-                    allele, pep, score = row.split()[HLA_Position.PICKPOCKET_1_1], row.split()[Peptide_Position.PICKPOCKET_1_1], row.split()[Score_Position.PICKPOCKET_1_1]
+                    allele, pep, score = row.split()[HLAIndex.PICKPOCKET_1_1], row.split()[PeptideIndex.PICKPOCKET_1_1], row.split()[ScoreIndex.PICKPOCKET_1_1]
                     if allele not in alleles:
                         alleles.append(allele)
                     scores[allele][pep] = float(score)
@@ -6965,7 +6965,7 @@ class NetCTLpan_1_1(AExternalEpitopePrediction):
                 if not row[0].isdigit():
                     continue
             
-                epitope, allele, comb_score = row[Peptide_Position.NETCTLPAN_1_1], row[HLA_Position.NETCTLPAN_1_1], row[Score_Position.NETCTLPAN_1_1]
+                epitope, allele, comb_score = row[PeptideIndex.NETCTLPAN_1_1], row[HLAIndex.NETCTLPAN_1_1], row[ScoreIndex.NETCTLPAN_1_1]
                 if allele not in alleles:
                     alleles.append(allele)
 
@@ -7003,7 +7003,10 @@ class NetCTLpan_1_1(AExternalEpitopePrediction):
         file.write("\n".join(">pepe_%i\n%s" % (i, p) for i, p in enumerate(input)))
 
 
-class Peptide_Position(IntEnum):
+class PeptideIndex(IntEnum):
+    """
+    Specifies the index of the peptide sequence from the parsed output format
+    """
     NETMHC_3_0 = 2
     NETMHC_3_4 = 2
     NETMHC_4_0 = 1
@@ -7017,7 +7020,10 @@ class Peptide_Position(IntEnum):
     PICKPOCKET_1_1 = 2
     NETCTLPAN_1_1 = 3
 
-class Score_Position(IntEnum):
+class ScoreIndex(IntEnum):
+    """
+    Specifies the score index from the parsed output format
+    """
     NETMHC_3_0 = 2
     NETMHC_3_4 = 3
     NETMHCPAN_2_4 = 3
@@ -7030,7 +7036,10 @@ class Score_Position(IntEnum):
     PICKPOCKET_1_1 = 4
     NETCTLPAN_1_1 = 7
 
-class Rank_Position(IntEnum):
+class RankIndex(IntEnum):
+    """
+    Specifies the rank index from the parsed output format if there is a rank score provided by the predictor
+    """
     NETMHCPAN_2_8 = 5
     NETMHCPAN_3_0 = 7
     NETMHCPAN_4_0 = 7
@@ -7038,6 +7047,10 @@ class Rank_Position(IntEnum):
     NETMHCIIPAN_3_0 = 5
 
 class Offset(IntEnum):
+    """
+    Specifies the offset of columns for multiple predicted HLA-alleles in the given predictors in order to
+    correctly access score and rank per HLA-allele
+    """
     NETMHC_4_0 = 3
     NETMHCPAN_2_8 = 3
     NETMHCPAN_3_0 = 5
@@ -7046,7 +7059,10 @@ class Offset(IntEnum):
     NETMHCSTABPAN_1_0_WO_SCORE = 3
     NETMHCIIPAN_3_0 = 3
 
-class HLA_Position(IntEnum):
+class HLAIndex(IntEnum):
+    """
+    Specifies the HLA-allele index in the parsed output of the predictor
+    """
     NETMHCII_2_2 = 0
     PICKPOCKET_1_1 = 1
     NETCTLPAN_1_1 = 2
