@@ -39,6 +39,8 @@ from pyomo.environ import ConcreteModel, Set, Param, Var, Constraint, PositiveIn
 from pyomo.opt import SolverFactory, TerminationCondition
 
 from epytope.Core.Result import EpitopePredictionResult
+from epytope.Core.Allele import Allele
+from epytope.Core.Peptide import Peptide
 from epytope.IO.Utils import capture_stdout
 
 class OptiTope(object):
@@ -61,7 +63,7 @@ class OptiTope(object):
         Jean-Paul Watson and David L. Woodruff. Springer, 2012.
     """
 
-    def __init__(self, results,  threshold=None, k=10, solver="glpk", verbosity=0):
+    def __init__(self, results,  threshold=None, k=10, solver="glpk", verbosity=0, rank=False):
         """
         :param result: Epitope prediction result object from which the epitope selection should be performed
         :type result: :class:`~epytope.Core.Result.EpitopePredictionResult`
@@ -76,8 +78,7 @@ class OptiTope(object):
         if not isinstance(results, EpitopePredictionResult):
             raise ValueError("first input parameter is not of type EpitopePredictionResult")
 
-        _alleles = copy.deepcopy(results.columns.values.tolist())
-
+        _alleles = copy.deepcopy(list(set([Allele(cols[0]) for cols in results.columns.values])))
         #test if allele prob is set, if not set allele prob uniform
         #if only partly set infer missing values (assuming uniformity of missing value)
         prob = []
@@ -128,18 +129,27 @@ class OptiTope(object):
         peps = {}
         cons = {}
 
-        #unstack multiindex df to get normal df based on first prediction method
-        #and filter for binding epitopes
-        method = results.index.values[0][1]
-        res_df = results.xs(results.index.values[0][1], level="Method")
-        res_df = res_df[res_df.apply(lambda x: any(x[a] > self.__thresh.get(a.name, -float("inf"))
+        # unstack multiindex df to get normal df based on first prediction method and score metric
+        method = results.columns[1][1]
+        res_df = copy.deepcopy(results)
+        res_df.columns = res_df.columns.droplevel(1)
+        metric = 1 if rank else 0
+        res_df = res_df.xs(res_df.columns.values[metric][1], level="ScoreType", axis=1)
+        res_df.columns = [Allele(a) for a in res_df.columns]
+        # and filter for binding epitopes depending on score or rank metric
+        if rank:
+            res_df = res_df[res_df.apply(lambda x: any(x[a] < self.__thresh.get(a.name, float("inf"))
+                                                   for a in res_df.columns), axis=1)]
+        else:
+            res_df = res_df[res_df.apply(lambda x: any(x[a] > self.__thresh.get(a.name, -float("inf"))
                                                    for a in res_df.columns), axis=1)]
 
         for tup in res_df.itertuples():
-            p = tup[0]
+            p = Peptide(tup[0])
             seq = str(p)
             peps[seq] = p
             for a, s in zip(res_df.columns, tup[1:]):
+                logging.warning(s)
                 if method in ["smm", "smmpmbec", "arb", "comblibsidney"]:
                     try:
                         thr = min(1., max(0.0, 1.0 - math.log(self.__thresh.get(a.name),

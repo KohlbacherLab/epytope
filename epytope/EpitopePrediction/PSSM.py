@@ -89,11 +89,11 @@ class APSSMEpitopePrediction(AEpitopePrediction):
                     continue
 
                 if alleles_string[a] not in result:
-                    result[alleles_string[a]] = {self.name+'_score': {}}
+                    result[alleles_string[a]] = {self.name+'Score': {}}
                 ##here is the prediction and result object missing##
                 for p in peps:
                     score = sum(pssm[i].get(p[i], 0.0) for i in range(length)) + pssm.get(-1, {}).get("con", 0)
-                    result[alleles_string[a]][self.name+'_score'][pep_seqs[p]] = score
+                    result[alleles_string[a]][self.name+'Score'][pep_seqs[p]] = score
 
         if not result:
             raise ValueError("No predictions could be made with "
