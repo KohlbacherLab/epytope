@@ -131,9 +131,9 @@ class OptiTope(object):
 
         # unstack multiindex df to get normal df based on first prediction method and score metric
         method = results.columns[1][1]
+        metric = 1 if rank else 0
         res_df = copy.deepcopy(results)
         res_df.columns = res_df.columns.droplevel(1)
-        metric = 1 if rank else 0
         res_df = res_df.xs(res_df.columns.values[metric][1], level="ScoreType", axis=1)
         res_df.columns = [Allele(a) for a in res_df.columns]
         # and filter for binding epitopes depending on score or rank metric
@@ -143,27 +143,33 @@ class OptiTope(object):
         else:
             res_df = res_df[res_df.apply(lambda x: any(x[a] > self.__thresh.get(a.name, -float("inf"))
                                                    for a in res_df.columns), axis=1)]
-
+        logging.warning(res_df)
         for tup in res_df.itertuples():
             p = Peptide(tup[0])
             seq = str(p)
             peps[seq] = p
             for a, s in zip(res_df.columns, tup[1:]):
-                logging.warning(s)
                 if method in ["smm", "smmpmbec", "arb", "comblibsidney"]:
                     try:
                         thr = min(1., max(0.0, 1.0 - math.log(self.__thresh.get(a.name),
                                                       50000))) if a.name in self.__thresh else -float("inf")
                     except:
                         thr = 0
-
+                    
                     if s >= thr:
                         alleles_I.setdefault(a.name, set()).add(seq)
                     imm[seq, a.name] = min(1., max(0.0, 1.0 - math.log(s, 50000)))
                 else:
-                    if s > self.__thresh.get(a.name, -float("inf")):
-                        alleles_I.setdefault(a.name, set()).add(seq)
-                    imm[seq, a.name] = s
+                    if rank:
+                        if s < self.__thresh.get(a, float("inf")):
+                            alleles_I.setdefault(a.name, set()).add(seq)
+                            logging.warning(s)
+                        imm[seq, a.name] = s
+                    else:
+                        if s > self.__thresh.get(a, -float("inf")):
+                            alleles_I.setdefault(a.name, set()).add(seq)
+                            logging.warning(s)
+                        imm[seq, a.name] = s
 
             prots = set(pr for pr in p.get_all_proteins())
             cons[seq] = len(prots)
@@ -210,14 +216,21 @@ class OptiTope(object):
         model.z = Var(model.Q, within=Binary)
 
         # Objective definition
-        model.Obj = Objective(
-            rule=lambda model: sum(model.x[e] * sum(model.p[a] * model.i[e, a] for a in model.A) for e in model.E),
-            sense=maximize)
+        if rank:
+            model.Obj = Objective(
+                rule=lambda model: sum(model.x[e] * sum(model.p[a] * model.i[e, a] for a in model.A) for e in model.E))
+        else:
+            model.Obj = Objective(
+                rule=lambda model: sum(model.x[e] * sum(model.p[a] * model.i[e, a] for a in model.A) for e in model.E),
+                sense=maximize)
 
 
         #Obligatory Constraint (number of selected epitopes)
-        model.NofSelectedEpitopesCov = Constraint(rule=lambda model: sum(model.x[e] for e in model.E) <= model.k)
-
+        if rank:
+            model.NofSelectedEpitopesCov = Constraint(rule=lambda model: sum(model.x[e] for e in model.E) >= model.k)
+        else:
+            model.NofSelectedEpitopesCov = Constraint(rule=lambda model: sum(model.x[e] for e in model.E) <= model.k)
+    
         #optional constraints (in basic model they are disabled)
         model.IsAlleleCovConst = Constraint(model.A,
                                             rule=lambda model, a: sum(model.x[e] for e in model.A_I[a]) >= model.y[a])
