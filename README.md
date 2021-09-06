@@ -1,7 +1,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/fred2/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
 
 epytope - An Immunoinformatics Framework for Python
--------------------------------------------------
+---------------------------------------------------
 Copyright 2014 by Benjamin Schuber,  Mathias Walzer, Philipp Brachvogel, Andras Szolek, Christopher Mohr, and Oliver Kohlbacher
 
 
@@ -35,7 +35,7 @@ Dependencies
    - PickPocket (http://www.cbs.dtu.dk/services/software.php)
    - Integer Linear Programming Solver (recommended CBC: https://projects.coin-or.org/Cbc)
 
-Please pay attanention to the different licensings of the third party tools.
+Please pay attention to the different licensing of third party tools.
 
 Getting Started
 ---------------
