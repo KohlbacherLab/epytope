@@ -39,7 +39,6 @@ from pyomo.environ import ConcreteModel, Set, Param, Var, Constraint, PositiveIn
 from pyomo.opt import SolverFactory, TerminationCondition
 
 from epytope.Core.Result import EpitopePredictionResult
-from epytope.Core.Allele import Allele
 from epytope.Core.Peptide import Peptide
 from epytope.IO.Utils import capture_stdout
 
@@ -72,11 +71,16 @@ class OptiTope(object):
         :param int k: The number of epitopes to select
         :param str solver: The solver to be used (default glpk)
         :param int verbosity: Integer defining whether additional debugg prints are made >0 => debug mode
+        :param bool rank: Boolean specifying which metric should be optimized
         """
 
         #check input data
         if not isinstance(results, EpitopePredictionResult):
             raise ValueError("first input parameter is not of type EpitopePredictionResult")
+        
+        # Check if input data supports rank metric
+        if not 'Rank' in results.columns.get_level_values(2) and rank:
+            raise ValueError("Rank metric cannot be found in the provided input")
 
         _alleles = copy.deepcopy(list(set([cols[0] for cols in results.columns.values])))
         #test if allele prob is set, if not set allele prob uniform
@@ -134,16 +138,19 @@ class OptiTope(object):
         metric = 1 if rank else 0
         res_df = copy.deepcopy(results)
         res_df.columns = res_df.columns.droplevel(1)
+        # Keep only the neceessary information: Allele, and Score/Rank of Peptides
+        # Multiindex structure is broken up here
         res_df = res_df.xs(res_df.columns.values[metric][1], level="ScoreType", axis=1)
 
-        # and filter for binding epitopes depending on score or rank metric
+        # and filter for binding epitopes depending on a (high) score or a (low) rank 
+        # with respect to the given threshold
         if rank:
             res_df = res_df[res_df.apply(lambda x: any(x[a] < self.__thresh.get(a, float("inf"))
                                                    for a in res_df.columns), axis=1)]
         else:
             res_df = res_df[res_df.apply(lambda x: any(x[a] > self.__thresh.get(a, -float("inf"))
                                                    for a in res_df.columns), axis=1)]
-        #logging.warning(res_df)
+
         for tup in res_df.itertuples():
             p = Peptide(tup[0])
             seq = str(p)
@@ -160,6 +167,8 @@ class OptiTope(object):
                         alleles_I.setdefault(a.name, set()).add(seq)
                     imm[seq, a.name] = min(1., max(0.0, 1.0 - math.log(s, 50000)))
                 else:
+                    # Determine the high scoring / low ranked peptides. If an allele is present in the result df but
+                    # not in the specified threshold, the scores with respect to the allel will be kept
                     if rank:
                         if s < self.__thresh.get(a, float("inf")):
                             alleles_I.setdefault(a.name, set()).add(seq)
@@ -394,9 +403,6 @@ class OptiTope(object):
 
                 self.__result = [self.__peptideSet[x] for x in self.instance.x if self.instance.x[x].value == 1.0]
                 #self.__result.log_metadata("obj", res.Solution.Objective.Value)
-                #logging.warning([self.__peptideSet[x] for x in self.instance.x if self.instance.x[x].value == 1.0])
-                #logging.warning([self.__peptideSet[x] for x in self.instance.x])
-                logging.warning([self.instance.x[x].value for x in self.instance.x])
 
                 self.__changed = False
                 return self.__result
