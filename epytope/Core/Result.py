@@ -11,7 +11,11 @@ __author__ = 'schubert'
 
 import abc
 import numpy
+from numpy.lib.arraysetops import isin
 import pandas
+from epytope.Core.Allele import Allele
+from epytope.Core.Peptide import Peptide
+import logging
 
 
 class AResult(pandas.DataFrame, metaclass=abc.ABCMeta):
@@ -141,12 +145,14 @@ class EpitopePredictionResult(AResult):
         """
         scoreType = numpy.asarray([list(m.keys()) for m in [metrics for a, metrics in d.items()]]).flatten()
         alleles = numpy.asarray([numpy.repeat(a, len(set(scoreType))) for a in d]).flatten()
+        if any(not isinstance(a, Allele) for a in alleles):
+            alleles = [Allele(a) for a in alleles]
         meth = numpy.repeat(method, len(scoreType))
 
         multi_cols = pandas.MultiIndex.from_arrays([alleles, meth, scoreType], names=["Allele", "Method", "ScoreType"])
         df = pandas.DataFrame(float(0), index=peps, columns=multi_cols)
         df.index.name = 'Peptides'
-        
+       
         # Fill DataFrame
         for allele, metrics in d.items():
             for metric, pep_scores in metrics.items():

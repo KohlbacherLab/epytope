@@ -78,7 +78,7 @@ class OptiTope(object):
         if not isinstance(results, EpitopePredictionResult):
             raise ValueError("first input parameter is not of type EpitopePredictionResult")
 
-        _alleles = copy.deepcopy(list(set([Allele(cols[0]) for cols in results.columns.values])))
+        _alleles = copy.deepcopy(list(set([cols[0] for cols in results.columns.values])))
         #test if allele prob is set, if not set allele prob uniform
         #if only partly set infer missing values (assuming uniformity of missing value)
         prob = []
@@ -135,15 +135,15 @@ class OptiTope(object):
         res_df = copy.deepcopy(results)
         res_df.columns = res_df.columns.droplevel(1)
         res_df = res_df.xs(res_df.columns.values[metric][1], level="ScoreType", axis=1)
-        res_df.columns = [Allele(a) for a in res_df.columns]
+
         # and filter for binding epitopes depending on score or rank metric
         if rank:
-            res_df = res_df[res_df.apply(lambda x: any(x[a] < self.__thresh.get(a.name, float("inf"))
+            res_df = res_df[res_df.apply(lambda x: any(x[a] < self.__thresh.get(a, float("inf"))
                                                    for a in res_df.columns), axis=1)]
         else:
-            res_df = res_df[res_df.apply(lambda x: any(x[a] > self.__thresh.get(a.name, -float("inf"))
+            res_df = res_df[res_df.apply(lambda x: any(x[a] > self.__thresh.get(a, -float("inf"))
                                                    for a in res_df.columns), axis=1)]
-        logging.warning(res_df)
+        #logging.warning(res_df)
         for tup in res_df.itertuples():
             p = Peptide(tup[0])
             seq = str(p)
@@ -163,14 +163,12 @@ class OptiTope(object):
                     if rank:
                         if s < self.__thresh.get(a, float("inf")):
                             alleles_I.setdefault(a.name, set()).add(seq)
-                            logging.warning(s)
                         imm[seq, a.name] = s
                     else:
                         if s > self.__thresh.get(a, -float("inf")):
                             alleles_I.setdefault(a.name, set()).add(seq)
-                            logging.warning(s)
                         imm[seq, a.name] = s
-
+            
             prots = set(pr for pr in p.get_all_proteins())
             cons[seq] = len(prots)
             for prot in prots:
@@ -192,7 +190,7 @@ class OptiTope(object):
         model.Q = Set(initialize=variations)
 
         model.E = Set(initialize=set(peps.keys()))
-
+        logging.warning(set(peps.keys()))
         model.A = Set(initialize=list(alleles_I.keys()))
         model.E_var = Set(model.Q, initialize=lambda mode, v: epi_var[v])
         model.A_I = Set(model.A, initialize=lambda model, a: alleles_I[a])
@@ -216,21 +214,14 @@ class OptiTope(object):
         model.z = Var(model.Q, within=Binary)
 
         # Objective definition
-        if rank:
-            model.Obj = Objective(
-                rule=lambda model: sum(model.x[e] * sum(model.p[a] * model.i[e, a] for a in model.A) for e in model.E))
-        else:
-            model.Obj = Objective(
+        model.Obj = Objective(
                 rule=lambda model: sum(model.x[e] * sum(model.p[a] * model.i[e, a] for a in model.A) for e in model.E),
                 sense=maximize)
 
 
         #Obligatory Constraint (number of selected epitopes)
-        if rank:
-            model.NofSelectedEpitopesCov = Constraint(rule=lambda model: sum(model.x[e] for e in model.E) >= model.k)
-        else:
-            model.NofSelectedEpitopesCov = Constraint(rule=lambda model: sum(model.x[e] for e in model.E) <= model.k)
-    
+        model.NofSelectedEpitopesCov = Constraint(rule=lambda model: sum(model.x[e] for e in model.E) <= model.k)
+
         #optional constraints (in basic model they are disabled)
         model.IsAlleleCovConst = Constraint(model.A,
                                             rule=lambda model, a: sum(model.x[e] for e in model.A_I[a]) >= model.y[a])
@@ -403,6 +394,9 @@ class OptiTope(object):
 
                 self.__result = [self.__peptideSet[x] for x in self.instance.x if self.instance.x[x].value == 1.0]
                 #self.__result.log_metadata("obj", res.Solution.Objective.Value)
+                #logging.warning([self.__peptideSet[x] for x in self.instance.x if self.instance.x[x].value == 1.0])
+                #logging.warning([self.__peptideSet[x] for x in self.instance.x])
+                logging.warning([self.instance.x[x].value for x in self.instance.x])
 
                 self.__changed = False
                 return self.__result

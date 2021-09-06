@@ -167,7 +167,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                         raise RuntimeError(e)
 
                     result = self.parse_external_result(tmp_out_path)
-                 
+                    
                 os.remove(tmp_file.name)
                 os.remove(tmp_out_path)
 
