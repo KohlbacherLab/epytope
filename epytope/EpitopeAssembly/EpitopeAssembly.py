@@ -329,7 +329,7 @@ class ParetoEpitopeAssembly(object):
         seq_to_pep = {}
         self.neo_cleavage = {}
         self.good_cleavage = {}
-
+        
         if matrix is None:
             for start, stop in itr.combinations(pep_tmp, 2):
                 if start == "Dummy" or stop == "Dummy":
@@ -347,15 +347,17 @@ class ParetoEpitopeAssembly(object):
 
                     fragments[frag] = (start_str, stop_str)
                     fragments[garf] = (stop_str, start_str)
-
+            
             epi_pred = ep_pred.predict(generate_peptides_from_proteins(fragments.keys(), length), alleles=_alleles)
+
             for index,row in epi_pred.iterrows():
-                nof_epis = sum(comparator(row[a],threshold.get(a.name, 0)) for a in _alleles) \
-
-                for protein in index[0].proteins.values():
+                nof_epis = int(sum(comparator(row[a],threshold.get(a.name, 0)) for a in _alleles))
+                #logging.warning(index.proteins.values())
+                logging.warning(index)
+                for protein in index.proteins.values():
                     start, stop = fragments[protein]
-                    ep_edge_matrix[start,stop] += len(index[0].proteinPos[protein.transcript_id])*nof_epis
-
+                    ep_edge_matrix[start,stop] += len(index.proteinPos[protein.transcript_id])*nof_epis
+            logging.warning(ep_edge_matrix)
             cleave_pred = cl_pred.predict(list(fragments.keys()))
             #cleave_site_df = cleave_pred.xs((slice(None), (cleavage_pos-1)))
             for i in set(cleave_pred.index.get_level_values(0)):
@@ -393,7 +395,7 @@ class ParetoEpitopeAssembly(object):
         model.E = Set(initialize=E)
         model.E_prime = Set(initialize=list(seq_to_pep.keys()))
         model.ExE = Set(initialize=itr.permutations(E,2), dimen=2)
-
+        #logging.warning(ep_edge_matrix)
         model.w_ab = Param(model.E_prime, model.E_prime, initialize=cl_edge_matrix)
         model.e_ab = Param(model.E_prime, model.E_prime, initialize=ep_edge_matrix)
         model.card = Param(initialize=len(model.E_prime))

@@ -15,6 +15,7 @@ import subprocess
 import csv
 import tempfile
 import pandas
+import logging
 
 from epytope.Core.Allele import Allele
 from epytope.Core.Peptide import Peptide
@@ -74,13 +75,12 @@ class APSSMEpitopePrediction(AEpitopePrediction):
         pep_groups = list(pep_seqs.keys())
         pep_groups.sort(key=len)
         for length, peps in itertools.groupby(pep_groups, key=len):
-
             peps = list(peps)
             # dynamicaly import prediction PSSMS for alleles and predict
             if self.supportedLength is not None and length not in self.supportedLength:
                 warnings.warn("Peptide length of %i is not supported by %s" % (length, self.name))
                 continue
-
+            
             for a in alleles_string.keys():
                 try:
                     pssm = __load_allele_model(a, length)
@@ -98,8 +98,8 @@ class APSSMEpitopePrediction(AEpitopePrediction):
         if not result:
             raise ValueError("No predictions could be made with "
                              + self.name + " for given input. Check your epitope length and HLA allele combination.")
-
-        df_result = EpitopePredictionResult.from_dict(result, peps, self.name)
+        pep_groups = [Peptide(p) for p in pep_groups]
+        df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
         
         return df_result
 

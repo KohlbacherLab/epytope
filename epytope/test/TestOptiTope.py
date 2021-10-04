@@ -77,7 +77,7 @@ YFVIFFVAA""".split()]
         import random
         self.result = EpitopePredictorFactory("BIMAS").predict(self.peptides, self.alleles)
         conservation = {}
-        for e in self.result.index.levels[0]:
+        for e in self.result.index:
             conservation[str(e)] = random.random()
         pt = OptiTope(self.result, self.thresh, k=3, solver="cbc", verbosity=0)
         pt.activate_epitope_conservation_const(0.5, conservation=conservation)

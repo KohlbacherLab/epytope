@@ -245,8 +245,10 @@ try:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
             
+            # Convert str allele list to list with Allele type
+            alleles = [self.revert_allele_repr(a) for a in alleles]
             # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
-            result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
+            result = {alleles: {"Score":(list(scores.values())[j])} for j, alleles in enumerate(alleles)}
 
             # create EpitopePredictionResult object. This is a multi-indexed DataFrame
             # with Allele, Method and Score type as multi-columns and peptides as rows
@@ -530,6 +532,8 @@ try:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
 
+            # Convert str allele list to list with Allele type
+            alleles = [self.revert_allele_repr(a) for a in alleles]
             # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
             result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
@@ -800,7 +804,9 @@ try:
             if not scores:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
-
+                                
+            # Convert str allele list to list with Allele type
+            alleles = [self.revert_allele_repr(a) for a in alleles]
             # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
             result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 

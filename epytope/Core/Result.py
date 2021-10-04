@@ -147,18 +147,18 @@ class EpitopePredictionResult(AResult):
         """
         scoreType = numpy.asarray([list(m.keys()) for m in [metrics for a, metrics in d.items()]]).flatten()
         alleles = numpy.asarray([numpy.repeat(a, len(set(scoreType))) for a in d]).flatten()
-        if any(not isinstance(a, Allele) for a in alleles):
-            alleles = [Allele(a) for a in alleles]
+        
         meth = numpy.repeat(method, len(scoreType))
-
+        #logging.warn(peps)
         multi_cols = pandas.MultiIndex.from_arrays([alleles, meth, scoreType], names=["Allele", "Method", "ScoreType"])
-        df = pandas.DataFrame(float(0), index=peps, columns=multi_cols)
+        df = pandas.DataFrame(float(0),index=pandas.Index(peps), columns=multi_cols)
         df.index.name = 'Peptides'
-       
+        #logging.warning(df)
         # Fill DataFrame
         for allele, metrics in d.items():
             for metric, pep_scores in metrics.items():
                 for pep, score in pep_scores.items():
+                    #logging.warn(df[allele][method][metric].keys())
                     df[allele][method][metric][pep] = score
         
         return EpitopePredictionResult(df)

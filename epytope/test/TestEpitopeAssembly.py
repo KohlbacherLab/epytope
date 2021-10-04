@@ -36,9 +36,9 @@ class EpitopeAssemblyTestCase(unittest.TestCase):
         print(ep_pred.predict(self.peptides,alleles=allele))
         #cl_pred, ep_pred, alleles, threshold, comparator, length=9
 
-        assembler = ParetoEpitopeAssembly(self.peptides,cl_pred, ep_pred, allele, thresh, comp, solver="cbc", verbosity=1)
+        assembler = ParetoEpitopeAssembly(self.peptides,cl_pred, ep_pred, allele, thresh, comp, solver="cbc", verbosity=0)
         r = assembler.solve(eps=1e10, order=(1,0))
-        print(r)
+        #print(r)
 
         #print assembler.solve(eps=2.0)
 
