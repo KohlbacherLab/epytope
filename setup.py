@@ -126,7 +126,7 @@ setup(
     # Run-time dependencies. (will be installed by pip when epytope is installed)
     # TODO: find alternative for SMVlight scikitlearn
     install_requires=[
-            'setuptools<58.0',
+            'setuptools==19.2',
             'pandas',
             'pyomo>=4.0',
             'PyMySQL',
