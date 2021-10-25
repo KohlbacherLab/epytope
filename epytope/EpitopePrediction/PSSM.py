@@ -98,8 +98,8 @@ class APSSMEpitopePrediction(AEpitopePrediction):
         if not result:
             raise ValueError("No predictions could be made with "
                              + self.name + " for given input. Check your epitope length and HLA allele combination.")
-        pep_groups = [Peptide(p) for p in pep_groups]
-        df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
+        #pep_groups = [Peptide(p) for p in pep_groups]
+        df_result = EpitopePredictionResult.from_dict(result, pep_seqs.values(), self.name)
         
         return df_result
 

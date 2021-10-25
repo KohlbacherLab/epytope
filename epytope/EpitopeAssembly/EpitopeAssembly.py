@@ -349,15 +349,16 @@ class ParetoEpitopeAssembly(object):
                     fragments[garf] = (stop_str, start_str)
             
             epi_pred = ep_pred.predict(generate_peptides_from_proteins(fragments.keys(), length), alleles=_alleles)
-
+            test = generate_peptides_from_proteins(fragments.keys(), length)
+            #logging.warning([pep.proteins.values() for pep in test])
             for index,row in epi_pred.iterrows():
                 nof_epis = int(sum(comparator(row[a],threshold.get(a.name, 0)) for a in _alleles))
-                #logging.warning(index.proteins.values())
-                logging.warning(index)
+                logging.warning(index.proteins.values())
+                #logging.warning(index)
                 for protein in index.proteins.values():
                     start, stop = fragments[protein]
                     ep_edge_matrix[start,stop] += len(index.proteinPos[protein.transcript_id])*nof_epis
-            logging.warning(ep_edge_matrix)
+
             cleave_pred = cl_pred.predict(list(fragments.keys()))
             #cleave_site_df = cleave_pred.xs((slice(None), (cleavage_pos-1)))
             for i in set(cleave_pred.index.get_level_values(0)):
@@ -395,7 +396,7 @@ class ParetoEpitopeAssembly(object):
         model.E = Set(initialize=E)
         model.E_prime = Set(initialize=list(seq_to_pep.keys()))
         model.ExE = Set(initialize=itr.permutations(E,2), dimen=2)
-        #logging.warning(ep_edge_matrix)
+        logging.warning(ep_edge_matrix)
         model.w_ab = Param(model.E_prime, model.E_prime, initialize=cl_edge_matrix)
         model.e_ab = Param(model.E_prime, model.E_prime, initialize=ep_edge_matrix)
         model.card = Param(initialize=len(model.E_prime))

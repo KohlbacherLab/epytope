@@ -120,45 +120,32 @@ class EpitopePredictionResult(AResult):
 
         if type(others) == type(self):
             others = [others]
+        
+        # Concatenates self and to be merged dataframe(s)
+        for other in others:
+            df = pandas.concat([df, other], axis=1)
 
-        for i in range(len(others)):
-            df1a, df2a = df.align(others[i])
-            zero1 = df1a == 0
-            zero2 = df2a == 0
-            df1a = df1a.fillna(0)
-            df2a = df2a.fillna(0)
-            df = df1a+df2a
-            true_zero = zero1 | zero2
-            false_zero = df == 0
-            zero = true_zero & false_zero
-            nans = ~true_zero & false_zero
-            df[zero] = 0
-            df[nans] = numpy.NaN
-
-        df = EpitopePredictionResult(df)
+        #df = EpitopePredictionResult(df)
         # Merge result of multiple predictors in others per allele
-        df_merged = pandas.concat([allele[1] for allele in df.groupby(level=0, axis=1)], axis=1)
+        df_merged = pandas.concat([group[1] for group in df.groupby(level=[0,1], axis=1)], axis=1)
     
-        return df_merged
+        return EpitopePredictionResult(df_merged)
 
     def from_dict(d, peps, method):
         """
-        Description
+        Description 
         """
         scoreType = numpy.asarray([list(m.keys()) for m in [metrics for a, metrics in d.items()]]).flatten()
         alleles = numpy.asarray([numpy.repeat(a, len(set(scoreType))) for a in d]).flatten()
         
         meth = numpy.repeat(method, len(scoreType))
-        #logging.warn(peps)
         multi_cols = pandas.MultiIndex.from_arrays([alleles, meth, scoreType], names=["Allele", "Method", "ScoreType"])
         df = pandas.DataFrame(float(0),index=pandas.Index(peps), columns=multi_cols)
         df.index.name = 'Peptides'
-        #logging.warning(df)
         # Fill DataFrame
         for allele, metrics in d.items():
             for metric, pep_scores in metrics.items():
                 for pep, score in pep_scores.items():
-                    #logging.warn(df[allele][method][metric].keys())
                     df[allele][method][metric][pep] = score
         
         return EpitopePredictionResult(df)
