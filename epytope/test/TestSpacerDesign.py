@@ -30,7 +30,7 @@ class SpacerDesignTestCase(unittest.TestCase):
         epi_pred = EpitopePredictorFactory("Syfpeithi")
         cl_pred = CleavageSitePredictorFactory("PCM")
 
-        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, self.alleles, solver="cbc")
+        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, self.alleles, solver="glpk")
         sol = sbws.solve()
         print(sol)
         assert all(i == str(j) for i, j in zip(["GHRMAWDM", "WWQW", "VYEADDVI"], sol))
@@ -44,7 +44,7 @@ class SpacerDesignTestCase(unittest.TestCase):
         epi_pred = EpitopePredictorFactory("Syfpeithi")
         cl_pred = CleavageSitePredictorFactory("PCM")
         alleles = [Allele("HLA-A*02:01", prob=0.5), Allele("HLA-A*26:01", prob=0.5)]
-        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="cbc")
+        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="glpk")
         sol = sbws.solve()
         print(sol)
         assert all(i == str(j) for i, j in zip(["GHRMAWDM", "WWRW", "VYEADDVI"], sol))
@@ -59,7 +59,7 @@ class SpacerDesignTestCase(unittest.TestCase):
         cl_pred = CleavageSitePredictorFactory("PCM")
         alleles = [Allele("HLA-A*26:01", prob=0.5)]
         print(self.epis)
-        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="cbc", en=8)
+        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="glpk", en=8)
         self.assertRaises(ValueError, sbws.solve)
 
 
