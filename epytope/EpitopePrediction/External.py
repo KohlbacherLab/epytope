@@ -464,8 +464,6 @@ class NetMHC_4_0(NetMHC_3_4):
         scores = defaultdict(defaultdict)
         ranks = defaultdict(defaultdict)
         f = csv.reader(open(file, "r"), delimiter='\t')
-      # alleles = map(lambda x: x.split()[0], filter(lambda x: x.strip() != "", f.next()))
-      # f.next()
         alleles = [Allele(x.split()[0][:5]+'*'+x.split()[0][5:7]+ ':' +x.split()[0][7:]) for x in [x for x in next(f) if x.strip() != ""]]
         next(f)
         for l in f:
@@ -1448,7 +1446,6 @@ class NetMHCpan_3_0(NetMHCpan_2_8):
         scores = defaultdict(defaultdict)
         ranks = defaultdict(defaultdict)
         alleles = [Allele(x[:5]+'*'+x[5:]) for x in next(f) if x != ""]
-        logging.warning(next(f))
         for row in f:
             pep_seq = Peptide(row[PeptideIndex.NETMHCPAN_3_0])
             for i, a in enumerate(alleles):
@@ -2081,7 +2078,7 @@ class NetMHCII_2_2(AExternalEpitopePrediction):
             if not len(row):
                 continue
             
-            if "HLA-" not in row[HLAIndex.NETMHCII_2_2]:
+            if Allele.organism not in row[HLAIndex.NETMHCII_2_2]:
                 continue
             allele = Allele(row[HLAIndex.NETMHCII_2_2][:8]+'*'+row[HLAIndex.NETMHCII_2_2][8:10]+':'+row[HLAIndex.NETMHCII_2_2][10:])
             pep = Peptide(row[PeptideIndex.NETMHCII_2_2])
@@ -3971,8 +3968,7 @@ class NetMHCIIpan_3_0(AExternalEpitopePrediction):
         scores = defaultdict(defaultdict)
         ranks = defaultdict(defaultdict)
         # NetMHCiipan 3.1 inherits from NetMHCiipan 3.0 thus has a slighty different allele nomenclature
-        alleles = [Allele('HLA-'+x) if '*' in x else Allele('HLA-'+x[:7].replace("_","*")+':'+x[7:]) for x in set([x for x in next(f) if x != ""])]
-        logging.warning(alleles)
+        alleles = [Allele('HLA-'+x) for x in set([x for x in next(f) if x != ""])]
         next(f)
         for row in f:
             pep_seq = Peptide(row[PeptideIndex.NETMHCIIPAN_3_0])
@@ -5824,6 +5820,30 @@ class NetMHCIIpan_3_1(NetMHCIIpan_3_0):
         """The name of the predictor"""
         return self.__name
 
+    def parse_external_result(self, file):
+        """
+        Parses external results and returns the result
+
+        :param str file: The file path or the external prediction results
+        :return: A dictionary containing the prediction results
+        :rtype: dict
+        """
+        f = csv.reader(open(file, "r"), delimiter='\t')
+        scores = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
+        # NetMHCiipan 3.1 inherits from NetMHCiipan 3.0 thus has a slighty different allele nomenclature
+        alleles = [Allele('HLA-'+x[:7].replace("_","*")+':'+x[7:]) for x in set([x for x in next(f) if x != ""])]
+        next(f)
+        for row in f:
+            pep_seq = Peptide(row[PeptideIndex.NETMHCIIPAN_3_1])
+            for i, a in enumerate(alleles):
+                scores[a][pep_seq] = float(row[ScoreIndex.NETMHCIIPAN_3_1 + i * Offset.NETMHCIIPAN_3_1])
+                ranks[a][pep_seq] = float(row[RankIndex.NETMHCIIPAN_3_1 + i * Offset.NETMHCIIPAN_3_1])
+                # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': Score1, 'Pep2': Score2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
+
+        return result
+
 
 class PickPocket_1_1(AExternalEpitopePrediction):
     """
@@ -7021,6 +7041,7 @@ class PeptideIndex(IntEnum):
     NETMHCSTABPAN_1_0 = 1
     NETMHCII_2_2 = 2
     NETMHCIIPAN_3_0 = 1
+    NETMHCIIPAN_3_1 = 1
     PICKPOCKET_1_1 = 2
     NETCTLPAN_1_1 = 3
 
@@ -7037,6 +7058,7 @@ class ScoreIndex(IntEnum):
     NETMHCSTABPAN_1_0 = 6
     NETMHCII_2_2 = 4
     NETMHCIIPAN_3_0 = 3
+    NETMHCIIPAN_3_1 = 3
     PICKPOCKET_1_1 = 4
     NETCTLPAN_1_1 = 7
 
@@ -7049,6 +7071,7 @@ class RankIndex(IntEnum):
     NETMHCPAN_4_0 = 7
     NETMHCSTABPAN_1_0 = 5
     NETMHCIIPAN_3_0 = 5
+    NETMHCIIPAN_3_1 = 5
 
 class Offset(IntEnum):
     """

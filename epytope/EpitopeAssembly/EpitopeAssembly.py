@@ -350,11 +350,10 @@ class ParetoEpitopeAssembly(object):
             
             epi_pred = ep_pred.predict(generate_peptides_from_proteins(fragments.keys(), length), alleles=_alleles)
             test = generate_peptides_from_proteins(fragments.keys(), length)
-            #logging.warning([pep.proteins.values() for pep in test])
+            
             for index,row in epi_pred.iterrows():
                 nof_epis = int(sum(comparator(row[a],threshold.get(a.name, 0)) for a in _alleles))
                 logging.warning(index.proteins.values())
-                #logging.warning(index)
                 for protein in index.proteins.values():
                     start, stop = fragments[protein]
                     ep_edge_matrix[start,stop] += len(index.proteinPos[protein.transcript_id])*nof_epis
@@ -396,7 +395,6 @@ class ParetoEpitopeAssembly(object):
         model.E = Set(initialize=E)
         model.E_prime = Set(initialize=list(seq_to_pep.keys()))
         model.ExE = Set(initialize=itr.permutations(E,2), dimen=2)
-        logging.warning(ep_edge_matrix)
         model.w_ab = Param(model.E_prime, model.E_prime, initialize=cl_edge_matrix)
         model.e_ab = Param(model.E_prime, model.E_prime, initialize=ep_edge_matrix)
         model.card = Param(initialize=len(model.E_prime))

@@ -231,7 +231,7 @@ try:
                         content = row[0].split(',')
                         # get original peptide object
                         peptide = content[0]
-                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS])
+                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS_CLASS1_2_0])
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][peptide] = 1.0
@@ -245,7 +245,7 @@ try:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
             
-            # Convert str allele list to list with Allele type
+            # Convert str allele list to list with Allele objects
             alleles = [self.revert_allele_repr(a) for a in alleles]
             # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
             result = {alleles: {"Score":(list(scores.values())[j])} for j, alleles in enumerate(alleles)}
@@ -518,7 +518,7 @@ try:
                         content = row[0].split(',')
                         # get original peptide object
                         peptide = peptide_objects[content[0]]
-                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS])
+                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS_CLASS2_2_0])
                         if binary:
                             if binding_affinity <= 500:
                                 scores[allele_repr][peptide] = 1.0
@@ -778,8 +778,6 @@ try:
             pep_groups = list(peptide_objects.keys())
             pep_groups.sort(key=len)
 
-            # group peptides by length
-            peptides.sort(key=len)
             for length, peps in itertools.groupby(peptides, key=len):
                 if length not in self.supportedLength:
                     logging.warning("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
@@ -900,7 +898,8 @@ except BadSignatureException:
 
 class ScoreIndex(IntEnum):
     """
-    Specifies the score index from the parsed output format
+    Specifies the score column index in the respective output format
     """
-    MHCNUGGETS = 1
+    MHCNUGGETS_CLASS1_2_0 = 1
+    MHCNUGGETS_CLASS2_2_0 = 1
     MHCFLURRY = 0

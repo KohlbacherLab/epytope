@@ -15,7 +15,8 @@ from numpy.lib.arraysetops import isin
 import pandas
 from epytope.Core.Allele import Allele
 from epytope.Core.Peptide import Peptide
-import logging
+from copy import deepcopy
+from sys import exit
 
 
 class AResult(pandas.DataFrame, metaclass=abc.ABCMeta):
@@ -60,52 +61,49 @@ class EpitopePredictionResult(AResult):
 
         EpitopePredictionResult
 
-        +-----------+-------------------------------+-------------------------------+
-        |  Allele   |             Allele1           |             Allele2           | 
-        +- - - - - -+- - - - - - - -+- - - - - - - -+- - - - - - - -+- - - - - - - -+
-        |  Method   |     Method1   |    Method2    |     Method1   |    Method2    |
-        +- - - - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+
-        | ScoreType | Score |  Rank | Score |  Rank | Score |  Rank | Score |  Rank |
-        +- - - - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+
-        |  Peptides |       |       |       |       |       |       |       |       |
-        +===========+=======+=======+=======+=======+=======+=======+=======+=======+
-        | Peptide1  |  0.03 |  57.4 |  0.05 |  51.1 |  0.08 |  49.4 |  0.73 |  3.12 |
-        +-----------+-------+-------+-------+-------+-------+-------+-------+-------+
-        | Peptide2  |  0.32 |  13.2 |  0.31 |  14.1 |  0.25 |  22.1 |  0.11 |  69.1 |
-        +-----------+-------+-------+-------+-------+-------+-------+-------+-------+
+        +----------------+-------------------------------+-------------------------------+
+        |  Allele        |          Allele Obj 1         |          Allele Obj 2         | 
+        +- - - - - - - - +- - - - - - - -+- - - - - - - -+- - - - - - - -+- - - - - - - -+
+        |  Method        |    Method 1   |    Method 2   |    Method 1   |    Method 2   |
+        +- - - - - - - - +- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+
+        | ScoreType      | Score |  Rank | Score |  Rank | Score |  Rank | Score |  Rank |
+        +- - - - - - - - +- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+- - - -+
+        |  Peptides      |       |       |       |       |       |       |       |       |
+        +================+=======+=======+=======+=======+=======+=======+=======+=======+
+        | Peptide Obj 1  |  0.03 |  57.4 |  0.05 |  51.1 |  0.08 |  49.4 |  0.73 |  3.12 |
+        +----------------+-------+-------+-------+-------+-------+-------+-------+-------+
+        | Peptide Obj 2  |  0.32 |  13.2 |  0.31 |  14.1 |  0.25 |  22.1 |  0.11 |  69.1 |
+        +----------------+-------+-------+-------+-------+-------+-------+-------+-------+
 
     """
 
-    def filter_result(self, expressions):
+    def filter_result(self, column, comp, thr, asc=False):
         """
-        Filters a result data frame based on a specified expression consisting of a list of triple with
-        (method_name, comparator, threshold). The expression is applied to each row. If any of the columns fulfill
+        Filters a result data frame based on a specified column consisting of a list of triple with
+        (allele_name, method_name, scoreType_name) and a specified threshold. The expression is applied to each row. If any of the columns fulfill
         the criteria the row remains.
 
-        :param list((str,comparator,float)) expressions: A list of triples consisting of (method_name, comparator,
-                                                        threshold)
+        :param list(str,str,str) column: A list of triples consisting of (allele_name, method_name, scoreType_name)
+        :param function comp: Comparator determining how the threshold should filter the dataframe
+        :param float thr: The threshold to be applied onto the specified column
+        :param boolean asc: Enable or diable ascending order on specified column
+
         :return: Filtered result object
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
-        """
-        if isinstance(expressions, tuple):
-            expressions = [expressions]
+        
+        df = deepcopy(self)
+        allele, method, scoretype = column
 
-        #builde logical expression
-        masks = list(map(list, [comp(self.loc[(slice(None), method), :], thr).any(axis=1)
-                    for method, comp, thr in expressions]))
-        if len(masks) > 1:
-            masks = numpy.logical_and(*masks)
-        else:
-            masks = masks[0]
+        # Filter df according to threshold
+        df_filtered = df[comp(df[allele][method][scoretype], thr)]
+        
+        # Sort filtered df by scoretype
+        df_sorted = df_filtered[allele][method].sort_values(by=[scoretype], ascending=asc)
+        df = df.reindex(df_sorted.index)
 
-        #apply to all rows
-        idx = [f for f in masks
-               for _ in range(len(self.index.levels[1]))]
-        return EpitopePredictionResult(self.loc[idx, :])
-        """
-        #TODO: has to be implemented
-        pass
+        return EpitopePredictionResult(df)
+        
 
     def merge_results(self, others):
         """
@@ -125,7 +123,6 @@ class EpitopePredictionResult(AResult):
         for other in others:
             df = pandas.concat([df, other], axis=1)
 
-        #df = EpitopePredictionResult(df)
         # Merge result of multiple predictors in others per allele
         df_merged = pandas.concat([group[1] for group in df.groupby(level=[0,1], axis=1)], axis=1)
     
@@ -133,7 +130,7 @@ class EpitopePredictionResult(AResult):
 
     def from_dict(d, peps, method):
         """
-        Description 
+        Create EpitopePredictionResult object from dictionary holding scores for alleles, peptides and a specified method 
         """
         scoreType = numpy.asarray([list(m.keys()) for m in [metrics for a, metrics in d.items()]]).flatten()
         alleles = numpy.asarray([numpy.repeat(a, len(set(scoreType))) for a in d]).flatten()

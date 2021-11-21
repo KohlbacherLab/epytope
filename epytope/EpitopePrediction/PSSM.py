@@ -89,16 +89,16 @@ class APSSMEpitopePrediction(AEpitopePrediction):
                     continue
 
                 if alleles_string[a] not in result:
-                    result[alleles_string[a]] = {self.name+'Score': {}}
-                ##here is the prediction and result object missing##
+                    result[alleles_string[a]] = {'Score': {}}
+                
                 for p in peps:
                     score = sum(pssm[i].get(p[i], 0.0) for i in range(length)) + pssm.get(-1, {}).get("con", 0)
-                    result[alleles_string[a]][self.name+'Score'][pep_seqs[p]] = score
+                    result[alleles_string[a]]['Score'][pep_seqs[p]] = score
 
         if not result:
             raise ValueError("No predictions could be made with "
                              + self.name + " for given input. Check your epitope length and HLA allele combination.")
-        #pep_groups = [Peptide(p) for p in pep_groups]
+        
         df_result = EpitopePredictionResult.from_dict(result, pep_seqs.values(), self.name)
         
         return df_result
@@ -642,7 +642,7 @@ class ARB(APSSMEpitopePrediction):
             raise ValueError("No predictions could be made with " + self.name + " for given input. Check your"
                                                                                 "epitope length and HLA allele combination.")
         
-        result = {allele: {self.name+"_score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
+        result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
         df_result = EpitopePredictionResult.from_dict(result, peps, self.name)
         return df_result
@@ -1020,7 +1020,7 @@ class CalisImm(APSSMEpitopePrediction):
             raise ValueError("No predictions could be made with " + self.name + " for given input. Check your"
                                                                                 "epitope length and HLA allele combination.")
 
-        result = {allele: {self.name+"_score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
+        result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
         df_result = EpitopePredictionResult.from_dict(result, peps, self.name)
         return df_result

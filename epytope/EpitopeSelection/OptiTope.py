@@ -152,7 +152,7 @@ class OptiTope(object):
                                                    for a in res_df.columns), axis=1)]
 
         for tup in res_df.itertuples():
-            p = Peptide(tup[0])
+            p = tup[0]
             seq = str(p)
             peps[seq] = p
             for a, s in zip(res_df.columns, tup[1:]):

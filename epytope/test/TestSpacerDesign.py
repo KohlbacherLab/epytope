@@ -58,7 +58,6 @@ class SpacerDesignTestCase(unittest.TestCase):
         epi_pred = EpitopePredictorFactory("Syfpeithi")
         cl_pred = CleavageSitePredictorFactory("PCM")
         alleles = [Allele("HLA-A*26:01", prob=0.5)]
-        print(self.epis)
         sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="glpk", en=8)
         self.assertRaises(ValueError, sbws.solve)
 
