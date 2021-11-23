@@ -17,6 +17,7 @@ from epytope.Core.Allele import Allele
 from epytope.Core.Peptide import Peptide
 from copy import deepcopy
 from sys import exit
+import logging
 
 
 class AResult(pandas.DataFrame, metaclass=abc.ABCMeta):
@@ -32,8 +33,7 @@ class AResult(pandas.DataFrame, metaclass=abc.ABCMeta):
         """
         Filter result based on a list of expressions
 
-        :param list((str,comparator,float)) expressions: A list of triples consisting of (method_name, comparator,
-                                                         threshold)
+        :param list((str,comparator,float)) expressions: A list of triples consisting of (method_name, comparator,threshold)
         :return: A new filtered AResult object
         :rtype: :class:`~epytope.Core.Result.AResult`
         """
@@ -77,30 +77,40 @@ class EpitopePredictionResult(AResult):
 
     """
 
-    def filter_result(self, column, comp, thr, asc=False):
+    def filter_result(self, expressions, scoretype=False):
         """
-        Filters a result data frame based on a specified column consisting of a list of triple with
-        (allele_name, method_name, scoreType_name) and a specified threshold. The expression is applied to each row. If any of the columns fulfill
-        the criteria the row remains.
+        Filters a result data frame based on a specified expression consisting of a list of triple with
+        (method_name/scoretype_name, comparator, threshold) and a boolean if the scoretype is specified.
+        The expression is applied to each row. If any of the columns fulfill the criteria the row remains.
 
-        :param list(str,str,str) column: A list of triples consisting of (allele_name, method_name, scoreType_name)
-        :param function comp: Comparator determining how the threshold should filter the dataframe
-        :param float thr: The threshold to be applied onto the specified column
-        :param boolean asc: Enable or diable ascending order on specified column
+        :param list((str,comparator,float)) expression: A list of triples consisting of (method_name/scoretype_name, comparator, threshold)
+        :param boolean scoretype: Indicates weather a score or method is specified as first item of the triples in the expressions
 
         :return: Filtered result object
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
         
         df = deepcopy(self)
-        allele, method, scoretype = column
-
-        # Filter df according to threshold
-        df_filtered = df[comp(df[allele][method][scoretype], thr)]
+        scoretypes = df.columns.get_level_values(2)
+        lvl = 2 if scoretype else 1
         
-        # Sort filtered df by scoretype
-        df_sorted = df_filtered[allele][method].sort_values(by=[scoretype], ascending=asc)
-        df = df.reindex(df_sorted.index)
+        if scoretype and len(set(scoretypes)) > 1:
+            raise ValueError("Cannot filter dataframe on non-unique ScoreTypes of dataframe.")
+
+        for expr in expressions:
+            key, comp, thr = expr
+            filter = comp(df.xs(key, axis = 1, level = lvl), thr).values
+            if scoretype:
+                if key not in list(set(scoretypes))[0]:
+                    raise ValueError("Specified ScoreType {} does not match ScoreType of Dataframe {}.".format(key, scoretypes[1]))
+                else:
+                    # Only keep rows which contain values above the threshold
+                    keep_row = [bool.all() for bool in filter]
+                    df = df.loc[keep_row]
+            else:
+                # Only keep rows which contain values above the threshold in the specified method
+                keep_row = [bool.any() for bool in filter]
+                df = df.loc[keep_row]
 
         return EpitopePredictionResult(df)
         

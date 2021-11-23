@@ -71,7 +71,7 @@ class OptiTope(object):
         :param int k: The number of epitopes to select
         :param str solver: The solver to be used (default glpk)
         :param int verbosity: Integer defining whether additional debugg prints are made >0 => debug mode
-        :param bool rank: Boolean specifying which metric should be optimized
+        :param bool rank: Boolean specifying whether optimization should be done based on a `rank` metric (default False)
         """
 
         #check input data
@@ -199,7 +199,7 @@ class OptiTope(object):
         model.Q = Set(initialize=variations)
 
         model.E = Set(initialize=set(peps.keys()))
-        logging.warning(set(peps.keys()))
+        
         model.A = Set(initialize=list(alleles_I.keys()))
         model.E_var = Set(model.Q, initialize=lambda mode, v: epi_var[v])
         model.A_I = Set(model.A, initialize=lambda model, a: alleles_I[a])
