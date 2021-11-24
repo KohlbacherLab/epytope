@@ -89,7 +89,9 @@ class EpitopePredictionResult(AResult):
         :return: Filtered result object
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
-        
+        if isinstance(expressions, tuple):
+            expressions = [expressions]
+            
         df = deepcopy(self)
         scoretypes = df.columns.get_level_values(2)
         lvl = 2 if scoretype else 1
