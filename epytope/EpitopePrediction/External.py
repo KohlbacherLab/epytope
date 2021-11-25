@@ -87,15 +87,15 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
 
         if alleles is None:
             al = [Allele(a) for a in self.supportedAlleles]
-            allales_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(al), al)}
+            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(al), al)}
         else:
             if isinstance(alleles, Allele):
                 alleles = [alleles]
             if any(not isinstance(p, Allele) for p in alleles):
                 raise ValueError("Input is not of type Allele")
-            allales_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(alleles), alleles)}
+            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(alleles), alleles)}
 
-        result = defaultdict(defaultdict)
+        result = {}
 
         # group alleles in blocks of 80 alleles (NetMHC can't deal with more)
         _MAX_ALLELES = 50
@@ -110,18 +110,18 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
         allele_groups = []
         c_a = 0
         allele_group = []
-        for a in allales_string.keys():
+        for a in alleles_string.keys():
             if c_a >= _MAX_ALLELES:
                 c_a = 0
                 allele_groups.append(allele_group)
-                if str(allales_string[a]) not in self.supportedAlleles:
-                    logging.warning("Allele %s is not supported by %s" % (str(allales_string[a]), self.name))
+                if str(alleles_string[a]) not in self.supportedAlleles:
+                    logging.warning("Allele %s is not supported by %s" % (str(alleles_string[a]), self.name))
                     allele_group = []
                     continue
                 allele_group = [a]
             else:
-                if str(allales_string[a]) not in self.supportedAlleles:
-                    logging.warning("Allele %s is not supported by %s" % (str(allales_string[a]), self.name))
+                if str(alleles_string[a]) not in self.supportedAlleles:
+                    logging.warning("Allele %s is not supported by %s" % (str(alleles_string[a]), self.name))
                     continue
                 allele_group.append(a)
                 c_a += 1
@@ -138,6 +138,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                                                                                        self.name, length))
                 continue
             peps = list(peps)
+            logging.warning(peps)
             for i in range(0, len(peps), chunksize):
                 # Create a temporary file for subprocess to write to. The
                 # handle is not needed on the python end, as only the path will
@@ -166,15 +167,23 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                     except Exception as e:
                         raise RuntimeError(e)
 
-                    result = self.parse_external_result(tmp_out_path)
-                    
+                    res_tmp = self.parse_external_result(tmp_out_path)
+                    for allele, scores in res_tmp.items():
+                        if allele not in result.keys():
+                            result[allele] = {}
+                        for scoretype, pep_scores in scores.items():
+                            if scoretype not in result[allele].keys():
+                                result[allele][scoretype] = {}
+                            for pep, score in pep_scores.items():
+                                result[allele][scoretype][pep] = score
+                                
                 os.remove(tmp_file.name)
                 os.remove(tmp_out_path)
-
+        
         if not result:
             raise ValueError("No predictions could be made with " + self.name +
                              " for given input. Check your epitope length and HLA allele combination.")
-
+        
         df_result = EpitopePredictionResult.from_dict(result, list(pep_seqs.values()), self.name)
 
         return df_result
