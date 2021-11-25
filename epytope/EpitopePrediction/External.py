@@ -138,7 +138,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                                                                                        self.name, length))
                 continue
             peps = list(peps)
-            logging.warning(peps)
+            
             for i in range(0, len(peps), chunksize):
                 # Create a temporary file for subprocess to write to. The
                 # handle is not needed on the python end, as only the path will
