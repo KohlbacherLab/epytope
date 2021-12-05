@@ -77,14 +77,14 @@ class EpitopePredictionResult(AResult):
 
     """
 
-    def filter_result(self, expressions, scoretype=False):
+    def filter_result(self, expressions, scoretype='Score'):
         """
         Filters a result data frame based on a specified expression consisting of a list of triple with
-        (method_name/scoretype_name, comparator, threshold) and a boolean if the scoretype is specified.
+        (method_name, comparator, threshold) and a str of the methods scoretype to be filtered.
         The expression is applied to each row. If any of the columns fulfill the criteria the row remains.
 
-        :param list((str,comparator,float)) expression: A list of triples consisting of (method_name/scoretype_name, comparator, threshold)
-        :param boolean scoretype: Indicates weather a score or method is specified as first item of the triples in the expressions
+        :param list((str,comparator,float)) expression: A list of triples consisting of (method_name, comparator, threshold)
+        :param str scoretype: Indicates which scoretype of the specified method should be filtered
 
         :return: Filtered result object
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
@@ -93,25 +93,19 @@ class EpitopePredictionResult(AResult):
             expressions = [expressions]
             
         df = deepcopy(self)
-        scoretypes = df.columns.get_level_values(2)
-        lvl = 2 if scoretype else 1
+        methods = list(set(df.columns.get_level_values(1)))
+        scoretypes = list(set(df.columns.get_level_values(2)))
+        if scoretype not in scoretypes:
+            raise ValueError("Specified ScoreType {} does not match ScoreTypes of data frame {}.".format(scoretype, scoretypes))
         
-        if scoretype and len(set(scoretypes)) > 1:
-            raise ValueError("Cannot filter dataframe on non-unique ScoreTypes of dataframe.")
-
         for expr in expressions:
-            key, comp, thr = expr
-            filter = comp(df.xs(key, axis = 1, level = lvl), thr).values
-            if scoretype:
-                if key not in list(set(scoretypes))[0]:
-                    raise ValueError("Specified ScoreType {} does not match ScoreType of Dataframe {}.".format(key, scoretypes[1]))
-                else:
-                    # Only keep rows which contain values above the threshold
-                    keep_row = [bool.all() for bool in filter]
-                    df = df.loc[keep_row]
+            method, comp, thr = expr
+            if method not in methods:
+                raise ValueError("Specified method {} does not match methods of data frame {}.".format(method, methods))
             else:
-                # Only keep rows which contain values above the threshold in the specified method
-                keep_row = [bool.any() for bool in filter]
+                filt = comp(df.xs(method, axis = 1, level = 1).xs(scoretype, axis = 1, level = 1), thr).values
+                # Only keep rows which contain values fulfilling the comparators logic in the specified method
+                keep_row = [bool.any() for bool in filt]
                 df = df.loc[keep_row]
 
         return EpitopePredictionResult(df)
