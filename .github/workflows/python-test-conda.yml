@@ -22,7 +22,7 @@ jobs:
         echo "CONDA_PKGS_DIRS=/tmp/condapkgs" >> $GITHUB_ENV
     - name: Set up Python ${{ matrix.python-version }}
       run: |
-        $CONDA/bin/conda create -p /tmp/condaenv python==${{ matrix.python-version }}'.*'
+        $CONDA/bin/conda create -p /tmp/condaenv python==${{ matrix.python-version }}'.*' setuptools"==52.0"
     - name: Activate conda environment
       run: |
         echo "/tmp/condaenv/bin" >> $GITHUB_PATH
@@ -31,6 +31,6 @@ jobs:
       run: |
         pip install .
     - name: Install Test dependencies
-      run: conda install -p /tmp/condaenv -c conda-forge -c bioconda nose nose-exclude coincbc
+      run: conda install -p /tmp/condaenv -c conda-forge -c bioconda nose nose-exclude glpk
     - name: Run Tests
       run: nosetests --exclude-dir=epytope/test/external epytope
