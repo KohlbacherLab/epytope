@@ -169,6 +169,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
                     except Exception as e:
                         raise RuntimeError(e)
 
+                    # Obtain parsed output dataframe containing the peptide scores and/or ranks
                     res_tmp = self.parse_external_result(tmp_out_path)
                     for allele_string, scores in res_tmp.items():
                         allele = alleles_string[allele_string]
@@ -217,7 +218,7 @@ class NetMHC_3_4(AExternalEpitopePrediction):
                            'HLA-B*44:03', 'HLA-B*45:01', 'HLA-B*46:01', 'HLA-B*48:01', 'HLA-B*51:01', 'HLA-B*53:01', 'HLA-B*54:01', 'HLA-B*57:01',
                            'HLA-B*58:01', 'HLA-B*73:01', 'HLA-B*83:01', 'HLA-C*03:03', 'HLA-C*04:01', 'HLA-C*05:01', 'HLA-C*06:02', 'HLA-C*07:01',
                            'HLA-C*07:02', 'HLA-C*08:02', 'HLA-C*12:03', 'HLA-C*14:02', 'HLA-C*15:02', 'HLA-E*01:01',
-                           'H2-Db', 'H2-Dd', 'H2-Kb', 'H2-Kd', 'H2-Kk', 'H2-Ld'])
+                           'H-2-Db', 'H-2-Dd', 'H-2-Kb', 'H-2-Kd', 'H-2-Kk', 'H-2-Ld'])
     __supported_length = frozenset([8, 9, 10, 11])
     __name = "netmhc"
     __command = "netMHC -p {peptides} -a {alleles} -x {out} {options}"
@@ -282,10 +283,11 @@ class NetMHC_3_4(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
-        :return: A dictionary containing the prediction results
+        :return: A dictionary containing the prediction results 
         :rtype: dict
         """
         result = defaultdict(defaultdict)
@@ -352,7 +354,7 @@ class NetMHC_3_0(NetMHC_3_4):
                            'HLA-A*69:01', 'HLA-B*07:02', 'HLA-B*08:01', 'HLA-B*08:02', 'HLA-B*15:01', 'HLA-B*18:01', 'HLA-B*27:05', 'HLA-B*35:01',
                            'HLA-B*39:01', 'HLA-B*40:01', 'HLA-B*40:02', 'HLA-B*44:02', 'HLA-B*44:03', 'HLA-B*45:01', 'HLA-B*51:01', 'HLA-B*53:01',
                            'HLA-B*54:01', 'HLA-B*57:01', 'HLA-B*58:01',
-                           'H2-Db', 'H2-Dd', 'H2-Kb', 'H2-Kd', 'H2-Kk', 'H2-Ld'])  # no PSSM predictors
+                           'H-2-Db', 'H-2-Dd', 'H-2-Kb', 'H-2-Kd', 'H-2-Kk', 'H-2-Ld'])  # no PSSM predictors
 
     __supported_length = frozenset([8, 9, 10, 11])
     __name = "netmhc"
@@ -405,7 +407,8 @@ class NetMHC_3_0(NetMHC_3_4):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -467,7 +470,8 @@ class NetMHC_4_0(NetMHC_3_4):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -856,7 +860,7 @@ class NetMHCpan_2_4(AExternalEpitopePrediction):
          'HLA-C*16:24', 'HLA-C*16:25', 'HLA-C*16:26', 'HLA-C*17:01', 'HLA-C*17:02', 'HLA-C*17:03', 'HLA-C*17:04', 'HLA-C*17:05', 'HLA-C*17:06',
          'HLA-C*17:07', 'HLA-C*18:01', 'HLA-C*18:02', 'HLA-C*18:03', 'HLA-E*01:01', 'HLA-G*01:01', 'HLA-G*01:02', 'HLA-G*01:03', 'HLA-G*01:04',
          'HLA-G*01:06', 'HLA-G*01:07', 'HLA-G*01:08', 'HLA-G*01:09',
-         'H2-Db', 'H2-Dd', 'H2-Kb', 'H2-Kd', 'H2-Kk', 'H2-Ld'])
+         'H-2-Db', 'H-2-Dd', 'H-2-Kb', 'H-2-Kd', 'H-2-Kk', 'H-2-Ld'])
     __version = "2.4"
 
     @property
@@ -918,7 +922,8 @@ class NetMHCpan_2_4(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -1313,7 +1318,7 @@ class NetMHCpan_2_8(AExternalEpitopePrediction):
          'HLA-C*16:24', 'HLA-C*16:25', 'HLA-C*16:26', 'HLA-C*17:01', 'HLA-C*17:02', 'HLA-C*17:03', 'HLA-C*17:04', 'HLA-C*17:05', 'HLA-C*17:06',
          'HLA-C*17:07', 'HLA-C*18:01', 'HLA-C*18:02', 'HLA-C*18:03', 'HLA-E*01:01', 'HLA-G*01:01', 'HLA-G*01:02', 'HLA-G*01:03', 'HLA-G*01:04',
          'HLA-G*01:06', 'HLA-G*01:07', 'HLA-G*01:08', 'HLA-G*01:09',
-         'H2-Db', 'H2-Dd', 'H2-Kb', 'H2-Kd', 'H2-Kk', 'H2-Ld', "H2-Qa1", "H2-Qa2"])
+         'H-2-Db', 'H-2-Dd', 'H-2-Kb', 'H-2-Kd', 'H-2-Kk', 'H-2-Ld', "H-2-Qa1", "H-2-Qa2"])
 
     @property
     def version(self):
@@ -1400,7 +1405,8 @@ class NetMHCpan_2_8(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -1488,7 +1494,8 @@ class NetMHCpan_4_0(NetMHCpan_3_0):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -1932,7 +1939,8 @@ class NetMHCstabpan_1_0(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -2013,7 +2021,7 @@ class NetMHCII_2_2(AExternalEpitopePrediction):
     __alleles = frozenset(
         ['HLA-DRB1*01:01', 'HLA-DRB1*03:01', 'HLA-DRB1*04:01', 'HLA-DRB1*04:04', 'HLA-DRB1*04:05', 'HLA-DRB1*07:01', 'HLA-DRB1*08:02', 'HLA-DRB1*09:01',
          'HLA-DRB1*11:01', 'HLA-DRB1*13:02', 'HLA-DRB1*15:01', 'HLA-DRB3*01:01', 'HLA-DRB4*01:01', 'HLA-DRB5*01:01',
-         'H2-IAb', 'H2-IAd'])
+         'H-2-Iab', 'H-2-Iad'])
     __version = "2.2"
 
     @property
@@ -2073,7 +2081,8 @@ class NetMHCII_2_2(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -2152,7 +2161,7 @@ class NetMHCII_2_3(NetMHCII_2_2):
 'HLA-DQA1*01:03-DQB1*06:03', 'HLA-DQA1*01:04-DQB1*05:03', 'HLA-DQA1*02:01-DQB1*02:02', 'HLA-DQA1*02:01-DQB1*03:01', 'HLA-DQA1*02:01-DQB1*03:03',
 'HLA-DQA1*02:01-DQB1*04:02', 'HLA-DQA1*03:01-DQB1*03:01', 'HLA-DQA1*03:01-DQB1*03:02', 'HLA-DQA1*03:03-DQB1*04:02', 'HLA-DQA1*04:01-DQB1*04:02',
 'HLA-DQA1*05:01-DQB1*02:01', 'HLA-DQA1*05:01-DQB1*03:01', 'HLA-DQA1*05:01-DQB1*03:02', 'HLA-DQA1*05:01-DQB1*03:03', 'HLA-DQA1*05:01-DQB1*04:02',
-'HLA-DQA1*06:01-DQB1*04:02', 'H-2-IAb', 'H-2-IAd', 'H-2-IAk', 'H-2-IAs', 'H-2-IAu', 'H-2-IEd', 'H-2-IEk'])
+'HLA-DQA1*06:01-DQB1*04:02', 'H-2-Iab', 'H-2-Iad', 'H-2-Iak', 'H-2-Ias', 'H-2-Iau', 'H-2-Iad', 'H-2-Iak'])
     __version = "2.3"
 
     @property
@@ -2203,7 +2212,8 @@ class NetMHCII_2_3(NetMHCII_2_2):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -4014,7 +4024,7 @@ class NetMHCIIpan_3_0(AExternalEpitopePrediction):
          'HLA-DQA1*06:02-DQB1*06:37', 'HLA-DQA1*06:02-DQB1*06:38',
          'HLA-DQA1*06:02-DQB1*06:39', 'HLA-DQA1*06:02-DQB1*06:40', 'HLA-DQA1*06:02-DQB1*06:41', 'HLA-DQA1*06:02-DQB1*06:42',
          'HLA-DQA1*06:02-DQB1*06:43', 'HLA-DQA1*06:02-DQB1*06:44',
-         'H2-IAb', 'H2-IAd'])
+         'H-2-Iab', 'H-2-Iad'])
     __version = "3.0"
 
     @property
@@ -4055,7 +4065,7 @@ class NetMHCIIpan_3_0(AExternalEpitopePrediction):
         :return: str
         """
         if isinstance(allele, MouseAllele):
-            return "H-2-%s%s%s" % (allele.locus, allele.supertype, allele.subtype)
+            return "H-2-%s%s%s" % (allele.locus, allele.supertype.upper(), allele.subtype)
         elif isinstance(allele, CombinedAllele):
             return "HLA-%s%s%s-%s%s%s" % (allele.alpha_locus, allele.alpha_supertype, allele.alpha_subtype,
                                           allele.beta_locus, allele.beta_supertype, allele.beta_subtype)
@@ -4077,7 +4087,8 @@ class NetMHCIIpan_3_0(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -5928,7 +5939,7 @@ class NetMHCIIpan_3_1(NetMHCIIpan_3_0):
          'HLA-DQA1*06:02-DQB1*06:37', 'HLA-DQA1*06:02-DQB1*06:38',
          'HLA-DQA1*06:02-DQB1*06:39', 'HLA-DQA1*06:02-DQB1*06:40', 'HLA-DQA1*06:02-DQB1*06:41', 'HLA-DQA1*06:02-DQB1*06:42',
          'HLA-DQA1*06:02-DQB1*06:43', 'HLA-DQA1*06:02-DQB1*06:44',
-         'H2-IAd', 'H2-IAb'])
+         'H-2-Iad', 'H-2-Iab'])
 
     __version = "3.1"
 
@@ -5963,7 +5974,8 @@ class NetMHCIIpan_3_1(NetMHCIIpan_3_0):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -7123,8 +7135,8 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
 'HLA-DQA1*06:02-DQB1*06:30', 'HLA-DQA1*06:02-DQB1*06:31', 'HLA-DQA1*06:02-DQB1*06:32', 'HLA-DQA1*06:02-DQB1*06:33', 'HLA-DQA1*06:02-DQB1*06:34',
 'HLA-DQA1*06:02-DQB1*06:35', 'HLA-DQA1*06:02-DQB1*06:36', 'HLA-DQA1*06:02-DQB1*06:37', 'HLA-DQA1*06:02-DQB1*06:38', 'HLA-DQA1*06:02-DQB1*06:39',
 'HLA-DQA1*06:02-DQB1*06:40', 'HLA-DQA1*06:02-DQB1*06:41', 'HLA-DQA1*06:02-DQB1*06:42', 'HLA-DQA1*06:02-DQB1*06:43', 'HLA-DQA1*06:02-DQB1*06:44',
-'H-2-IAb', 'H-2-IAd', 'H-2-IAk', 'H-2-IAq', 'H-2-IAs',
-'H-2-IAu', 'H-2-IEd', 'H-2-IEk'])
+'H-2-Iab', 'H-2-Iad', 'H-2-Iak', 'H-2-Iaq', 'H-2-Ias',
+'H-2-Iau', 'H-2-Iad', 'H-2-Iak'])
 
     __version = "4.0"
 
@@ -7159,7 +7171,8 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -7851,7 +7864,8 @@ class PickPocket_1_1(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -8311,7 +8325,8 @@ class NetCTLpan_1_1(AExternalEpitopePrediction):
 
     def parse_external_result(self, file):
         """
-        Parses external results and returns the result
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
 
         :param str file: The file path or the external prediction results
         :return: A dictionary containing the prediction results
@@ -8328,6 +8343,7 @@ class NetCTLpan_1_1(AExternalEpitopePrediction):
                     continue
             
                 epitope = row[PeptideIndex.NETCTLPAN_1_1]
+                # Allele input representation differs from output representation. Needs to be in input representation to parse the output properly
                 allele = row[HLAIndex.NETCTLPAN_1_1].replace('*','')
                 comb_score = float(row[ScoreIndex.NETCTLPAN_1_1])
                 if allele not in alleles:
@@ -8432,7 +8448,7 @@ class Offset(IntEnum):
     NETMHCSTABPAN_1_0_WO_SCORE = 3
     NETMHCIIPAN_3_0 = 3
     NETMHCIIPAN_3_1 = 3
-    NETMHCIIPAN_4_0 = 3
+    NETMHCIIPAN_4_0 = 1
 
 class HLAIndex(IntEnum):
     """
