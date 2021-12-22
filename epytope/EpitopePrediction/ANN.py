@@ -180,7 +180,8 @@ try:
             else:
                 # filter for supported alleles
                 alleles = [a for a in alleles if a in self.supportedAlleles]
-            alleles = self.convert_alleles(alleles)
+            # Create a dictionary with Allele Obj as key and the respective allele predictor representation as value
+            alleles_repr = {allele: self._represent(allele) for allele in alleles}
 
             # prepare results dictionary
             scores = defaultdict(defaultdict)
@@ -208,14 +209,12 @@ try:
 
                 # predict binding affinities
                 for a in alleles:
-                    allele_repr = self.revert_allele_repr(a)
-
                     # workaround for mhcnuggets file i/o buffer bug
                     mhcnuggets_output = io.StringIO()
                     with capture_stdout(mhcnuggets_output):
                         mhcnuggets_predict(class_='I',
                                             peptides_path=tmp_input_file,
-                                            mhc=a)
+                                            mhc=alleles_repr[a])
 
                     # read predicted binding affinities back
                     mhcnuggets_output.seek(0)
@@ -234,19 +233,17 @@ try:
                         binding_affinity = float(content[ScoreIndex.MHCNUGGETS_CLASS1_2_0])
                         if binary:
                             if binding_affinity <= 500:
-                                scores[allele_repr][peptide] = 1.0
+                                scores[a][peptide] = 1.0
                             else:
-                                scores[allele_repr][peptide] = 0.0
+                                scores[a][peptide] = 0.0
                         else:
                             # convert ic50 to raw prediction score
-                            scores[allele_repr][peptide] = 1- math.log(binding_affinity, 50000)
+                            scores[a][peptide] = 1- math.log(binding_affinity, 50000)
 
             if not scores:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
             
-            # Convert str allele list to list with Allele objects
-            alleles = [self.revert_allele_repr(a) for a in alleles]
             # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
             result = {alleles: {"Score":(list(scores.values())[j])} for j, alleles in enumerate(alleles)}
 
@@ -468,7 +465,9 @@ try:
             else:
                 # filter for supported alleles
                 alleles = [a for a in alleles if a in self.supportedAlleles]
-            alleles = self.convert_alleles(alleles)
+
+            # Create a dictionary with Allele Obj as key and the respective allele predictor representation as value
+            alleles_repr = {allele: self._represent(allele) for allele in alleles}
 
             # prepare results dictionary
             scores = defaultdict(defaultdict)
@@ -496,14 +495,12 @@ try:
 
                 # predict bindings
                 for a in alleles:
-                    allele_repr = self.revert_allele_repr(a)
-
                     # workaround for mhcnuggets file i/o buffer bug
                     mhcnuggets_output = io.StringIO()
                     with capture_stdout(mhcnuggets_output):
                         mhcnuggets_predict(class_='II',
                                         peptides_path=tmp_input_file,
-                                        mhc=a)
+                                        mhc=alleles_repr[a])
 
                     # read predicted binding affinities back
                     mhcnuggets_output.seek(0)
@@ -521,19 +518,17 @@ try:
                         binding_affinity = float(content[ScoreIndex.MHCNUGGETS_CLASS2_2_0])
                         if binary:
                             if binding_affinity <= 500:
-                                scores[allele_repr][peptide] = 1.0
+                                scores[a][peptide] = 1.0
                             else:
-                                scores[allele_repr][peptide] = 0.0
+                                scores[a][peptide] = 0.0
                         else:
                             # convert ic50 to raw prediction score
-                            scores[allele_repr][peptide] = 1- math.log(binding_affinity, 50000)
+                            scores[a][peptide] = 1- math.log(binding_affinity, 50000)
 
             if not scores:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
 
-            # Convert str allele list to list with Allele type
-            alleles = [self.revert_allele_repr(a) for a in alleles]
             # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
             result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
@@ -750,7 +745,9 @@ try:
             else:
                 # filter for supported alleles
                 alleles = [a for a in alleles if a in self.supportedAlleles]
-            alleles = self.convert_alleles(alleles)
+
+            # Create a dictionary with Allele Obj as key and the respective allele predictor representation as value
+            alleles_repr = {allele: self._represent(allele) for allele in alleles}
 
             # test mhcflurry models are available => download if not
             p = subprocess.call(['mhcflurry-downloads', 'path', 'models_class1'],
@@ -787,24 +784,21 @@ try:
 
                 # predict and assign binding affinities
                 for a in alleles:
-                    allele_repr = self.revert_allele_repr(a)
                     for p in peps:
-                        binding_affinity = predictor.predict(allele=a, peptides=[str(p)])[ScoreIndex.MHCFLURRY]
+                        binding_affinity = predictor.predict(allele=alleles_repr[a], peptides=[str(p)])[ScoreIndex.MHCFLURRY]
                         if binary:
                             if binding_affinity <= 500:
-                                scores[allele_repr][p] = 1.0
+                                scores[a][p] = 1.0
                             else:
-                                scores[allele_repr][p] = 0.0
+                                scores[a][p] = 0.0
                         else:
                             # convert ic50 to raw prediction score
-                            scores[allele_repr][p] = 1- math.log(binding_affinity, 50000)
+                            scores[a][p] = 1- math.log(binding_affinity, 50000)
 
             if not scores:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
                                 
-            # Convert str allele list to list with Allele type
-            alleles = [self.revert_allele_repr(a) for a in alleles]
             # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
             result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
