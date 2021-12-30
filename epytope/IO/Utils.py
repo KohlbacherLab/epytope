@@ -1,4 +1,4 @@
-# This code is part of the Fred2 distribution and governed by its
+# This code is part of the epytope distribution and governed by its
 # license.  Please see the LICENSE file that should have been included
 # as part of this package.
 """
