@@ -353,7 +353,6 @@ class ParetoEpitopeAssembly(object):
             
             for index,row in epi_pred.iterrows():
                 nof_epis = int(sum(comparator(row[a],threshold.get(a.name, 0)) for a in _alleles))
-                logging.warning(index.proteins.values())
                 for protein in index.proteins.values():
                     start, stop = fragments[protein]
                     ep_edge_matrix[start,stop] += len(index.proteinPos[protein.transcript_id])*nof_epis
