@@ -33,7 +33,7 @@ class AResult(pandas.DataFrame, metaclass=abc.ABCMeta):
         """
         Filter result based on a list of expressions
 
-        :param list((str,comparator,float)) expressions: A list of triples consisting of (method_name, comparator,threshold)
+        :param list((str, comparator, float)) expressions: A list of triples consisting of (method_name, comparator, threshold)
         :return: A new filtered AResult object
         :rtype: :class:`~epytope.Core.Result.AResult`
         """
@@ -83,7 +83,7 @@ class EpitopePredictionResult(AResult):
         (method_name, comparator, threshold) and a str of the methods scoretype to be filtered.
         The expression is applied to each row. If any of the columns fulfill the criteria the row remains.
 
-        :param list((str,comparator,float)) expression: A list of triples consisting of (method_name, comparator, threshold)
+        :param list((str, comparator, float)) expressions: A list of triples consisting of (method_name, comparator, threshold)
         :param str scoretype: Indicates which scoretype of the specified method should be filtered
 
         :return: Filtered result object
@@ -136,7 +136,13 @@ class EpitopePredictionResult(AResult):
 
     def from_dict(d, peps, method):
         """
-        Create EpitopePredictionResult object from dictionary holding scores for alleles, peptides and a specified method 
+        Create :class:`~epytope.Core.Result.EpitopePredictionResult` object from dictionary holding scores for alleles, peptides and a specified method
+
+        :param d: dict with following structure: {allele: {scoretype: {peptide: score}}}
+        :param peps: list of :class:`~epytope.Core.Peptide.Peptide`
+        :param method: str specifying the prediction method 
+        :return: A new :class:`~epytope.Core.Result.EpitopePredictionResult` object
+        :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult` 
         """
         scoreType = numpy.asarray([list(m.keys()) for m in [metrics for a, metrics in d.items()]]).flatten()
         alleles = numpy.asarray([numpy.repeat(a, len(set(scoreType))) for a in d]).flatten()
@@ -198,7 +204,7 @@ class CleavageSitePredictionResult(AResult):
         of a list of triple with (method_name, comparator, threshold). The expression is applied to each row. If any of
         the columns fulfill the criteria the row remains.
 
-        :param list((str,comparator,float)) expressions: A list of triples consisting of (method_name, comparator,
+        :param list((str, comparator, float)) expressions: A list of triples consisting of (method_name, comparator,
                                                          threshold)
         :return: A new filtered result object
         :rtype: :class:`~epytope.Core.Result.CleavageSitePredictionResult`
@@ -291,7 +297,7 @@ class CleavageFragmentPredictionResult(AResult):
         (method_name, comparator, threshold). The expression is applied to each row. If any of the columns fulfill the
         criteria the row remains.
 
-        :param list((str,comparator,float)) expressions: A list of triples consisting of (method_name, comparator,
+        :param list((str, comparator, float)) expressions: A list of triples consisting of (method_name, comparator,
                                                          threshold)
         :return: A new filtered result object
         :rtype: :class:`~epytope.Core.Result.CleavageFragmentPredictionResult`
@@ -349,7 +355,7 @@ class TAPPredictionResult(AResult):
         of a list of triple with (method_name, comparator, threshold). The expression is applied to each row. If any of
         the columns fulfill the criteria the row remains.
 
-        :param list((str,comparator,float)) expressions: A list of triples consisting of (method_name, comparator,
+        :param list((str, comparator, float)) expressions: A list of triples consisting of (method_name, comparator,
                                                          threshold)
         :return: A new filtered result object
         :rtype: :class:`~epytope.Core.Result.TAPPredictionResult`
