@@ -45,7 +45,7 @@ setup(
     name='epytope',
 
     # Version:
-    version='3.0.0rc1',
+    version='3.0.0',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=long_description,
@@ -55,8 +55,12 @@ setup(
     url='https://github.com/KohlbacherLab/epytope',
 
     # Author details
-    author='Benjamin Schubert, Mathias Walzer',
-    author_email='schubert@informatik.uni-tuebingen.de, walzer@informatik.uni-tuebingen.de',
+    author='Benjamin Schubert, Mathias Walzer, Christopher Mohr, Leon Kuchenbecker',
+    author_email='benjamin.schubert@helmholtz-muenchen.de, walzer@ebi.ac.uk, christopher.mohr@uni-tuebingen.de, leon.kuchenbecker@uni-tuebingen.de ',
+
+    # maintainer details
+    maintainer='Christopher Mohr',
+    maintainer_email='christopher.mohr@uni-tuebingen.de',
 
     # Choose your license
     license='BSD',
@@ -67,7 +71,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
@@ -80,7 +84,7 @@ setup(
     ],
 
     # What epytope relates to:
-    keywords='epitope prediction MHC vaccine',
+    keywords='epitope prediction vaccine design HLA MHC',
 
     # Specify  packages via find_packages() and exclude the tests and 
     # documentation:

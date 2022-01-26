@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v3.0.0dev - [date]
+## v3.0.0 - 2022-01-24
 
 Initial release of `epytope`. `epytope` is the successor project of `FRED-2`, which was renamed to a more versioning friendly base name.
 
