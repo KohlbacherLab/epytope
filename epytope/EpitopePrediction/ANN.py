@@ -15,8 +15,10 @@ import csv
 import sys
 import tempfile
 import io
+import math
 
 from abc import abstractmethod
+from enum import IntEnum
 
 import pandas
 from collections import defaultdict
@@ -71,7 +73,7 @@ class AANNEpitopePrediction(AEpitopePrediction):
         :param peptides: A single :class:`~epytope.Core.Peptide.Peptide` or a list of :class:`~epytope.Core.Peptide.Peptide`
         :type peptides: list(:class:`~epytope.Core.Peptide.Peptide`) or :class:`~epytope.Core.Peptide.Peptide`
         :param kwargs: optional parameter (not used yet)
-        :return: Returns a :class:`pandas.DataFrame` object with the prediction results
+        :return: Returns a nested dictionary {allele1: {scoreType1: {pep1: score1, pep2:..}, scoreType2: {..}, ..}, allele2:..}
         :rtype: :class:`pandas.DataFrame`
         """
 
@@ -178,10 +180,11 @@ try:
             else:
                 # filter for supported alleles
                 alleles = [a for a in alleles if a in self.supportedAlleles]
-            alleles = self.convert_alleles(alleles)
+            # Create a dictionary with Allele Obj as key and the respective allele predictor representation as value
+            alleles_repr = {allele: self._represent(allele) for allele in alleles}
 
             # prepare results dictionary
-            result = defaultdict(defaultdict)
+            scores = defaultdict(defaultdict)
 
             # keep input peptide objects for later use
             peptide_objects = {}
@@ -206,14 +209,12 @@ try:
 
                 # predict binding affinities
                 for a in alleles:
-                    allele_repr = self.revert_allele_repr(a)
-
                     # workaround for mhcnuggets file i/o buffer bug
                     mhcnuggets_output = io.StringIO()
                     with capture_stdout(mhcnuggets_output):
                         mhcnuggets_predict(class_='I',
                                             peptides_path=tmp_input_file,
-                                            mhc=a)
+                                            mhc=alleles_repr[a])
 
                     # read predicted binding affinities back
                     mhcnuggets_output.seek(0)
@@ -228,26 +229,30 @@ try:
                     for row in reader:
                         content = row[0].split(',')
                         # get original peptide object
-                        peptide = peptide_objects[content[0]]
-                        binding_affinity = content[1]
+                        peptide = content[0]
+                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS_CLASS1_2_0])
                         if binary:
                             if binding_affinity <= 500:
-                                result[allele_repr][peptide] = 1.0
+                                scores[a][peptide] = 1.0
                             else:
-                                result[allele_repr][peptide] = 0.0
+                                scores[a][peptide] = 0.0
                         else:
-                            result[allele_repr][peptide] = binding_affinity
+                            # convert ic50 to raw prediction score
+                            scores[a][peptide] = 1- math.log(binding_affinity, 50000)
 
-            if not result:
+            if not scores:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
+            
+            # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
+            result = {alleles: {"Score":(list(scores.values())[j])} for j, alleles in enumerate(alleles)}
 
             # create EpitopePredictionResult object. This is a multi-indexed DataFrame
-            # with Peptide and Method as multi-index and alleles as columns
-            df_result = EpitopePredictionResult.from_dict(result)
-            df_result.index = pandas.MultiIndex.from_tuples([tuple((i, self.name)) for i in df_result.index],
-                                                            names=['Seq', 'Method'])
+            # with Allele, Method and Score type as multi-columns and peptides as rows
+            df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
+
             return df_result
+
 except BadSignatureException:
     logging.warning("Class MHCNuggetsPredictor_class1_2_0 cannot be constructed, because of a bad method signature (predict)")
 
@@ -460,10 +465,12 @@ try:
             else:
                 # filter for supported alleles
                 alleles = [a for a in alleles if a in self.supportedAlleles]
-            alleles = self.convert_alleles(alleles)
+
+            # Create a dictionary with Allele Obj as key and the respective allele predictor representation as value
+            alleles_repr = {allele: self._represent(allele) for allele in alleles}
 
             # prepare results dictionary
-            result = defaultdict(defaultdict)
+            scores = defaultdict(defaultdict)
 
             # keep input peptide objects for later use
             peptide_objects = {}
@@ -488,14 +495,12 @@ try:
 
                 # predict bindings
                 for a in alleles:
-                    allele_repr = self.revert_allele_repr(a)
-
                     # workaround for mhcnuggets file i/o buffer bug
                     mhcnuggets_output = io.StringIO()
                     with capture_stdout(mhcnuggets_output):
                         mhcnuggets_predict(class_='II',
                                         peptides_path=tmp_input_file,
-                                        mhc=a)
+                                        mhc=alleles_repr[a])
 
                     # read predicted binding affinities back
                     mhcnuggets_output.seek(0)
@@ -510,25 +515,28 @@ try:
                         content = row[0].split(',')
                         # get original peptide object
                         peptide = peptide_objects[content[0]]
-                        binding_affinity = content[1]
+                        binding_affinity = float(content[ScoreIndex.MHCNUGGETS_CLASS2_2_0])
                         if binary:
                             if binding_affinity <= 500:
-                                result[allele_repr][peptide] = 1.0
+                                scores[a][peptide] = 1.0
                             else:
-                                result[allele_repr][peptide] = 0.0
+                                scores[a][peptide] = 0.0
                         else:
-                            result[allele_repr][peptide] = binding_affinity
+                            # convert ic50 to raw prediction score
+                            scores[a][peptide] = 1- math.log(binding_affinity, 50000)
 
-            if not result:
+            if not scores:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
 
+            # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
+            result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
+
             # create EpitopePredictionResult object. This is a multi-indexed DataFrame
-            # with Peptide and Method as multi-index and alleles as columns
-            df_result = EpitopePredictionResult.from_dict(result)
-            df_result.index = pandas.MultiIndex.from_tuples([tuple((i, self.name)) for i in df_result.index],
-                                                            names=['Seq', 'Method'])
+            # with Allele, Method and Score type as multi-columns and peptides as rows
+            df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
             return df_result
+
 except BadSignatureException:
     logging.warning("Class MHCNuggetsPredictor_class2_2_0 cannot be constructed, because of a bad method signature (predict)")
 
@@ -737,12 +745,14 @@ try:
             else:
                 # filter for supported alleles
                 alleles = [a for a in alleles if a in self.supportedAlleles]
-            alleles = self.convert_alleles(alleles)
+
+            # Create a dictionary with Allele Obj as key and the respective allele predictor representation as value
+            alleles_repr = {allele: self._represent(allele) for allele in alleles}
 
             # test mhcflurry models are available => download if not
             p = subprocess.call(['mhcflurry-downloads', 'path', 'models_class1'],
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            if p is not 0:
+            if p != 0:
                 logging.warn("mhcflurry models must be downloaded, as they were not found locally.")
                 cp = subprocess.run(['mhcflurry-downloads', 'fetch', 'models_class1'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 if cp.returncode != 0:
@@ -754,10 +764,17 @@ try:
             predictor = Class1AffinityPredictor.load()
 
             # prepare results dictionary
-            result = defaultdict(defaultdict)
+            scores = defaultdict(defaultdict)
+
+            # keep input peptide objects for later use
+            peptide_objects = {}
+            for peptide in peptides:
+                peptide_objects[str(peptide)] = peptide
 
             # group peptides by length
-            peptides.sort(key=len)
+            pep_groups = list(peptide_objects.keys())
+            pep_groups.sort(key=len)
+
             for length, peps in itertools.groupby(peptides, key=len):
                 if length not in self.supportedLength:
                     logging.warning("Peptide length must be at least %i or at most %i for %s but is %i" % (min(self.supportedLength), max(self.supportedLength),
@@ -767,27 +784,29 @@ try:
 
                 # predict and assign binding affinities
                 for a in alleles:
-                    allele_repr = self.revert_allele_repr(a)
                     for p in peps:
-                        binding_affinity = predictor.predict(allele=a, peptides=[str(p)])[0]
+                        binding_affinity = predictor.predict(allele=alleles_repr[a], peptides=[str(p)])[ScoreIndex.MHCFLURRY]
                         if binary:
                             if binding_affinity <= 500:
-                                result[allele_repr][p] = 1.0
+                                scores[a][p] = 1.0
                             else:
-                                result[allele_repr][p] = 0.0
+                                scores[a][p] = 0.0
                         else:
-                            result[allele_repr][p] = binding_affinity
+                            # convert ic50 to raw prediction score
+                            scores[a][p] = 1- math.log(binding_affinity, 50000)
 
-            if not result:
+            if not scores:
                 raise ValueError("No predictions could be made with " + self.name +
                                 " for given input. Check your epitope length and HLA allele combination.")
+                                
+            # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': AffScore1, 'Pep2': AffScore2,..}, 'Allele2':...}
+            result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
             # create EpitopePredictionResult object. This is a multi-indexed DataFrame
-            # with Peptide and Method as multi-index and alleles as columns
-            df_result = EpitopePredictionResult.from_dict(result)
-            df_result.index = pandas.MultiIndex.from_tuples([tuple((i, self.name)) for i in df_result.index],
-                                                            names=['Seq', 'Method'])
+            # with Allele, Method and Score type as multi-columns and peptides as rows
+            df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
             return df_result
+
 except BadSignatureException:
     logging.warning("Class MHCFlurryPredictor_1_2_2 cannot be constructed, because of a bad method signature (predict)")
 
@@ -868,3 +887,13 @@ try:
                 return Allele(name)
 except BadSignatureException:
     logging.warning("Class MHCFlurryPredictor_1_4_3 cannot be constructed, because of a bad method signature (predict)")
+
+
+
+class ScoreIndex(IntEnum):
+    """
+    Specifies the score column index in the respective output format
+    """
+    MHCNUGGETS_CLASS1_2_0 = 1
+    MHCNUGGETS_CLASS2_2_0 = 1
+    MHCFLURRY = 0

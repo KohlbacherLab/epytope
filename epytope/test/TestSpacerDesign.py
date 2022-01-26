@@ -15,8 +15,8 @@ class SpacerDesignTestCase(unittest.TestCase):
     """
 
     def setUp(self):
-        epis = """GHRMAWDMM
-                 VYEADDVIL""".split("\n")
+        epis = """GHRMAWDM
+                 VYEADDVI""".split("\n")
 
         self.epis = [Peptide(x.strip()) for x in epis]
         self.alleles = [Allele("HLA-A*02:01", prob=0.5)]
@@ -30,10 +30,10 @@ class SpacerDesignTestCase(unittest.TestCase):
         epi_pred = EpitopePredictorFactory("Syfpeithi")
         cl_pred = CleavageSitePredictorFactory("PCM")
 
-        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, self.alleles, solver="cbc")
+        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, self.alleles, solver="glpk")
         sol = sbws.solve()
         print(sol)
-        assert all(i == str(j) for i, j in zip(["GHRMAWDMM", "WWQW", "VYEADDVIL"], sol))
+        assert all(i == str(j) for i, j in zip(["GHRMAWDM", "WWQW", "VYEADDVI"], sol))
 
     def test_unsupported_allele_length_combination(self):
         """
@@ -44,10 +44,10 @@ class SpacerDesignTestCase(unittest.TestCase):
         epi_pred = EpitopePredictorFactory("Syfpeithi")
         cl_pred = CleavageSitePredictorFactory("PCM")
         alleles = [Allele("HLA-A*02:01", prob=0.5), Allele("HLA-A*26:01", prob=0.5)]
-        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="cbc")
+        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="glpk")
         sol = sbws.solve()
         print(sol)
-        assert all(i == str(j) for i, j in zip(["GHRMAWDMM", "WWQW", "VYEADDVIL"], sol))
+        assert all(i == str(j) for i, j in zip(["GHRMAWDM", "WWRW", "VYEADDVI"], sol))
 
     def test_unsupported_allele_length_combination_exception(self):
         """
@@ -58,7 +58,7 @@ class SpacerDesignTestCase(unittest.TestCase):
         epi_pred = EpitopePredictorFactory("Syfpeithi")
         cl_pred = CleavageSitePredictorFactory("PCM")
         alleles = [Allele("HLA-A*26:01", prob=0.5)]
-        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="cbc")
+        sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, alleles, solver="glpk", en=8)
         self.assertRaises(ValueError, sbws.solve)
 
 

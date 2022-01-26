@@ -1,0 +1,47 @@
+name: PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  pypi-publish:
+    name: Publish tagged release on PyPI
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@master
+    - name: Install utilities
+      run: sudo apt-get install -y mmv
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install pypa/build
+      run: >-
+        python -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: >-
+        python -m
+        build
+        --sdist
+        --wheel
+        --outdir dist/
+        .
+    - name: Create timestamp
+      run: echo timestamp=$(date +%s) >> $GITHUB_ENV
+    - name: Rename built files to include timestamp
+      run: |
+        mmv -v dist/'*.*.*-*' dist/'#1.#2.#3-'$timestamp'-#4'
+        mmv -v dist/'*.tar.gz' dist/'#1-'$timestamp.tar.gz
+    - name: Publish distribution package to PyPI (test)
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
+    - name: Publish distribution package to PyPI (production)
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}

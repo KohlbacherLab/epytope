@@ -6,10 +6,6 @@ import glob
 
 here = path.abspath(path.dirname(__file__))
 
-# Get the long description from the relevant file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    readme = f.read()
-
 #d2s_src_dir = path.join(path.join('epytope', 'Distance2Self'), 'src')
 #d2s_module = Extension('epytope.d2s',
 #                       define_macros=[('MAJOR_VERSION', '1'),
@@ -39,21 +35,32 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 # and there is a bug in patternmatching http://bugs.python.org/issue19286
 # install unclear for data_files
 
+# Read the contents of the README.md file for use as long_description
+from os import path
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name='epytope',
 
     # Version:
-    version='3.0.0rc1',
+    version='3.0.0',
 
     description='A Framework for Epitope Detection and Vaccine Design',
-    long_description=readme,
+    long_description=long_description,
+    long_description_content_type='text/markdown',
 
     # The project's main homepage.
     url='https://github.com/KohlbacherLab/epytope',
 
     # Author details
-    author='Benjamin Schubert, Mathias Walzer',
-    author_email='schubert@informatik.uni-tuebingen.de, walzer@informatik.uni-tuebingen.de',
+    author='Benjamin Schubert, Mathias Walzer, Christopher Mohr, Leon Kuchenbecker',
+    author_email='benjamin.schubert@helmholtz-muenchen.de, walzer@ebi.ac.uk, christopher.mohr@uni-tuebingen.de, leon.kuchenbecker@uni-tuebingen.de ',
+
+    # maintainer details
+    maintainer='Christopher Mohr',
+    maintainer_email='christopher.mohr@uni-tuebingen.de',
 
     # Choose your license
     license='BSD',
@@ -64,11 +71,11 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
 
         # Indicate who your project is intended for
-        'Intended Audience :: Biologists, Pharmacologist, Developer',
-        'Topic :: Immunoinformatics :: Prediction Tools',
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: Medical Science Apps.',
 
         # The license as you wish (should match "license" above)
         'License :: OSI Approved :: BSD License',
@@ -77,7 +84,7 @@ setup(
     ],
 
     # What epytope relates to:
-    keywords='epitope prediction MHC vaccine',
+    keywords='epitope prediction vaccine design HLA MHC',
 
     # Specify  packages via find_packages() and exclude the tests and 
     # documentation:
@@ -89,12 +96,16 @@ setup(
     # have to be included in MANIFEST.in as well.
     #include_package_data=True,
     package_data={
-        'epytope.Data.examples': ['*.*'],
-        'epytope.Data.svms.svmtap': ['*'],
-        'epytope.Data.svms.svmhc': ['*'],
-        'epytope.Data.svms.unitope': ['*'],
-        #'epytope.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
+            'epytope.Data.examples': ['*.*'],
+            'epytope.Data.svms.svmtap': ['*'],
+            'epytope.Data.svms.svmhc': ['*'],
+            'epytope.Data.svms.unitope': ['*'],
+            #'epytope.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
     },
+
+    data_files = [
+            ('docs', ['CHANGELOG.md']),
+            ],
 
     #package_data is a lie: http://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute
 
@@ -119,7 +130,7 @@ setup(
     # Run-time dependencies. (will be installed by pip when epytope is installed)
     # TODO: find alternative for SMVlight scikitlearn
     install_requires=[
-            'setuptools>=18.2',
+            'setuptools<=57',
             'pandas',
             'pyomo>=4.0',
             'PyMySQL',
