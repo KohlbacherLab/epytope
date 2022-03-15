@@ -249,7 +249,7 @@ try:
 
             # create EpitopePredictionResult object. This is a multi-indexed DataFrame
             # with Allele, Method and Score type as multi-columns and peptides as rows
-            df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
+            df_result = EpitopePredictionResult.from_dict(result, peptide_objects.values(), self.name)
 
             return df_result
 
@@ -534,7 +534,7 @@ try:
 
             # create EpitopePredictionResult object. This is a multi-indexed DataFrame
             # with Allele, Method and Score type as multi-columns and peptides as rows
-            df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
+            df_result = EpitopePredictionResult.from_dict(result, peptide_objects.values(), self.name)
             return df_result
 
 except BadSignatureException:
@@ -804,7 +804,7 @@ try:
 
             # create EpitopePredictionResult object. This is a multi-indexed DataFrame
             # with Allele, Method and Score type as multi-columns and peptides as rows
-            df_result = EpitopePredictionResult.from_dict(result, pep_groups, self.name)
+            df_result = EpitopePredictionResult.from_dict(result, peptide_objects.values(), self.name)
             return df_result
 
 except BadSignatureException:
