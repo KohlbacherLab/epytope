@@ -12,7 +12,6 @@
 from epytope.Core.Base import AEpitopePrediction
 from epytope.EpitopePrediction.External import *
 from epytope.EpitopePrediction.PSSM import *
-# from epytope.EpitopePrediction.SVM import *
 from epytope.EpitopePrediction.ANN import *
 try:
     from fred_plugin import *
@@ -26,7 +25,7 @@ class MetaclassEpitope(type):
 
     def __call__(self, _predictor, *args, **kwargs):
         '''
-        If a third person wants to write a new Epitope Predictior. He/She has to name the file fred_plugin and
+        If a third person wants to write a new Epitope Predictor. He/She has to name the file fred_plugin and
         inherit from AEpitopePrediction. That's it nothing more.
         '''
 
