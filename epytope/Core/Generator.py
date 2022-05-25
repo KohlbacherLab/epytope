@@ -12,6 +12,7 @@
 
 """
 
+import logging
 import warnings
 from itertools import chain
 
@@ -243,7 +244,7 @@ def generate_peptides_from_variants(vars, length, dbadapter, id_type, peptides=N
         #print tId
         query = dbadapter.get_transcript_information(tId, type=id_type, _db=db)
         if query is None:
-            warnings.warn("Transcript with ID %s not found in DB"%tId)
+            logging.warning("Transcript with ID %s not found in DB or sequence unavailable"%tId)
             continue
 
         tSeq = query[EAdapterFields.SEQ]
@@ -349,7 +350,7 @@ def generate_transcripts_from_variants(vars, dbadapter, id_type, db="hsapiens_ge
     for tId, vs in transToVar.items():
         query = dbadapter.get_transcript_information(tId, type=id_type, _db=db)
         if query is None:
-            warnings.warn("Transcript with ID %s not found in DB"%tId)
+            logging.warning("Transcript with ID %s not found in DB or sequence unavailable"%tId)
             continue
 
         tSeq = query[EAdapterFields.SEQ]
