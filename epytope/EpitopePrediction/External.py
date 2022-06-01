@@ -196,7 +196,7 @@ class AExternalEpitopePrediction(AEpitopePrediction, AExternal):
     def load_supported_alleles(cls, name, version):
         """
         """
-        file_path = 'epytope/Data/supportedAlleles/external' + name + '_' + version.replace('.','_') + '.txt'
+        file_path = 'epytope/Data/supportedAlleles/external/' + name + '_' + version.replace('.','_') + '.txt'
         supported_alleles = [allele.rstrip('\n') for allele in open(file_path,'r')]
 
         return frozenset(supported_alleles)
