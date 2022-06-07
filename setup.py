@@ -140,6 +140,7 @@ setup(
             'mhcnuggets',
             'keras<=2.3.1',         # legacy tensorflow required by mhcnuggets resolves to incompatible keras version
             'h5py<=2.10.0',         # mhcnuggets fails to read model with newer versions
+            'protobuf==3.20.1'      # https://github.com/protocolbuffers/protobuf/issues/10051
             ],
 
 )
