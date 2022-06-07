@@ -22,7 +22,7 @@ jobs:
         echo "CONDA_PKGS_DIRS=/tmp/condapkgs" >> $GITHUB_ENV
     - name: Set up Python ${{ matrix.python-version }}
       run: |
-        $CONDA/bin/conda create -p /tmp/condaenv python==${{ matrix.python-version }}'.*' setuptools"==52.0"
+        $CONDA/bin/conda create -p /tmp/condaenv python==${{ matrix.python-version }}'.*' setuptools"==52.0" protobuf"==3.20.1"
     - name: Activate conda environment
       run: |
         echo "/tmp/condaenv/bin" >> $GITHUB_PATH
