@@ -7222,12 +7222,62 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
         scores = defaultdict(defaultdict)
         ranks = defaultdict(defaultdict)
         alleles = [x for x in set([x for x in next(f) if x != ""])]
-        next(f)
+        logging.warning(next(f))
         for row in f:
+            logging.warning(row)
             pep_seq = row[PeptideIndex.NETMHCIIPAN_4_0]
             for i, a in enumerate(alleles):
                 scores[a][pep_seq] = float(row[ScoreIndex.NETMHCIIPAN_4_0 + i * Offset.NETMHCIIPAN_4_0])
                 ranks[a][pep_seq] = float(row[RankIndex.NETMHCIIPAN_4_0 + i * Offset.NETMHCIIPAN_4_0])
+                # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': Score1, 'Pep2': Score2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
+
+        return result
+
+class NetMHCIIpan_4_1(NetMHCIIpan_4_0):
+    """
+    Implementation of NetMHCIIpan 4.1 adapter.
+    """
+
+    __command = "netMHCIIpan -f {peptides} -inptype 1 -a {alleles} {options} -xls -xlsfile {out}"
+    __version = "4.1"
+
+    @property
+    def version(self):
+        """The version of the predictor"""
+        return self.__version
+
+    @property
+    def command(self):
+        """
+        Defines the commandline call for external tool
+        """
+        return self.__command 
+
+    @property
+    def name(self):
+        """The name of the predictor"""
+        return self.__name
+
+    def parse_external_result(self, file):
+        """
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
+
+        :param str file: The file path or the external prediction results
+        :return: A dictionary containing the prediction results
+        :rtype: dict
+        """
+        f = csv.reader(open(file, "r"), delimiter='\t')
+        scores = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
+        alleles = [x for x in set([x for x in next(f) if x != ""])]
+        next(f)
+        for row in f:
+            pep_seq = row[PeptideIndex.NETMHCIIPAN_4_1]
+            for i, a in enumerate(alleles):
+                scores[a][pep_seq] = float(row[ScoreIndex.NETMHCIIPAN_4_1 + i * Offset.NETMHCIIPAN_4_1])
+                ranks[a][pep_seq] = float(row[RankIndex.NETMHCIIPAN_4_1 + i * Offset.NETMHCIIPAN_4_1])
                 # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': Score1, 'Pep2': Score2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
 
@@ -8441,6 +8491,7 @@ class PeptideIndex(IntEnum):
     NETMHCIIPAN_3_0 = 1
     NETMHCIIPAN_3_1 = 1
     NETMHCIIPAN_4_0 = 1
+    NETMHCIIPAN_4_1 = 1
     PICKPOCKET_1_1 = 2
     NETCTLPAN_1_1 = 3
 
@@ -8460,7 +8511,8 @@ class ScoreIndex(IntEnum):
     NETMHCII_2_3 = 5
     NETMHCIIPAN_3_0 = 3
     NETMHCIIPAN_3_1 = 3
-    NETMHCIIPAN_4_0 = 3
+    NETMHCIIPAN_4_0 = 4
+    NETMHCIIPAN_4_1 = 5
     PICKPOCKET_1_1 = 4
     NETCTLPAN_1_1 = 7
 
@@ -8477,6 +8529,7 @@ class RankIndex(IntEnum):
     NETMHCIIPAN_3_0 = 5
     NETMHCIIPAN_3_1 = 5
     NETMHCIIPAN_4_0 = 5
+    NETMHCIIPAN_4_1 = 6
 
 class Offset(IntEnum):
     """
@@ -8492,7 +8545,8 @@ class Offset(IntEnum):
     NETMHCSTABPAN_1_0_WO_SCORE = 3
     NETMHCIIPAN_3_0 = 3
     NETMHCIIPAN_3_1 = 3
-    NETMHCIIPAN_4_0 = 1
+    NETMHCIIPAN_4_0 = 0
+    NETMHCIIPAN_4_1 = 3
 
 class HLAIndex(IntEnum):
     """
