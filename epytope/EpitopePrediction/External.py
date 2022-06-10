@@ -7222,9 +7222,8 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
         scores = defaultdict(defaultdict)
         ranks = defaultdict(defaultdict)
         alleles = [x for x in set([x for x in next(f) if x != ""])]
-        logging.warning(next(f))
+        next(f)
         for row in f:
-            logging.warning(row)
             pep_seq = row[PeptideIndex.NETMHCIIPAN_4_0]
             for i, a in enumerate(alleles):
                 scores[a][pep_seq] = float(row[ScoreIndex.NETMHCIIPAN_4_0 + i * Offset.NETMHCIIPAN_4_0])
