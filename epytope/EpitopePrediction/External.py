@@ -7253,11 +7253,6 @@ class NetMHCIIpan_4_1(NetMHCIIpan_4_0):
         """
         return self.__command 
 
-    @property
-    def name(self):
-        """The name of the predictor"""
-        return self.__name
-
     def parse_external_result(self, file):
         """
         Parses external results and returns the result containing the predictors string representation
