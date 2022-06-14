@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added`
 
 - [#58](https://github.com/KohlbacherLab/epytope/pull/58) - Add check for `BioMart` transcript sequence availability [#55](https://github.com/KohlbacherLab/epytope/issues/55)
-- [#59](https://github.com/KohlbacherLab/epytope/pull/59) - Add interface for `NetMHCpan 4.1`
+- [#59](https://github.com/KohlbacherLab/epytope/pull/59) - Add interface for `NetMHCpan 4.1` [#56](https://github.com/KohlbacherLab/epytope/issues/56)
+- [#66](https://github.com/KohlbacherLab/epytope/pull/59) - Add interface for `NetMHCIIpan 4.1` [#65](https://github.com/KohlbacherLab/epytope/issues/65)
 
 ### `Changed`
 
