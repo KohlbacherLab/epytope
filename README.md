@@ -4,7 +4,7 @@
 ![Tests](https://github.com/KohlbacherLab/epytope/actions/workflows/python-test-conda.yml/badge.svg)
 ![Tests external](https://github.com/KohlbacherLab/epytope/actions/workflows/python-test-conda-external.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/fred2/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
 
 Copyright 2014 by Benjamin Schuber,  Mathias Walzer, Philipp Brachvogel, Andras Szolek, Christopher Mohr, and Oliver Kohlbacher
 
@@ -57,7 +57,7 @@ Currently **epytope** provides implementations of several prediction methods or 
   - [MHCflurry](https://pubmed.ncbi.nlm.nih.gov/29960884/) 1.2.2, 1.4.3
   - [NetMHC](https://pubmed.ncbi.nlm.nih.gov/26515819/) 3.0, 3.4, 4.0
   - [NetMHCII](https://pubmed.ncbi.nlm.nih.gov/29315598/) 2.2, 2.3
-  - [NetMHCpan](https://pubmed.ncbi.nlm.nih.gov/28978689/) 2.4, 2.8, 3.0, 4.0
+  - [NetMHCpan](https://pubmed.ncbi.nlm.nih.gov/28978689/) 2.4, 2.8, 3.0, 4.0, 4.1
   - [NetMHCIIpan](https://pubmed.ncbi.nlm.nih.gov/32406916/) 3.0, 3.1, 4.0
   - [PickPocket](https://pubmed.ncbi.nlm.nih.gov/19297351/) 1.1
   - [NetCTLpan](https://pubmed.ncbi.nlm.nih.gov/20379710/) 1.1
@@ -71,7 +71,7 @@ Currently **epytope** provides implementations of several prediction methods or 
 
 ## Getting Started
 
-Users and developers should start by reading our [wiki](https://github.com/KohlbacherLab/epytope/wiki) and [IPython tutorials](https://github.com/KohlbacherLab/epytope/tree/master/epytope/tutorials). A reference documentation is also available [online](http://fred2.readthedocs.org/en/latest/).
+Users and developers should start by reading our [wiki](https://github.com/KohlbacherLab/epytope/wiki) and [IPython tutorials](https://github.com/KohlbacherLab/epytope/tree/master/epytope/tutorials). A reference documentation is also available [online](http://epytope.readthedocs.org/en/latest/).
 
 ## How to Cite
 
