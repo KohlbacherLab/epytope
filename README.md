@@ -3,16 +3,19 @@
 ![PyPi](https://github.com/KohlbacherLab/epytope/actions/workflows/pypi-publish.yml/badge.svg)
 ![Tests](https://github.com/KohlbacherLab/epytope/actions/workflows/python-test-conda.yml/badge.svg)
 ![Tests external](https://github.com/KohlbacherLab/epytope/actions/workflows/python-test-conda-external.yml/badge.svg)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/version.svg)](https://anaconda.org/bioconda/epytope)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/latest_release_date.svg)](https://anaconda.org/bioconda/epytope)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/downloads.svg)](https://anaconda.org/bioconda/epytope)
 
-Copyright 2014 by Benjamin Schuber,  Mathias Walzer, Philipp Brachvogel, Andras Szolek, Christopher Mohr, and Oliver Kohlbacher
+Copyright 2014 by Benjamin Schuber, Mathias Walzer, Philipp Brachvogel, Andras Szolek, Christopher Mohr, and Oliver Kohlbacher
 
 **epytope** is a framework for T-cell epitope detection, and vaccine design. It offers consistent, easy, and simultaneous access to well established prediction methods of computational immunology. **epytope** can handle polymorphic proteins and offers analysis tools to select, assemble, and design linker sequences for string-of-beads epitope-based vaccines. It is implemented in Python in a modular way and can easily be extended by user defined methods.
 
 ## Copyright
 
-epytope is released under the three clause BSD licence.
+epytope is released under the three clause BSD license.
 
 ## Installation
 
@@ -27,9 +30,10 @@ use the following commands:
 - pandas
 - pyomo>=4.0
 - svmlight
-- MySQL-python>=1.2.4
-- Biopython
+- PyMySQL
+- biopython
 - pyVCF
+- h5py<=2.10.0
 
 ### Third-Party Software (not installed through pip)
 
@@ -58,7 +62,7 @@ Currently **epytope** provides implementations of several prediction methods or 
   - [NetMHC](https://pubmed.ncbi.nlm.nih.gov/26515819/) 3.0, 3.4, 4.0
   - [NetMHCII](https://pubmed.ncbi.nlm.nih.gov/29315598/) 2.2, 2.3
   - [NetMHCpan](https://pubmed.ncbi.nlm.nih.gov/28978689/) 2.4, 2.8, 3.0, 4.0, 4.1
-  - [NetMHCIIpan](https://pubmed.ncbi.nlm.nih.gov/32406916/) 3.0, 3.1, 4.0
+  - [NetMHCIIpan](https://pubmed.ncbi.nlm.nih.gov/32406916/) 3.0, 3.1, 4.0, 4.1
   - [PickPocket](https://pubmed.ncbi.nlm.nih.gov/19297351/) 1.1
   - [NetCTLpan](https://pubmed.ncbi.nlm.nih.gov/20379710/) 1.1
 - Epitope Selection
