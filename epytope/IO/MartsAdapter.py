@@ -100,13 +100,11 @@ co
             + self.biomart_attribute%("external_gene_name")  \
             + self.biomart_tail
 
-        # logging.warn(rq_n)
         tsvreader = csv.DictReader((urllib.request.urlopen(self.biomart_url +
                                                           urllib.parse.quote(rq_n))).read().decode('utf-8').splitlines(), dialect='excel-tab')
         tsvselect = [x for x in tsvreader]
         if not tsvselect:
             logging.warning("There seems to be no Proteinsequence for " + str(product_id))
-            #print self.biomart_url+rq_n
             return None
         self.sequence_proxy[product_id] = tsvselect[0]["Peptide"][:-1] if tsvselect[0]["Peptide"].endswith('*')\
             else tsvselect[0]["Peptide"]
@@ -157,8 +155,10 @@ co
                                                    urllib.parse.quote(rq_n))).read().decode('utf-8').splitlines(), dialect='excel-tab')
         tsvselect = [x for x in tsvreader]
         if not tsvselect:
-            logging.warning("There seems to be no transcript sequence for " + str(transcript_id))
-            #print self.biomart_url+rq_n
+            logging.warning("No transcript sequence available for " + str(transcript_id))
+            return None
+        elif 'Sequence unavailable' in tsvselect[0]['Coding sequence']:
+            logging.warning("No transcript sequence available for " + str(transcript_id))
             return None
 
         self.sequence_proxy[transcript_id] = tsvselect[0]['Coding sequence']
@@ -209,6 +209,9 @@ co
         tsvselect = [x for x in tsvreader]
         if not tsvselect:
             logging.warning("No Information on transcript %s"%transcript_id)
+            return None
+        elif 'Sequence unavailable' in tsvselect[0]['Coding sequence']:
+            logging.warning("No transcript sequence available for " + str(transcript_id))
             return None
 
         self.ids_proxy[transcript_id] = {EAdapterFields.SEQ: tsvselect[0]['Coding sequence'],
@@ -595,8 +598,6 @@ co
             rq_n += self.biomart_attribute%("refseq_mrna")  \
                 + self.biomart_attribute%("refseq_peptide")
         rq_n += self.biomart_attribute%("uniprot_swissprot") + self.biomart_tail
-
-        # logging.warning(rq_n)
 
         tsvreader = csv.DictReader((urllib.request.urlopen(self.biomart_url +
                                                            urllib.parse.quote(rq_n)).read()).decode('utf-8').splitlines(), dialect='excel-tab')

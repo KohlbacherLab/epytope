@@ -3,6 +3,22 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v3.1.0 - 2022-06-15
+
+### `Added`
+
+- [#58](https://github.com/KohlbacherLab/epytope/pull/58) - Add check for `BioMart` transcript sequence availability [#55](https://github.com/KohlbacherLab/epytope/issues/55)
+- [#59](https://github.com/KohlbacherLab/epytope/pull/59) - Add interface for `NetMHCpan 4.1` [#56](https://github.com/KohlbacherLab/epytope/issues/56)
+- [#66](https://github.com/KohlbacherLab/epytope/pull/66) - Add interface for `NetMHCIIpan 4.1` [#65](https://github.com/KohlbacherLab/epytope/issues/65)
+
+### `Changed`
+
+- [#62](https://github.com/KohlbacherLab/epytope/pull/62) - Update the supported alleles of `syfpeithi` [#60](https://github.com/KohlbacherLab/epytope/issues/60)
+
+### `Fixed`
+
+- [#53](https://github.com/KohlbacherLab/epytope/pull/53) - Fix `ANN` predictor results [#52](https://github.com/KohlbacherLab/epytope/issues/52)
+
 ## v3.0.0 - 2022-01-26
 
 Initial release of `epytope`. `epytope` is the successor project of [`FRED2`](https://github.com/FRED-2/Fred2), which was renamed to a more versioning friendly base name.
