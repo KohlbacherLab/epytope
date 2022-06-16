@@ -22,10 +22,6 @@ from epytope.Core.Peptide import Peptide
 from epytope.Core.Result import EpitopePredictionResult
 from epytope.Core.Base import AEpitopePrediction
 
-from mhcflurry import Class1AffinityPredictor
-from mhcnuggets.src.predict import predict
-
-
 class APSSMEpitopePrediction(AEpitopePrediction):
     """
         Abstract base class for PSSM predictions.
@@ -49,7 +45,8 @@ class APSSMEpitopePrediction(AEpitopePrediction):
         def __load_allele_model(allele, length):
             allele_model = "%s_%i" % (allele, length)
             return getattr(
-                __import__("epytope.Data.pssms." + self.name + ".mat." + allele_model, fromlist=[allele_model]),
+                __import__("epytope.Data.pssms." + self.name +
+                           ".mat." + allele_model, fromlist=[allele_model]),
                 allele_model)
 
         if isinstance(peptides, Peptide):
@@ -63,13 +60,15 @@ class APSSMEpitopePrediction(AEpitopePrediction):
 
         if alleles is None:
             al = [Allele(a) for a in self.supportedAlleles]
-            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(al), al)}
+            alleles_string = {conv_a: a for conv_a,
+                              a in zip(self.convert_alleles(al), al)}
         else:
             if isinstance(alleles, Allele):
                 alleles = [alleles]
             if any(not isinstance(p, Allele) for p in alleles):
                 raise ValueError("Input is not of type Allele")
-            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(alleles), alleles)}
+            alleles_string = {conv_a: a for conv_a, a in zip(
+                self.convert_alleles(alleles), alleles)}
 
         result = {}
         pep_groups = list(pep_seqs.keys())
@@ -78,29 +77,33 @@ class APSSMEpitopePrediction(AEpitopePrediction):
             peps = list(peps)
             # dynamicaly import prediction PSSMS for alleles and predict
             if self.supportedLength is not None and length not in self.supportedLength:
-                warnings.warn("Peptide length of %i is not supported by %s" % (length, self.name))
+                warnings.warn(
+                    "Peptide length of %i is not supported by %s" % (length, self.name))
                 continue
-            
+
             for a in alleles_string.keys():
                 try:
                     pssm = __load_allele_model(a, length)
                 except ImportError:
-                    warnings.warn("No model found for %s with length %i" % (alleles_string[a], length))
+                    warnings.warn("No model found for %s with length %i" % (
+                        alleles_string[a], length))
                     continue
 
                 if alleles_string[a] not in result:
                     result[alleles_string[a]] = {'Score': {}}
-                
+
                 for p in peps:
-                    score = sum(pssm[i].get(p[i], 0.0) for i in range(length)) + pssm.get(-1, {}).get("con", 0)
+                    score = sum(pssm[i].get(p[i], 0.0) for i in range(
+                        length)) + pssm.get(-1, {}).get("con", 0)
                     result[alleles_string[a]]['Score'][pep_seqs[p]] = score
 
         if not result:
             raise ValueError("No predictions could be made with "
                              + self.name + " for given input. Check your epitope length and HLA allele combination.")
-        
-        df_result = EpitopePredictionResult.from_dict(result, pep_seqs.values(), self.name)
-        
+
+        df_result = EpitopePredictionResult.from_dict(
+            result, pep_seqs.values(), self.name)
+
         return df_result
 
 
@@ -583,7 +586,8 @@ class ARB(APSSMEpitopePrediction):
         def __load_allele_model(allele, length):
             allele_model = "%s_%i" % (allele, length)
             return getattr(
-                __import__("epytope.Data.pssms." + self.name + ".mat." + allele_model, fromlist=[allele_model]),
+                __import__("epytope.Data.pssms." + self.name +
+                           ".mat." + allele_model, fromlist=[allele_model]),
                 allele_model)
 
         if isinstance(peptides, Peptide):
@@ -597,33 +601,38 @@ class ARB(APSSMEpitopePrediction):
 
         if alleles is None:
             al = [Allele(a) for a in self.supportedAlleles]
-            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(al), al)}
+            alleles_string = {conv_a: a for conv_a,
+                              a in zip(self.convert_alleles(al), al)}
         else:
             if isinstance(alleles, Allele):
                 alleles = [alleles]
             if any(not isinstance(p, Allele) for p in alleles):
                 raise ValueError("Input is not of type Allele")
-            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(alleles), alleles)}
+            alleles_string = {conv_a: a for conv_a, a in zip(
+                self.convert_alleles(alleles), alleles)}
 
         scores = {}
         for length, peps in itertools.groupby(pep_seqs.keys(), key=lambda x: len(x)):
             peps = list(peps)
             # dynamicaly import prediction PSSMS for alleles and predict
             if length not in self.supportedLength:
-                warnings.warn("Peptide length of %i is not supported by %s" % (length, self.name))
+                warnings.warn(
+                    "Peptide length of %i is not supported by %s" % (length, self.name))
                 continue
 
             for a in alleles_string.keys():
                 try:
                     pssm = __load_allele_model(a, length)
                 except ImportError:
-                    warnings.warn("No model found for %s with length %i" % (alleles_string[a], length))
+                    warnings.warn("No model found for %s with length %i" % (
+                        alleles_string[a], length))
                     continue
 
                 scores[alleles_string[a]] = {}
                 ##here is the prediction and result object missing##
                 for p in peps:
-                    score = sum(pssm[i].get(p[i], 0.0) for i in range(length)) + pssm.get(-1, {}).get("con", 0)
+                    score = sum(pssm[i].get(p[i], 0.0) for i in range(
+                        length)) + pssm.get(-1, {}).get("con", 0)
                     score /= -length
                     score -= pssm[-1]["intercept"]
                     score /= pssm[-1]["slope"]
@@ -637,8 +646,9 @@ class ARB(APSSMEpitopePrediction):
         if not scores:
             raise ValueError("No predictions could be made with " + self.name + " for given input. Check your"
                                                                                 "epitope length and HLA allele combination.")
-        
-        result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
+
+        result = {allele: {
+            "Score": (list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
         df_result = EpitopePredictionResult.from_dict(result, peps, self.name)
         return df_result
@@ -713,9 +723,7 @@ class ComblibSidney2008(APSSMEpitopePrediction):
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
         return EpitopePredictionResult(
-            super(ComblibSidney2008, self).predict(peptides,
-                                                   alleles=alleles,
-                                                   **kwargs).applymap(lambda x: math.pow(10, x)))
+            super(ComblibSidney2008, self).predict(peptides, alleles=alleles, **kwargs).applymap(lambda x: math.pow(10, x)))
 
 
 class TEPITOPEpan(APSSMEpitopePrediction):
@@ -961,7 +969,8 @@ class CalisImm(APSSMEpitopePrediction):
         def __load_allele_model(allele, length):
             allele_model = "%s" % allele
             return getattr(
-                __import__("epytope.Data.pssms." + self.name + ".mat." + allele_model, fromlist=[allele_model]),
+                __import__("epytope.Data.pssms." + self.name +
+                           ".mat." + allele_model, fromlist=[allele_model]),
                 allele_model)
 
         if isinstance(peptides, Peptide):
@@ -975,13 +984,15 @@ class CalisImm(APSSMEpitopePrediction):
 
         if alleles is None:
             al = [Allele(a) for a in self.supportedAlleles]
-            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(al), al)}
+            alleles_string = {conv_a: a for conv_a,
+                              a in zip(self.convert_alleles(al), al)}
         else:
             if isinstance(alleles, Allele):
                 alleles = [alleles]
             if any(not isinstance(p, Allele) for p in alleles):
                 raise ValueError("Input is not of type Allele")
-            alleles_string = {conv_a: a for conv_a, a in zip(self.convert_alleles(alleles), alleles)}
+            alleles_string = {conv_a: a for conv_a, a in zip(
+                self.convert_alleles(alleles), alleles)}
 
         scores = {}
         pep_groups = list(pep_seqs.keys())
@@ -989,7 +1000,8 @@ class CalisImm(APSSMEpitopePrediction):
         for length, peps in itertools.groupby(pep_groups, key=len):
 
             if self.supportedLength is not None and length not in self.supportedLength:
-                warnings.warn("Peptide length of %i is not supported by %s" % (length, self.name))
+                warnings.warn(
+                    "Peptide length of %i is not supported by %s" % (length, self.name))
                 continue
 
             peps = list(peps)
@@ -1005,7 +1017,8 @@ class CalisImm(APSSMEpitopePrediction):
                     pssm = []
 
                 importance = self.__importance if length <= 9 else \
-                    self.__importance[:5] + ((length - 9) * [0.30]) + self.__importance[5:]
+                    self.__importance[:5] + \
+                    ((length - 9) * [0.30]) + self.__importance[5:]
 
                 for p in peps:
                     score = sum(self.__log_enrichment.get(p[i], 0.0) * importance[i]
@@ -1016,7 +1029,8 @@ class CalisImm(APSSMEpitopePrediction):
             raise ValueError("No predictions could be made with " + self.name + " for given input. Check your"
                                                                                 "epitope length and HLA allele combination.")
 
-        result = {allele: {"Score":(list(scores.values())[j])} for j, allele in enumerate(alleles)}
+        result = {allele: {
+            "Score": (list(scores.values())[j])} for j, allele in enumerate(alleles)}
 
         df_result = EpitopePredictionResult.from_dict(result, peps, self.name)
         return df_result
