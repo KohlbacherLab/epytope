@@ -141,6 +141,10 @@ co
             response.content.decode('utf-8')), delimiter='\t')
         return result
 
+    def __chunks(self, lst, n):
+        for i in range(0, len(lst), n):
+            yield lst[i:i + n]
+
     def list_archives(self):
         """
         Fetches the available Ensembl archives from the ensembl website
@@ -224,30 +228,29 @@ co
                            'description', 'type', 'filter_type', 'operator']
         return df_part
 
-    def get_attribute_name_for_id(self, dataset_name, attribute_id):
+    def get_attribute_name_for_id(self, attributes, attribute_id):
         """
         Fetches the attribute name for an attribute id for a given dataset of a mart
 
-        :param str dataset_name: The name of the dataset
+        :param pandas.core.frame.DataFrame attributes: The available dataset attributes
         :param str attribute_id: The id of the attribute
 
         :return: The corresponding attribute name
         :rtype: str
         """
-        attributes = self.get_dataset_attributes(dataset_name)
         return attributes.loc[attributes['attribute_id'] == attribute_id, 'attribute_name'].iloc[0]
 
-    def get_attribute_id_for_name(self, dataset_name, attribute_name):
+    def get_attribute_id_for_name(self, attributes, attribute_name):
         """
         Fetches the attribute id for an attribute name for a given dataset of a mart
 
         :param str dataset_name: The name of the dataset
+        :param pandas.core.frame.DataFrame attributes: The available dataset attributes
         :param str attribute_name: The name of the attribute
 
         :return: The corresponding attribute id
         :rtype: str
         """
-        attributes = self.get_dataset_attributes(dataset_name)
         return attributes.loc[attributes['attribute_name'] == attribute_name, 'attribute_id'].iloc[0]
 
     def get_product_sequence(self, product_id, **kwargs):
@@ -288,6 +291,7 @@ co
         if product_id in self.sequence_proxy:
             return self.sequence_proxy[product_id]
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -296,7 +300,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -354,6 +358,7 @@ co
         if transcript_id in self.gene_proxy:
             return self.gene_proxy[transcript_id]
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -362,7 +367,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -419,6 +424,7 @@ co
         if transcript_id in self.ids_proxy:
             return self.ids_proxy[transcript_id]
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -427,7 +433,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -496,6 +502,7 @@ co
         if str(start) + str(stop) + transcript_id in self.gene_proxy:
             return self.gene_proxy[str(start) + str(stop) + transcript_id]
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -504,7 +511,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -580,6 +587,7 @@ co
         filters = {"chromosome_name": chromosome, "start": start, "end": stop}
         attributes = {EnsemblMartAttributes.EXTERNAL_GENE_NAME.value: ""}
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -588,7 +596,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -643,6 +651,7 @@ co
         if protein_id in self.ids_proxy:
             return self.ids_proxy[protein_id]
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -651,7 +660,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -708,6 +717,7 @@ co
         filters.update({query_filter: transcript_id})
         attributes.update({query_filter: ""})
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -716,7 +726,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -771,6 +781,7 @@ co
         if gene_id in self.ids_proxy:
             return self.ids_proxy[gene_id]
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -778,7 +789,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -821,6 +832,7 @@ co
         if chromosome + start + stop in self.gene_proxy:
             return self.gene_proxy[chromosome + start + stop]
 
+        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -829,7 +841,7 @@ co
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
@@ -854,6 +866,7 @@ co
         :type type: :func:`~epytope.IO.ADBAdapter.EIdentifierTypes`
         :keyword str _db: Can override MartsAdapter default db ("hsapiens_gene_ensembl")
         :keyword str _dataset: Specifies the query dbs dataset if default is not wanted ("gene_ensembl_config")
+        :keyword int _max_request_length: Specifies the maximum length of request identifiers, default is 300
         :return: Data frame with Ensembl/RefSeq/UniProt protein id and the corresponding transcript ID (Ensembl)
         :rtype: pandas.core.frame.DataFrame
         """
@@ -861,6 +874,8 @@ co
             "_db", EnsemblMartAttributes.ENSEMBL_HSAPIENS_DATASET.value)
         _dataset = kwargs.get(
             "_dataset", EnsemblMartAttributes.ENSEMBL_GENE_CONFIG.value)
+        max_request_length = kwargs.get(
+            "_max_request_length", 300)
         attributes = {EnsemblMartAttributes.ENSEMBL_PEPTIDE_ID.value: "",
                       EnsemblMartAttributes.REFSEQ_PEPTIDE.value: ""}
 
@@ -882,29 +897,39 @@ co
                 logging.warning(
                     f"Could not infer the origin of specified transcript ids {transcripts}")
                 return None
-        filters = {query_filter: ",".join(transcripts)}
         attributes.update({query_filter: ""})
+
+        if len(transcripts) > max_request_length:
+            transcripts_split = list(self.__chunks(transcripts, max_request_length))
+        else:
+            transcripts_split = [transcripts]
 
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
-        for key, value in filters.items():
-            self.__add_filter(dataset, "name", key, "value", str(value))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
-                attribute_name = self.get_attribute_name_for_id(_db, attribute)
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
                 attributes.update({attribute: attribute_name})
             except:
                 logging.error("Attribute {} not found for dataset {} on {}".format(
                     attribute, _db, self.biomart_url))
                 sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        # to avoid errors because of too large Request-URI we split up the requests
+        frames = []
+        for t in transcripts_split:
+            added_filters = self.__add_filter(dataset, "name", query_filter, "value", ','.join(t))
+            frames.append(self.__search_for_resources(root))
+            dataset.remove(added_filters)
+
+        result = pd.concat(frames, ignore_index=True)
+
         if result.empty:
             warnings.warn(f"No entry found for given identifiers.")
             return None
         result.columns = ["ensembl_id", "refseq_id",
-                          "uniprot_id", "transcript_id"]
+                        "uniprot_id", "transcript_id"]
 
         return result
