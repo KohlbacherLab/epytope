@@ -111,6 +111,8 @@ setup(
             'mhcnuggets',
             'keras<=2.3.1',         # legacy tensorflow required by mhcnuggets resolves to incompatible keras version
             'h5py<=2.10.0',         # mhcnuggets fails to read model with newer versions
+            'requests',
+            'beautifulsoup4'
             ],
 
 )
