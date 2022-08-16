@@ -344,7 +344,7 @@ co
         query_filter = EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID_VERSION.value if with_version else EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID.value
         if "type" in kwargs:
             if kwargs["type"] == EIdentifierTypes.REFSEQ:
-                query_filter = EnsemblMartAttributes.REFSEQ_MRNA
+                query_filter = EnsemblMartAttributes.REFSEQ_MRNA.value
             elif kwargs["type"] == EIdentifierTypes.PREDREFSEQ:
                 query_filter = EnsemblMartAttributes.REFSEQ_MRNA_PREDICTED.value
             elif kwargs["type"] == EIdentifierTypes.ENSEMBL:
@@ -410,7 +410,7 @@ co
         query_filter = EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID_VERSION.value if with_version else EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID.value
         if "type" in kwargs:
             if kwargs["type"] == EIdentifierTypes.REFSEQ:
-                query_filter = EnsemblMartAttributes.REFSEQ_MRNA
+                query_filter = EnsemblMartAttributes.REFSEQ_MRNA.value
             elif kwargs["type"] == EIdentifierTypes.PREDREFSEQ:
                 query_filter = EnsemblMartAttributes.REFSEQ_MRNA_PREDICTED.value
             elif kwargs["type"] == EIdentifierTypes.ENSEMBL:
@@ -488,7 +488,7 @@ co
         query_filter = EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID_VERSION.value if with_version else EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID.value
         if "type" in kwargs:
             if kwargs["type"] == EIdentifierTypes.REFSEQ:
-                query_filter = EnsemblMartAttributes.REFSEQ_MRNA
+                query_filter = EnsemblMartAttributes.REFSEQ_MRNA.value
             elif kwargs["type"] == EIdentifierTypes.PREDREFSEQ:
                 query_filter = EnsemblMartAttributes.REFSEQ_MRNA_PREDICTED.value
             elif kwargs["type"] == EIdentifierTypes.ENSEMBL:
@@ -705,7 +705,7 @@ co
         query_filter = EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID_VERSION.value if with_version else EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID.value
         if "type" in kwargs:
             if kwargs["type"] == EIdentifierTypes.REFSEQ:
-                query_filter = EnsemblMartAttributes.REFSEQ_MRNA
+                query_filter = EnsemblMartAttributes.REFSEQ_MRNA.value
             elif kwargs["type"] == EIdentifierTypes.PREDREFSEQ:
                 query_filter = EnsemblMartAttributes.REFSEQ_MRNA_PREDICTED.value
             elif kwargs["type"] == EIdentifierTypes.ENSEMBL:
@@ -888,7 +888,7 @@ co
         query_filter = EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID_VERSION.value if with_version else EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID.value
         if "type" in kwargs:
             if kwargs["type"] == EIdentifierTypes.REFSEQ:
-                query_filter = EnsemblMartAttributes.REFSEQ_MRNA
+                query_filter = EnsemblMartAttributes.REFSEQ_MRNA.value
             elif kwargs["type"] == EIdentifierTypes.PREDREFSEQ:
                 query_filter = EnsemblMartAttributes.REFSEQ_MRNA_PREDICTED.value
             elif kwargs["type"] == EIdentifierTypes.ENSEMBL:
