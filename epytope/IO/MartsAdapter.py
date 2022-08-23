@@ -931,7 +931,7 @@ co
 
         return result
 
-    def get_gene_name_from_id(self, gene_ids, **kwargs):
+    def get_gene_names_from_ids(self, gene_ids, **kwargs):
         """
         Returns the gene names for given gene identifiers
 
@@ -981,5 +981,5 @@ co
         if result.empty:
             logging.warning("No entry found for id %s" % gene_id)
             return None
-
+        result.columns = ["gene_name", "gene_id"]
         return result

@@ -138,6 +138,7 @@ class TestIO(TestCase):
             self.assertIsNotNone(ma.get_variants_from_transcript_id('ENST00000361221'))
             self.assertTrue(ma.get_marts().columns == self.expected_biomart_mart_header)
             self.assertEqual(ma.get_datasets("ENSEMBL_MART_ENSEMBL").size, 9)
+            self.assertEqual(ma.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0],"TSPAN6")
 
     def test_UniProtAdapter(self):
         self.assertWarnings(DeprecationWarning, UniProtDB)
