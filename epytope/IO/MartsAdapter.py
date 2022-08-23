@@ -178,7 +178,7 @@ co
         """
         Fetches available datasets for a given mart name
 
-        :param str mart_name: The name of the mart
+        :param str mart_name: The name of the mart (e.g. ENSEMBL_MART_ENSEMBL)
 
         :return: The available datasets for this mart
         :rtype: pandas.core.frame.DataFrame
@@ -186,7 +186,7 @@ co
         datasets = requests.get(self.biomart_url, params={
                                 "type": "datasets", "mart": mart_name})
         df = pd.read_csv(io.StringIO(
-            datasets.content.decode('utf-8')), delimiter='\t')
+            datasets.content.decode('utf-8')), delimiter='\t', header=None)
         df_slice = df.iloc[:, [1, 2, 4, 7, 8]]
         df_slice.dropna(how='all', inplace=True)
         df_slice.columns = ['dataset_id', 'dataset_name',
@@ -225,7 +225,7 @@ co
             filters.content.decode('utf-8')), delimiter='\t')
         df_part = df[df.columns[:-2]]
         df_part.columns = ['filter_id', 'filter_name', 'values',
-                           'description', 'type', 'filter_type', 'operator']
+                        'description', 'type', 'filter_type', 'operator']
         return df_part
 
     def get_attribute_name_for_id(self, attributes, attribute_id):
@@ -258,8 +258,7 @@ co
         Fetches product (i.e. protein) sequence for the given id
 
         :param str product_id: The id to be queried
-        :keyword type: Assumes given ID from type found in :func:`~epytope.IO.ADBAdapter.EIdentifierTypes`, default is
-                       ensembl_peptide_id
+        :keyword type: Assumes given ID from type found in :func:`~epytope.IO.ADBAdapter.EIdentifierTypes`, default is ensembl_peptide_id
         :type type: :func:`~epytope.IO.ADBAdapter.EIdentifierTypes`
         :keyword str _db: Can override MartsAdapter default db ("hsapiens_gene_ensembl")
         :keyword str _dataset: Specifies the query dbs dataset if default is not wanted ("gene_ensembl_config")
@@ -315,8 +314,7 @@ co
             return None
 
         sequence = result.at[0, attributes["peptide"]]
-        self.sequence_proxy[product_id] = sequence[:-
-                                                   1] if sequence.endswith('*') else sequence
+        self.sequence_proxy[product_id] = sequence[:-1] if sequence.endswith('*') else sequence
         return self.sequence_proxy[product_id]
 
     def get_transcript_sequence(self, transcript_id, **kwargs):
@@ -362,8 +360,7 @@ co
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
-        self.__add_filter(dataset, "name", query_filter,
-                          "value", str(transcript_id))
+        self.__add_filter(dataset, "name", query_filter,"value", str(transcript_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
@@ -428,8 +425,7 @@ co
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
-        self.__add_filter(dataset, "name", query_filter,
-                          "value", str(transcript_id))
+        self.__add_filter(dataset, "name", query_filter,"value", str(transcript_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
@@ -448,8 +444,8 @@ co
             return None
 
         self.ids_proxy[transcript_id] = {EAdapterFields.SEQ: result.at[0, attributes["coding"]],
-                                         EAdapterFields.GENE: result.at[0, attributes[EnsemblMartAttributes.EXTERNAL_GENE_NAME.value]],
-                                         EAdapterFields.STRAND: "-" if int(result.at[0, attributes['strand']]) < 0 else "+"}
+                                        EAdapterFields.GENE: result.at[0, attributes[EnsemblMartAttributes.EXTERNAL_GENE_NAME.value]],
+                                        EAdapterFields.STRAND: "-" if int(result.at[0, attributes['strand']]) < 0 else "+"}
         return self.ids_proxy[transcript_id]
 
     def get_transcript_position(self, transcript_id, start, stop, **kwargs):
@@ -656,7 +652,7 @@ co
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
         self.__add_filter(dataset, "name", query_filter,
-                          "value", str(protein_id))
+                        "value", str(protein_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
             try:
@@ -674,9 +670,8 @@ co
             return None
 
         self.ids_proxy[protein_id] = {EAdapterFields.SEQ: result.at[0, attributes["coding"]],
-                                      EAdapterFields.GENE: result.at[0, attributes[EnsemblMartAttributes.EXTERNAL_GENE_NAME.value]],
-                                      EAdapterFields.STRAND: "-" if int(result.at[0, attributes['strand']]) < 0
-                                      else "+"}
+                                    EAdapterFields.GENE: result.at[0, attributes[EnsemblMartAttributes.EXTERNAL_GENE_NAME.value]],
+                                    EAdapterFields.STRAND: "-" if int(result.at[0, attributes['strand']]) < 0 else "+"}
         return self.ids_proxy[protein_id]
 
     def get_variants_from_transcript_id(self, transcript_id, **kwargs):
@@ -900,7 +895,8 @@ co
         attributes.update({query_filter: ""})
 
         if len(transcripts) > max_request_length:
-            transcripts_split = list(self.__chunks(transcripts, max_request_length))
+            transcripts_split = list(self.__chunks(
+                transcripts, max_request_length))
         else:
             transcripts_split = [transcripts]
 
@@ -920,7 +916,8 @@ co
         # to avoid errors because of too large Request-URI we split up the requests
         frames = []
         for t in transcripts_split:
-            added_filters = self.__add_filter(dataset, "name", query_filter, "value", ','.join(t))
+            added_filters = self.__add_filter(
+                dataset, "name", query_filter, "value", ','.join(t))
             frames.append(self.__search_for_resources(root))
             dataset.remove(added_filters)
 
@@ -930,6 +927,59 @@ co
             warnings.warn(f"No entry found for given identifiers.")
             return None
         result.columns = ["ensembl_id", "refseq_id",
-                        "uniprot_id", "transcript_id"]
+                          "uniprot_id", "transcript_id"]
+
+        return result
+
+    def get_gene_name_from_id(self, gene_ids, **kwargs):
+        """
+        Returns the gene names for given gene identifiers
+
+        :param list gene_ids: The ids to be queried
+        :type type: :func:`~epytope.IO.ADBAdapter.EIdentifierTypes`
+        :keyword str _db: can override MartsAdapter default db ("hsapiens_gene_ensembl")
+        :keyword str _dataset: specifies the query dbs dataset if default is not wanted ("gene_ensembl_config")
+
+        :return: Data frame with gene name and the given gene identifiers
+        :rtype: pandas.core.frame.DataFrame
+        """
+        _db = kwargs.get(
+            "_db", EnsemblMartAttributes.ENSEMBL_HSAPIENS_DATASET.value)
+        _dataset = kwargs.get(
+            "_dataset", EnsemblMartAttributes.ENSEMBL_GENE_CONFIG.value)
+        attributes = {EnsemblMartAttributes.EXTERNAL_GENE_NAME.value: ""}
+
+        with_version = '.' in gene_ids[0]
+        query_filter = EnsemblMartAttributes.ENSEMBL_GENE_ID_VERSION.value if with_version else EnsemblMartAttributes.ENSEMBL_GENE_ID.value
+
+        if "type" in kwargs:
+            if kwargs["type"] == EIdentifierTypes.REFSEQ:
+                query_filter = EnsemblMartAttributes.REFSEQ_MRNA.value
+        attributes.update({query_filter: ""})
+
+        for gene_id in gene_ids:
+            if gene_id in self.ids_proxy:
+                return self.ids_proxy[gene_id]
+
+        dataset_attributes = self.get_dataset_attributes(_db)
+        root = self.__create_biomart_header_xml(self.biomart_head)
+        dataset = ElementTree.SubElement(root, "Dataset")
+        dataset.attrib.update({"name": _db, "interface": "default"})
+        self.__add_filter(dataset, "name", query_filter,
+                          "value", ','.join(gene_ids))
+        for attribute in attributes:
+            self.__add_attribute(dataset, "name", attribute)
+            try:
+                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
+                attributes.update({attribute: attribute_name})
+            except:
+                logging.error("Attribute {} not found for dataset {} on {}".format(
+                    attribute, _db, self.biomart_url))
+                sys.exit(1)
+
+        result = self.__search_for_resources(root)
+        if result.empty:
+            logging.warning("No entry found for id %s" % gene_id)
+            return None
 
         return result

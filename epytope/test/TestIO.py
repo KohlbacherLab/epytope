@@ -41,6 +41,7 @@ class TestIO(TestCase):
         self.vcf_path1 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile1.vcf")  # general
         self.vcf_path2 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile2.vcf")  # no annot
         self.vcf_path3 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile3.vcf")  # checkallvatiationtypesindetail
+        self.expected_biomart_mart_header = ["database","default","displayName","host", "includeDatasets","martUser","name","path","port","serverVirtualSchema","visible"]
 
     def test_read_lines(self):
         alleles = FileReader.read_lines(self.ale_path, in_type=Allele)
@@ -135,6 +136,8 @@ class TestIO(TestCase):
             self.assertIsNotNone(ma.get_protein_ids_from_transcripts(["ENST00000361221"]))
             self.assertEqual(ma.get_protein_ids_from_transcripts(["ENST00000361221"])["uniprot_id"][0], "Q9HCE6")
             self.assertIsNotNone(ma.get_variants_from_transcript_id('ENST00000361221'))
+            self.assertTrue(ma.get_marts().columns == self.expected_biomart_mart_header)
+            self.assertEqual(ma.get_datasets("ENSEMBL_MART_ENSEMBL").size, 9)
 
     def test_UniProtAdapter(self):
         self.assertWarnings(DeprecationWarning, UniProtDB)
