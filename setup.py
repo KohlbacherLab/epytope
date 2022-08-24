@@ -113,7 +113,6 @@ setup(
             'h5py<=2.10.0',         # mhcnuggets fails to read model with newer versions
             'requests',
             'beautifulsoup4',
-            'lxml'
             ],
 
 )

@@ -7,6 +7,7 @@
 .. moduleauthor:: walzer, schubert
 """
 
+from imghdr import tests
 import warnings
 import logging
 import pymysql.cursors
@@ -137,8 +138,7 @@ co
         et.write(f, encoding="UTF-8", xml_declaration=True)
         response = requests.get(self.biomart_url, params={
                                 "query": f.getvalue().decode("utf8")})
-        result = pd.read_csv(io.StringIO(
-            response.content.decode('utf-8')), delimiter='\t')
+        result = pd.read_csv(io.StringIO(response.content.decode('utf-8')), delimiter='\t')
         return result
 
     def __chunks(self, lst, n):
@@ -171,7 +171,12 @@ co
         :rtype: pandas.core.frame.DataFrame
         """
         registry = requests.get(self.biomart_url, params={"type": "registry"})
-        df = pd.read_xml(io.StringIO(registry.content.decode('utf-8')))
+        tree = ElementTree.fromstring(registry.content.decode('utf-8'))
+        data = []
+        for registry in tree:
+            data.append([*registry.attrib.values()])
+        df = pd.DataFrame.from_dict(data)
+        df.columns = [*registry.attrib.keys()]
         return df
 
     def get_datasets(self, mart_name):
