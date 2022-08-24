@@ -137,7 +137,7 @@ class TestIO(TestCase):
             self.assertEqual(ma.get_protein_ids_from_transcripts(["ENST00000361221"])["uniprot_id"][0], "Q9HCE6")
             self.assertIsNotNone(ma.get_variants_from_transcript_id('ENST00000361221'))
             self.assertTrue(all(ma.get_marts().columns == self.expected_biomart_mart_header))
-            self.assertEqual(ma.get_datasets("ENSEMBL_MART_ENSEMBL").size, 9)
+            self.assertIsNotNone(ma.get_datasets("ENSEMBL_MART_ENSEMBL"))
             self.assertEqual(ma.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0],"TSPAN6")
 
     def test_UniProtAdapter(self):
