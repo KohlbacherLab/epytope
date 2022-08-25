@@ -12,6 +12,8 @@ import warnings
 import logging
 import pymysql.cursors
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 import io
 import pandas as pd
 import re
@@ -136,14 +138,34 @@ co
         f = io.BytesIO()
         et = ElementTree.ElementTree(xml_root)
         et.write(f, encoding="UTF-8", xml_declaration=True)
-        response = requests.get(self.biomart_url, params={
-                                "query": f.getvalue().decode("utf8")})
+        response = self.__perform_request(self.biomart_url, {"query": f.getvalue().decode("utf8")})
         result = pd.read_csv(io.StringIO(response.content.decode('utf-8')), delimiter='\t')
         return result
 
     def __chunks(self, lst, n):
         for i in range(0, len(lst), n):
             yield lst[i:i + n]
+
+    def __perform_request(self, url, params):
+        """
+        Perform a request (GET) on the given url and parameters. 
+        Request will be retried three times on specified errors.
+
+        :return: The response
+        :rtype: request.response
+        """
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET"],
+            backoff_factor=3
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        request = requests.Session()
+        request.mount("https://", adapter)
+        response = request.get(url, params=params)
+        request.close()
+        return response
 
     def list_archives(self):
         """
@@ -170,7 +192,7 @@ co
         :return: The available marts for this server
         :rtype: pandas.core.frame.DataFrame
         """
-        registry = requests.get(self.biomart_url, params={"type": "registry"})
+        registry = self.__perform_request(self.biomart_url, {"type": "registry"})
         tree = ElementTree.fromstring(registry.content.decode('utf-8'))
         data = []
         for registry in tree:
@@ -188,8 +210,7 @@ co
         :return: The available datasets for this mart
         :rtype: pandas.core.frame.DataFrame
         """
-        datasets = requests.get(self.biomart_url, params={
-                                "type": "datasets", "mart": mart_name})
+        datasets = self.__perform_request(self.biomart_url, {"type": "datasets", "mart": mart_name})
         df = pd.read_csv(io.StringIO(
             datasets.content.decode('utf-8')), delimiter='\t', header=None)
         df_slice = df.iloc[:, [1, 2, 4, 7, 8]]
@@ -207,8 +228,7 @@ co
         :return: The available attributes
         :rtype: pandas.core.frame.DataFrame
         """
-        attributes = requests.get(self.biomart_url, params={
-            "type": "attributes", "dataset": dataset_name})
+        attributes = self.__perform_request(self.biomart_url, {"type": "attributes", "dataset": dataset_name})
         df = pd.read_csv(io.StringIO(
             attributes.content.decode('utf-8')), delimiter='\t')
         df_part = df[df.columns[:3]]
@@ -224,8 +244,7 @@ co
         :return: The available filters
         :rtype: pandas.core.frame.DataFrame
         """
-        filters = requests.get(self.biomart_url, params={
-            "type": "filters", "dataset": dataset_name})
+        filters = self.__perform_request(self.biomart_url, {"type": "filters", "dataset": dataset_name})
         df = pd.read_csv(io.StringIO(
             filters.content.decode('utf-8')), delimiter='\t')
         df_part = df[df.columns[:-2]]
