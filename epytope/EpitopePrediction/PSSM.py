@@ -110,10 +110,10 @@ class Syfpeithi(APSSMEpitopePrediction):
     __name = "syfpeithi"
     __version = "1.0"
     __supported_length = frozenset([8, 9, 10, 11, 12, 13])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
-
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -164,9 +164,10 @@ class BIMAS(APSSMEpitopePrediction):
     __name = "bimas"
     __version = "1.0"
     __supported_length = frozenset([8, 9])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -233,9 +234,10 @@ class Epidemix(APSSMEpitopePrediction):
     __name = "epidemix"
     __version = "1.0"
     __supported_length = frozenset([9, 10, 8, 11])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -286,9 +288,10 @@ class Hammer(APSSMEpitopePrediction):
     __name = "hammer"
     __version = "1.0"
     __supported_length = frozenset([9])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -339,9 +342,10 @@ class SMM(APSSMEpitopePrediction):
     __name = "smm"
     __version = "1.0"
     __supported_length = frozenset([8, 9, 10, 11])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -408,9 +412,10 @@ class SMMPMBEC(APSSMEpitopePrediction):
     __name = "smmpmbec"
     __version = "1.0"
     __supported_length = frozenset([8, 9, 10, 11])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -478,9 +483,10 @@ class ARB(APSSMEpitopePrediction):
     __name = "arb"
     __version = "1.0"
     __supported_length = frozenset([8, 9, 10, 11])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
 
     @property
@@ -610,9 +616,10 @@ class ComblibSidney2008(APSSMEpitopePrediction):
     __name = "comblibsidney"
     __version = "1.0"
     __supported_length = frozenset([9])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -682,9 +689,10 @@ class TEPITOPEpan(APSSMEpitopePrediction):
     __name = "tepitopepan"
     __version = "1.0"
     __supported_length = frozenset([9])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     @property
     def version(self):
@@ -737,9 +745,10 @@ class CalisImm(APSSMEpitopePrediction):
     __name = "calisimm"
     __version = "1.0"
     __supported_length = frozenset([9, 10, 11])
-    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __name + '_' + __version.replace('.', '_'),
-                                   fromlist=[__name + '_' + __version.replace('.', '_')]),
-                        __name + '_' + __version.replace('.', '_'))
+    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.pssm." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
 
     __log_enrichment = {"A": 0.127, "C": -0.175, "D": 0.072, "E": 0.325, "F": 0.380, "G": 0.11, "H": 0.105, "I": 0.432,
                         "K": -0.7, "L": -0.036, "M": -0.57, "N": -0.021, "P": -0.036, "Q": -0.376, "R": 0.168,
