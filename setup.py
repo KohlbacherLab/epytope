@@ -6,33 +6,9 @@ import glob
 
 here = path.abspath(path.dirname(__file__))
 
-#d2s_src_dir = path.join(path.join('epytope', 'Distance2Self'), 'src')
-#d2s_module = Extension('epytope.d2s',
-#                       define_macros=[('MAJOR_VERSION', '1'),
-#                                      ('MINOR_VERSION', '0')],
-#                       include_dirs=[d2s_src_dir],
-#                       libraries=['boost_serialization', 'boost_python'],
-#                       #library_dirs = ['/usr/local/lib'],
-#                       depends=[path.join(d2s_src_dir, 'distance2self.hpp')],
-#                       sources=[path.join(d2s_src_dir, 'distance2self.cpp')])
-
-
-#data_files = list()
-# directories = glob.glob('epytope/Data/svms/*/')
-# for directory in directories:
-#     files = glob.glob(directory + '*')
-#     data_files.append((directory, files))
-#directories = glob.glob('epytope/Data/examples/')
-#for directory in directories:
-#    files = glob.glob(directory + '*')
-#    data_files.append((directory, files))
-#
-# d2s_files = glob.glob(d2s_dir + "src/" + '*')
-#data_files.append((d2s_dir + "src/", d2s_files))
-
 #for packaging files must be in a package (with init) and listed in package_data
 # package-externals can be included with data_files,
-# and there is a bug in patternmatching http://bugs.python.org/issue19286
+# and there is a bug in patter nmatching http://bugs.python.org/issue19286
 # install unclear for data_files
 
 # Read the contents of the README.md file for use as long_description
@@ -89,7 +65,6 @@ setup(
     # Specify  packages via find_packages() and exclude the tests and 
     # documentation:
     packages=find_packages(),
-    #packages=find_packages(exclude=['epytope.test', 'epytope.doc', 'epytope.tutorials']),
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
@@ -100,7 +75,6 @@ setup(
             'epytope.Data.svms.svmtap': ['*'],
             'epytope.Data.svms.svmhc': ['*'],
             'epytope.Data.svms.unitope': ['*'],
-            #'epytope.Distance2Self': ['src/*'],  #does not get installed, because the src folder is no package folder - compiles ok
     },
 
     data_files = [
@@ -123,9 +97,6 @@ setup(
     #        'epitopeprediction=epytope.Apps.EpitopePrediction:main',
     #    ],
     #},
-
-    #ext_modules=[helloworld_module],
-    #ext_modules=[d2s_module],
 
     # Run-time dependencies. (will be installed by pip when epytope is installed)
     # TODO: find alternative for SMVlight scikitlearn
