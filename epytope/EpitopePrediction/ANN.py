@@ -287,6 +287,19 @@ try:
             else:
                 return "%s-%s%s:%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
+        def convert_alleles(self, alleles):
+            """
+            Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele` representation
+            of the predictor and returns a string representation
+
+            :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is
+                            needed
+            :type alleles: :class:`~epytope.Core.Allele.Allele`
+            :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
+            :rtype: list(str)
+            """
+            return [self._represent(a) for a in alleles]
+
         # Converts the internal mhcnuggets-class-1 HLA representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
@@ -520,6 +533,19 @@ try:
             else:
                 return "%s-%s%s:%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
 
+        def convert_alleles(self, alleles):
+            """
+            Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele` representation
+            of the predictor and returns a string representation
+
+            :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is
+                            needed
+            :type alleles: :class:`~epytope.Core.Allele.Allele`
+            :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
+            :rtype: list(str)
+            """
+            return [self._represent(a) for a in alleles]
+
         # Converts the internal mhcnuggets-class-2 representation back into a epytope representation
         def revert_allele_repr(self, name):
             if name.startswith("H-2-"):
@@ -732,6 +758,19 @@ try:
                 return "%s-%s%s%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
             else:
                 return "%s-%s*%s:%s" % (allele.organism, allele.locus, allele.supertype, allele.subtype)
+
+        def convert_alleles(self, alleles):
+            """
+            Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele` representation
+            of the predictor and returns a string representation
+
+            :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is
+                            needed
+            :type alleles: :class:`~epytope.Core.Allele.Allele`
+            :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
+            :rtype: list(str)
+            """
+            return [self._represent(a) for a in alleles]
 
         # Converts the internal MHCFlurry representation back into a epytope representation
         def revert_allele_repr(self, name):

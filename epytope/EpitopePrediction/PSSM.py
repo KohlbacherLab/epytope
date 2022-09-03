@@ -17,7 +17,6 @@ from epytope.Core.Allele import Allele
 from epytope.Core.Peptide import Peptide
 from epytope.Core.Result import EpitopePredictionResult
 from epytope.Core.Base import AEpitopePrediction
-from epytope.Data.supportedAlleles import pssm
 
 
 class APSSMEpitopePrediction(AEpitopePrediction):
@@ -25,6 +24,18 @@ class APSSMEpitopePrediction(AEpitopePrediction):
         Abstract base class for PSSM predictions.
         Implements predict functionality
     """
+    @classmethod
+    def convert_alleles(cls, alleles):
+        """
+        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
+        representation of the predictor and returns a string representation
+
+        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
+        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
+        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
+        :rtype: list(str)
+        """
+        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
 
     def predict(self, peptides, alleles=None, **kwargs):
         """
@@ -139,18 +150,6 @@ class Syfpeithi(APSSMEpitopePrediction):
         """
         return self.__supported_length
 
-    def convert_alleles(self, alleles):
-        """
-        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
-        representation of the predictor and returns a string representation
-
-        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
-        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
-        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
-        :rtype: list(str)
-        """
-        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
-
 
 class BIMAS(APSSMEpitopePrediction):
     """
@@ -193,17 +192,6 @@ class BIMAS(APSSMEpitopePrediction):
         """
         return self.__supported_length
 
-    def convert_alleles(self, alleles):
-        """
-        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
-        representation of the predictor and returns a string representation
-
-        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
-        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
-        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
-        :rtype: list(str)
-        """
-        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
 
     def predict(self, peptides, alleles=None, **kwargs):
         """
@@ -263,18 +251,6 @@ class Epidemix(APSSMEpitopePrediction):
         """
         return self.__supported_length
 
-    def convert_alleles(self, alleles):
-        """
-        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
-        representation of the predictor and returns a string representation
-
-        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
-        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
-        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
-        :rtype: list(str)
-        """
-        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
-
 
 class Hammer(APSSMEpitopePrediction):
     """
@@ -316,18 +292,6 @@ class Hammer(APSSMEpitopePrediction):
         A list of supported :class:`~epytope.Core.Peptide.Peptide` lengths
         """
         return self.__supported_length
-
-    def convert_alleles(self, alleles):
-        """
-        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
-        representation of the predictor and returns a string representation
-
-        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
-        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
-        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
-        :rtype: list(str)
-        """
-        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
 
 
 class SMM(APSSMEpitopePrediction):
@@ -513,17 +477,6 @@ class ARB(APSSMEpitopePrediction):
         """
         return self.__supported_length
 
-    def convert_alleles(self, alleles):
-        """
-        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
-        representation of the predictor and returns a string representation
-
-        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
-        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
-        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
-        :rtype: list(str)
-        """
-        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
 
     def predict(self, peptides, alleles=None, **kwargs):
         """
@@ -645,17 +598,6 @@ class ComblibSidney2008(APSSMEpitopePrediction):
         """
         return self.__supported_length
 
-    def convert_alleles(self, alleles):
-        """
-        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
-        representation of the predictor and returns a string representation
-
-        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
-        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
-        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
-        :rtype: list(str)
-        """
-        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
 
     def predict(self, peptides, alleles=None, **kwargs):
         """
@@ -717,18 +659,6 @@ class TEPITOPEpan(APSSMEpitopePrediction):
         A list of supported :class:`~epytope.Core.Peptide.Peptide` lengths
         """
         return self.__supported_length
-
-    def convert_alleles(self, alleles):
-        """
-        Converts :class:`~epytope.Core.Allele.Allele` into the internal :class:`~epytope.Core.Allele.Allele`
-        representation of the predictor and returns a string representation
-
-        :param alleles: The :class:`~epytope.Core.Allele.Allele` for which the internal predictor representation is needed
-        :type alleles: list(:class:`~epytope.Core.Allele.Allele`)
-        :return: Returns a string representation of the input :class:`~epytope.Core.Allele.Allele`
-        :rtype: list(str)
-        """
-        return ["%s_%s%s" % (a.locus, a.supertype, a.subtype) for a in alleles]
 
 
 class CalisImm(APSSMEpitopePrediction):
