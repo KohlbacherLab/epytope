@@ -67,12 +67,9 @@ co
         else:
             self.connection = None
 
-        if biomart:
-            self.biomart_url = biomart
-            if not self.biomart_url.endswith("/biomart/martservice"):
-                self.biomart_url += "/biomart/martservice"
-        else:
-            self.biomart_url = "https://www.ensembl.org/biomart/martservice"
+        self.biomart_url = biomart
+        if not self.biomart_url.endswith("/biomart/martservice"):
+            self.biomart_url += "/biomart/martservice"
 
         if mart_properties:
             self.biomart_head.update(mart_properties)
