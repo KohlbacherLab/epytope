@@ -42,7 +42,7 @@ class EnsemblMartAttributes(Enum):
 
 
 class MartsAdapter(ADBAdapter):
-    def __init__(self, usr=None, host=None, pwd=None, db=None, biomart=None, mart_properties=None):
+    def __init__(self, usr=None, host=None, pwd=None, db=None, biomart="https://www.ensembl.org/biomart/martservice", mart_properties=None):
         """
         Used to fetch sequences from given RefSeq id's either from BioMart if no credentials given else from a MySQLdb
 co
