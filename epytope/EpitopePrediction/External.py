@@ -210,7 +210,7 @@ class NetMHC_3_4(AExternalEpitopePrediction):
     __name = "netmhc"
     __supported_length = frozenset([8, 9, 10, 11])
     __version = "3.4"
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -342,7 +342,7 @@ class NetMHC_3_0(NetMHC_3_4):
     __name = "netmhc"
     __version = "3.0"
     __supported_length = frozenset([8, 9, 10, 11])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -429,7 +429,7 @@ class NetMHC_4_0(NetMHC_3_4):
     """
     __name = 'netmhc'
     __version = "4.0"
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -519,7 +519,7 @@ class NetMHCpan_2_4(AExternalEpitopePrediction):
     __name = "netmhcpan"
     __version = "2.4"
     __supported_length = frozenset([8, 9, 10, 11])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -646,7 +646,7 @@ class NetMHCpan_2_8(AExternalEpitopePrediction):
     __name = "netmhcpan"
     __version = "2.8"
     __supported_length = frozenset([8, 9, 10, 11, 12, 13, 14])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -773,7 +773,7 @@ class NetMHCpan_3_0(NetMHCpan_2_8):
     """
     __name = "netmhcpan"
     __version = "3.0"
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -818,7 +818,7 @@ class NetMHCpan_4_0(NetMHCpan_3_0):
     """
     __name = "netmhcpan"
     __version = "4.0"
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -864,7 +864,7 @@ class NetMHCpan_4_1(NetMHCpan_4_0):
     """
     __name = "netmhcpan"
     __version = "4.1"
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -913,7 +913,7 @@ class NetMHCstabpan_1_0(AExternalEpitopePrediction):
     __name = "netMHCstabpan"
     __length = frozenset([8, 9, 10, 11])
     __version = "1.0"
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -1033,7 +1033,7 @@ class NetMHCII_2_2(AExternalEpitopePrediction):
     __name = "netmhcII"
     __version = "2.2"
     __supported_length = frozenset([15])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -1164,7 +1164,7 @@ class NetMHCII_2_3(NetMHCII_2_2):
     __name = "netmhcII"
     __version = "2.3"
     __supported_length = frozenset([15])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -1268,7 +1268,7 @@ class NetMHCIIpan_3_0(AExternalEpitopePrediction):
     __name = "netmhcIIpan"
     __version = "3.0"
     __supported_length = frozenset([9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -1421,7 +1421,7 @@ class NetMHCIIpan_3_1(NetMHCIIpan_3_0):
     __name = "netmhcIIpan"
     __version = "3.1"
     __supported_length = frozenset([9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -1494,7 +1494,7 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
     __name = "netmhcIIpan"
     __version = "4.0"
     __supported_length = frozenset([9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -1567,7 +1567,7 @@ class PickPocket_1_1(AExternalEpitopePrediction):
     __name = "pickpocket"
     __version = "1.1"
     __supported_length = frozenset([8, 9, 10, 11])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
@@ -1699,7 +1699,7 @@ class NetCTLpan_1_1(AExternalEpitopePrediction):
     __name = "netctlpan"
     __version = "1.1"
     __supported_length = frozenset([8, 9, 10, 11])
-    __allele_import_name = __name + '_' + __version.replace('.', '_')
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)

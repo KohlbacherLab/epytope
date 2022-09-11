@@ -90,7 +90,7 @@ try:
         __name = "mhcnuggets-class-1"
         __version = "2.0"
         __supported_length = frozenset([5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-        __allele_import_name = __name.replace('-', '_') + '_' + __version.replace('.', '_')
+        __allele_import_name = f"{__name}_{__version}".replace('-', '_').replace('.', '_')
         __alleles = getattr(__import__("epytope.Data.supportedAlleles.ann." + __allele_import_name,
                                        fromlist=[__allele_import_name])
                             , __allele_import_name)
@@ -253,7 +253,7 @@ try:
         __name = "mhcnuggets-class-1"
         __version = "2.3.2"
         __supported_length = frozenset([5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-        __allele_import_name = __name.replace('-', '_') + '_' + __version.replace('.', '_')
+        __allele_import_name = f"{__name}_{__version}".replace('-', '_').replace('.', '_')
         __alleles = getattr(__import__("epytope.Data.supportedAlleles.ann." + __allele_import_name,
                                        fromlist=[__allele_import_name])
                             , __allele_import_name)
@@ -326,7 +326,7 @@ try:
         __name = "mhcnuggets-class-2"
         __version = "2.0"
         __supported_length = frozenset([5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25])
-        __allele_import_name = __name.replace('-', '_') + '_' + __version.replace('.', '_')
+        __allele_import_name = f"{__name}_{__version}".replace('-', '_').replace('.', '_')
         __alleles = getattr(__import__("epytope.Data.supportedAlleles.ann." + __allele_import_name,
                                        fromlist=[__allele_import_name])
                             , __allele_import_name)
@@ -495,7 +495,7 @@ try:
         __version = "2.3.2"
         __supported_length = frozenset(
             [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30])
-        __allele_import_name = __name.replace('-', '_') + '_' + __version.replace('.', '_')
+        __allele_import_name = f"{__name}_{__version}".replace('-', '_').replace('.', '_')
         __alleles = getattr(__import__("epytope.Data.supportedAlleles.ann." + __allele_import_name,
                                        fromlist=[__allele_import_name])
                             , __allele_import_name)
@@ -578,7 +578,7 @@ try:
         __name = "mhcflurry"
         __version = "1.2.2"
         __supported_length = frozenset([8, 9, 10, 11, 12, 13, 14, 15])
-        __allele_import_name = __name + '_' + __version.replace('.', '_')
+        __allele_import_name = f"{__name}_{__version}".replace('.', '_')
         __alleles = getattr(__import__("epytope.Data.supportedAlleles.ann." + __allele_import_name,
                                        fromlist=[__allele_import_name])
                             , __allele_import_name)
@@ -725,7 +725,7 @@ try:
         __name = "mhcflurry"
         __version = "1.4.3"
         __supported_length = frozenset([8, 9, 10, 11, 12, 13, 14, 15])
-        __allele_import_name = __name + '_' + __version.replace('.', '_')
+        __allele_import_name = f"{__name}_{__version}".replace('.', '_')
         __alleles = getattr(__import__("epytope.Data.supportedAlleles.ann." + __allele_import_name,
                                        fromlist=[__allele_import_name])
                             , __allele_import_name)
