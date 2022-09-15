@@ -141,7 +141,10 @@ class TestIO(TestCase):
             self.assertEqual(ma.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0],"TSPAN6")
 
     def test_UniProtAdapter(self):
-        self.assertWarnings(DeprecationWarning, UniProtDB)
+        up_adapter = UniProtDB("uniprot_adapter")
+        up_adapter.read_seqs(self.fa_path)
+        self.assertTrue(up_adapter.exists("QLHQEI"))
+        self.assertFalse(up_adapter.exists("RANDOM"))
 
     def test_RefSeqAdapter(self):
         self.assertWarnings(DeprecationWarning, RefSeqAdapter,"1","2","3","4")
