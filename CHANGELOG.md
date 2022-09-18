@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed`
 
+- [#73](https://github.com/KohlbacherLab/epytope/pull/73) - Fix netmhcii4.0 parser [#72](https://github.com/KohlbacherLab/epytope/issues/72)
+
 ## v3.1.0 - 2022-06-15
 
 ### `Added`
