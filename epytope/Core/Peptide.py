@@ -91,12 +91,12 @@ class Peptide(MetadataLogger, Seq):
     :return: True if peptide originates from a variant
     :rtype: boolean
     """
-    def is_created_by_variant(peptide):
-        transcript_ids = [x.transcript_id for x in set(peptide.get_all_transcripts())]
+    def is_created_by_variant(self):
+        transcript_ids = [x.transcript_id for x in set(self.get_all_transcripts())]
         for t in transcript_ids:
-            prot = peptide.proteins[t]
-            for start_pos in peptide.proteinPos[t]:
-                for i in range(start_pos, start_pos + len(peptide)):
+            prot = self.proteins[t]
+            for start_pos in self.proteinPos[t]:
+                for i in range(start_pos, start_pos + len(self)):
                     if i in prot.vars.keys():
                         return True
         return False
