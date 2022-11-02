@@ -94,11 +94,18 @@ class Peptide(MetadataLogger, Seq):
     def is_created_by_variant(self):
         transcript_ids = [x.transcript_id for x in set(self.get_all_transcripts())]
         for t in transcript_ids:
-            prot = self.proteins[t]
-            for start_pos in self.proteinPos[t]:
-                for i in range(start_pos, start_pos + len(self)):
-                    if i in prot.vars.keys():
-                        return True
+            p = self.proteins[t]
+            variant_map = p.vars
+            for pos, vars in variant_map.items():
+                for var in vars:
+                    if var.type in [VariationType.FSDEL, VariationType.FSINS]:
+                        if self.proteinPos[t][0] + len(self) > pos:
+                            return True
+                    else:
+                        for start_pos in self.proteinPos[t]:
+                            positions = list(range(start_pos, start_pos + len(self)))
+                            if pos in positions:
+                                return True
         return False
 
     def get_all_proteins(self):

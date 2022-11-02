@@ -7,15 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added`
 
+- [#74](https://github.com/KohlbacherLab/epytope/pull/74) - Add function to `Peptide` class to determine if peptide originates from a variant
+
 ### `Changed`
 
 - [#63](https://github.com/KohlbacherLab/epytope/pull/63) - Outsource supported alleles of prediction tools [#61](https://github.com/KohlbacherLab/epytope/issues/61)
 - [#69](https://github.com/KohlbacherLab/epytope/pull/69) - Improve `Ensembl` BioMart adapter [#57](https://github.com/KohlbacherLab/epytope/issues/57)
-- [#74](https://github.com/KohlbacherLab/epytope/pull/74) - Add function to `Peptide` class to determine if peptide originates from a variant
 
 ### `Fixed`
 
-- [#73](https://github.com/KohlbacherLab/epytope/pull/73) - Fix netmhcii4.0 parser [#72](https://github.com/KohlbacherLab/epytope/issues/72)
+- [#73](https://github.com/KohlbacherLab/epytope/pull/73) - Fix `NetMHCII 4.0` parser [#72](https://github.com/KohlbacherLab/epytope/issues/72)
 
 ## v3.1.0 - 2022-06-15
 
