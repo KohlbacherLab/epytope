@@ -1939,7 +1939,7 @@ class Offset(IntEnum):
     NETMHCSTABPAN_1_0_WO_SCORE = 3
     NETMHCIIPAN_3_0 = 3
     NETMHCIIPAN_3_1 = 3
-    NETMHCIIPAN_4_0 = 0
+    NETMHCIIPAN_4_0 = 2
     NETMHCIIPAN_4_1 = 3
 
 class HLAIndex(IntEnum):
