@@ -1,4 +1,4 @@
-netmhcstabpan_1_0 = frozenset(['HLA-A*01:01', 'HLA-A*01:02', 'HLA-A*01:03', 'HLA-A*01:06', 'HLA-A*01:07', 'HLA-A*01:08', 'HLA-A*01:09',
+netMHCstabpan_1_0 = frozenset(['HLA-A*01:01', 'HLA-A*01:02', 'HLA-A*01:03', 'HLA-A*01:06', 'HLA-A*01:07', 'HLA-A*01:08', 'HLA-A*01:09',
 'HLA-A*01:10', 'HLA-A*01:12', 'HLA-A*01:13', 'HLA-A*01:14', 'HLA-A*01:17', 'HLA-A*01:19', 'HLA-A*01:20',
 'HLA-A*01:21', 'HLA-A*01:23', 'HLA-A*01:24', 'HLA-A*01:25', 'HLA-A*01:26', 'HLA-A*01:28', 'HLA-A*01:29',
 'HLA-A*01:30', 'HLA-A*01:32', 'HLA-A*01:33', 'HLA-A*01:35', 'HLA-A*01:36', 'HLA-A*01:37', 'HLA-A*01:38',
