@@ -21,7 +21,7 @@ setup(
     name='epytope',
 
     # Version:
-    version='3.1.0',
+    version='3.2.0',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=long_description,
@@ -111,6 +111,8 @@ setup(
             'mhcnuggets',
             'keras<=2.3.1',         # legacy tensorflow required by mhcnuggets resolves to incompatible keras version
             'h5py<=2.10.0',         # mhcnuggets fails to read model with newer versions
+            'requests',
+            'beautifulsoup4',
             ],
 
 )

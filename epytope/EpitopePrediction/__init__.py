@@ -10,9 +10,9 @@
 """
 
 from epytope.Core.Base import AEpitopePrediction
+
 from epytope.EpitopePrediction.External import *
 from epytope.EpitopePrediction.PSSM import *
-# from epytope.EpitopePrediction.SVM import *
 from epytope.EpitopePrediction.ANN import *
 try:
     from fred_plugin import *
