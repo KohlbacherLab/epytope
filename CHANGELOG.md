@@ -3,7 +3,8 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v3.2.0 - 2022-11-02
+
+## v3.2.1dev - 2022-09-15
 
 ### `Added`
 
@@ -29,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed`
 
 - [#62](https://github.com/KohlbacherLab/epytope/pull/62) - Update the supported alleles of `syfpeithi` [#60](https://github.com/KohlbacherLab/epytope/issues/60)
-
+- Switch from [PyVCF](https://github.com/jamescasbon/PyVCF) to [PyVCF3](https://github.com/dridk/PyVCF3) as dependency
 ### `Fixed`
 
 - [#53](https://github.com/KohlbacherLab/epytope/pull/53) - Fix `ANN` predictor results [#52](https://github.com/KohlbacherLab/epytope/issues/52)
