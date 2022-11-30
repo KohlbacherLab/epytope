@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed`
 
 - [#62](https://github.com/KohlbacherLab/epytope/pull/62) - Update the supported alleles of `syfpeithi` [#60](https://github.com/KohlbacherLab/epytope/issues/60)
-- Switch from pyvcf to PyVCF3
+- Switch from [PyVCF](https://github.com/jamescasbon/PyVCF) to [PyVCF3](https://github.com/dridk/PyVCF3) as dependency
 ### `Fixed`
 
 - [#53](https://github.com/KohlbacherLab/epytope/pull/53) - Fix `ANN` predictor results [#52](https://github.com/KohlbacherLab/epytope/issues/52)
