@@ -8,7 +8,6 @@
 .. moduleauthor:: schubert
 
 """
-
 from epytope.Core.Base import AEpitopePrediction
 
 from epytope.EpitopePrediction.External import *
