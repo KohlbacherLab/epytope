@@ -21,7 +21,7 @@ setup(
     name='epytope',
 
     # Version:
-    version='3.0.0',
+    version='3.3.0',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=long_description,
@@ -101,14 +101,14 @@ setup(
     # Run-time dependencies. (will be installed by pip when epytope is installed)
     # TODO: find alternative for SMVlight scikitlearn
     install_requires=[
-            'setuptools<=57',
+            'setuptools',
             'pandas',
             'pyomo>=4.0',
             'PyMySQL',
             'biopython',
-            'pyVCF',
+            'PyVCF3',
             'mhcflurry<=1.4.3',
-            'mhcnuggets',
+            'mhcnuggets==2.3.2',
             'keras<=2.3.1',         # legacy tensorflow required by mhcnuggets resolves to incompatible keras version
             'h5py<=2.10.0',         # mhcnuggets fails to read model with newer versions
             'requests',
