@@ -6,7 +6,8 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/version.svg)](https://anaconda.org/bioconda/epytope)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/latest_release_date.svg)](https://anaconda.org/bioconda/epytope)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/platforms.svg
+)](https://anaconda.org/bioconda/epytope)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/epytope/badges/downloads.svg)](https://anaconda.org/bioconda/epytope)
 
 Copyright 2014 by Benjamin Schuber, Mathias Walzer, Philipp Brachvogel, Andras Szolek, Christopher Mohr, and Oliver Kohlbacher
