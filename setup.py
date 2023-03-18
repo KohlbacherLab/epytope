@@ -21,7 +21,7 @@ setup(
     name='epytope',
 
     # Version:
-    version='3.1.0',
+    version='3.3.0',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=long_description,
@@ -102,7 +102,7 @@ setup(
     # TODO: find alternative for SMVlight scikitlearn
     install_requires=[
             'setuptools<=57',
-            'pandas',
+            'pandas>=1.3.5',        # See issue #84
             'pyomo>=4.0',
             'PyMySQL',
             'biopython',
