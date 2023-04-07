@@ -102,7 +102,7 @@ setup(
     # TODO: find alternative for SMVlight scikitlearn
     install_requires=[
             'setuptools',
-            'pandas',
+            'pandas>=1.3.5',        # See issue #84
             'pyomo>=4.0',
             'PyMySQL',
             'biopython',

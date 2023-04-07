@@ -3,6 +3,18 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v3.3.1 - 2023-03-24
+
+### `Added`
+
+### `Changed`
+
+- [#85](https://github.com/KohlbacherLab/epytope/pull/85) Pinned pandas version >= 1.3.5 as requested by @e-dorigatti [#84](https://github.com/KohlbacherLab/epytope/issues/84).
+
+### `Fixed`
+
+- [#83](https://github.com/KohlbacherLab/epytope/pull/83) Fixed erroneous mouse allele parsing for PSSM predictors [#82](https://github.com/KohlbacherLab/epytope/issues/82)
+
 ## v3.3.0 - 2022-12-01
 
 ### `Added`
