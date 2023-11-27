@@ -1601,6 +1601,7 @@ class NetMHCIIpan_4_2(NetMHCIIpan_4_1):
     """
     Implementation of NetMHCIIpan 4.2 adapter.
     """
+    __name = "netmhcIIpan"
     __version = "4.2"
     __supported_length = frozenset(list(range(9,57)))
     __allele_import_name = f"{__name}_{__version}".replace('.', '_')
