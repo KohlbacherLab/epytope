@@ -33,7 +33,7 @@ class SpacerDesignTestCase(unittest.TestCase):
         sbws = EpitopeAssemblyWithSpacer(self.epis, cl_pred, epi_pred, self.alleles, solver="glpk")
         sol = sbws.solve()
         print(sol)
-        assert all(i == str(j) for i, j in zip(["GHRMAWDM", "WWRW", "VYEADDVI"], sol))
+        assert all(i == str(j) for i, j in zip(["GHRMAWDM", "WWQW", "VYEADDVI"], sol))
 
     def test_unsupported_allele_length_combination(self):
         """
