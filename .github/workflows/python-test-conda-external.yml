@@ -15,10 +15,10 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         path: epytope
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: kohlbacherlab/fred-tools
         token: ${{ secrets.FRED_CI_PAT }}
