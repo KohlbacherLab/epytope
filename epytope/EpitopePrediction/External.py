@@ -1493,7 +1493,7 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
     """
     __name = "netmhcIIpan"
     __version = "4.0"
-    __supported_length = frozenset([9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+    __supported_length = frozenset(list(range(9,57)))
     __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
@@ -1596,6 +1596,34 @@ class NetMHCIIpan_4_1(NetMHCIIpan_4_0):
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
 
         return result
+
+class NetMHCIIpan_4_2(NetMHCIIpan_4_1):
+    """
+    Implementation of NetMHCIIpan 4.2 adapter.
+    """
+    __name = "netmhcIIpan"
+    __version = "4.2"
+    __supported_length = frozenset(list(range(9,57)))
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
+   
+    __command = "netMHCIIpan -f {peptides} -inptype 1 -a {alleles} {options} -xls -xlsfile {out}"
+
+
+    @property
+    def version(self):
+        """The version of the predictor"""
+        return self.__version
+
+    @property
+    def command(self):
+        """
+        Defines the commandline call for external tool
+        """
+        return self.__command
+
 
 class PickPocket_1_1(AExternalEpitopePrediction):
     """
