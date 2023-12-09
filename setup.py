@@ -21,7 +21,7 @@ setup(
     name='epytope',
 
     # Version:
-    version='3.3.1',
+    version='3.3.2',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=long_description,
@@ -35,8 +35,8 @@ setup(
     author_email='benjamin.schubert@helmholtz-muenchen.de, walzer@ebi.ac.uk, christopher.mohr@uni-tuebingen.de, leon.kuchenbecker@uni-tuebingen.de ',
 
     # maintainer details
-    maintainer='Christopher Mohr',
-    maintainer_email='christopher.mohr@uni-tuebingen.de',
+    maintainer='Christopher Mohr, Jonas Scheid',
+    maintainer_email='contact.cmohr@gmail.com, jonas.scheid@uni-tuebingen.de',
 
     # Choose your license
     license='BSD',

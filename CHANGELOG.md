@@ -3,6 +3,19 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v3.3.2 - 2023-12-15
+
+### `Added`
+
+-  [#93](https://github.com/KohlbacherLab/epytope/pull/93) Added NetMHCIIpan version 4.2 interface [#92](https://github.com/KohlbacherLab/epytope/issues/92)
+-  [#96](https://github.com/KohlbacherLab/epytope/pull/93) Added NetMHCIIpan version 4.3 interface [#95](https://github.com/KohlbacherLab/epytope/issues/95)
+
+### `Changed`
+
+### `Fixed`
+
+- [#93](https://github.com/KohlbacherLab/epytope/pull/93) Fixed length restriction of NetMHCIIpan interfaces [#91](https://github.com/KohlbacherLab/epytope/issues/91)
+
 ## v3.3.1 - 2023-04-25
 
 ### `Added`
