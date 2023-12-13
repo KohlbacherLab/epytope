@@ -32,7 +32,7 @@ setup(
 
     # Author details
     author='Benjamin Schubert, Mathias Walzer, Christopher Mohr, Leon Kuchenbecker',
-    author_email='benjamin.schubert@helmholtz-muenchen.de, walzer@ebi.ac.uk, christopher.mohr@uni-tuebingen.de, leon.kuchenbecker@uni-tuebingen.de ',
+    author_email='benjamin.schubert@helmholtz-muenchen.de, walzer@ebi.ac.uk, contact.cmohr@gmail.com, leon.kuchenbecker@uni-tuebingen.de ',
 
     # maintainer details
     maintainer='Christopher Mohr, Jonas Scheid',
