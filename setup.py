@@ -21,7 +21,7 @@ setup(
     name='epytope',
 
     # Version:
-    version='3.3.2',
+    version='3.4.0',
 
     description='A Framework for Epitope Detection and Vaccine Design',
     long_description=long_description,
