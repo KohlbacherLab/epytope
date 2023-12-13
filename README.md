@@ -63,7 +63,7 @@ Currently **epytope** provides implementations of several prediction methods or 
   - [NetMHC](https://pubmed.ncbi.nlm.nih.gov/26515819/) 3.0, 3.4, 4.0
   - [NetMHCII](https://pubmed.ncbi.nlm.nih.gov/29315598/) 2.2, 2.3
   - [NetMHCpan](https://pubmed.ncbi.nlm.nih.gov/28978689/) 2.4, 2.8, 3.0, 4.0, 4.1
-  - [NetMHCIIpan](https://pubmed.ncbi.nlm.nih.gov/32406916/) 3.0, 3.1, 4.0, 4.1, 4.2, 4.3
+  - [NetMHCIIpan](https://pubmed.ncbi.nlm.nih.gov/38000035/) 3.0, 3.1, 4.0, 4.1, 4.2, 4.3
   - [PickPocket](https://pubmed.ncbi.nlm.nih.gov/19297351/) 1.1
   - [NetCTLpan](https://pubmed.ncbi.nlm.nih.gov/20379710/) 1.1
 - Epitope Selection
