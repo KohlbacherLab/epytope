@@ -1493,7 +1493,7 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
     """
     __name = "netmhcIIpan"
     __version = "4.0"
-    __supported_length = frozenset([9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+    __supported_length = frozenset(list(range(9,57)))
     __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
@@ -1596,6 +1596,81 @@ class NetMHCIIpan_4_1(NetMHCIIpan_4_0):
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
 
         return result
+
+class NetMHCIIpan_4_2(NetMHCIIpan_4_1):
+    """
+    Implementation of NetMHCIIpan 4.2 adapter.
+    """
+    __name = "netmhcIIpan"
+    __version = "4.2"
+    __supported_length = frozenset(list(range(9,57)))
+    __allele_import_name = f"{__name}_{__version}".replace('.', '_')
+    __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
+                                   fromlist=[__allele_import_name])
+                        , __allele_import_name)
+
+    __command = "netMHCIIpan -f {peptides} -inptype 1 -a {alleles} {options} -xls -xlsfile {out}"
+
+
+    @property
+    def version(self):
+        """The version of the predictor"""
+        return self.__version
+
+    @property
+    def command(self):
+        """
+        Defines the commandline call for external tool
+        """
+        return self.__command
+
+
+class NetMHCIIpan_4_3(NetMHCIIpan_4_2):
+    """
+    Implementation of NetMHCIIpan 4.3 adapter.
+    """
+    __name = "netmhcIIpan"
+    __version = "4.3"
+    __supported_length = frozenset(list(range(9,57)))
+
+    __command = "netMHCIIpan -f {peptides} -inptype 1 -a {alleles} {options} -xls -xlsfile {out}"
+
+    @property
+    def version(self):
+        """The version of the predictor"""
+        return self.__version
+
+    @property
+    def command(self):
+        """
+        Defines the commandline call for external tool
+        """
+        return self.__command
+    
+    def parse_external_result(self, file):
+        """
+        Parses external results and returns the result containing the predictors string representation
+        of alleles and peptides.
+
+        :param str file: The file path or the external prediction results
+        :return: A dictionary containing the prediction results
+        :rtype: dict
+        """
+        f = csv.reader(open(file, "r"), delimiter='\t')
+        scores = defaultdict(defaultdict)
+        ranks = defaultdict(defaultdict)
+        alleles = [x for x in set([x for x in next(f) if x != ""])]
+        next(f)
+        for row in f:
+            pep_seq = row[PeptideIndex.NETMHCIIPAN_4_3]
+            for i, a in enumerate(alleles):
+                scores[a][pep_seq] = float(row[ScoreIndex.NETMHCIIPAN_4_3 + i * Offset.NETMHCIIPAN_4_3])
+                ranks[a][pep_seq] = float(row[RankIndex.NETMHCIIPAN_4_3 + i * Offset.NETMHCIIPAN_4_3])
+                # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': Score1, 'Pep2': Score2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
+        result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
+
+        return result
+
 
 class PickPocket_1_1(AExternalEpitopePrediction):
     """
@@ -1886,6 +1961,7 @@ class PeptideIndex(IntEnum):
     NETMHCIIPAN_3_1 = 1
     NETMHCIIPAN_4_0 = 1
     NETMHCIIPAN_4_1 = 1
+    NETMHCIIPAN_4_3 = 1
     PICKPOCKET_1_1 = 2
     NETCTLPAN_1_1 = 3
 
@@ -1907,6 +1983,7 @@ class ScoreIndex(IntEnum):
     NETMHCIIPAN_3_1 = 3
     NETMHCIIPAN_4_0 = 4
     NETMHCIIPAN_4_1 = 5
+    NETMHCIIPAN_4_3 = 6
     PICKPOCKET_1_1 = 4
     NETCTLPAN_1_1 = 7
 
@@ -1924,6 +2001,7 @@ class RankIndex(IntEnum):
     NETMHCIIPAN_3_1 = 5
     NETMHCIIPAN_4_0 = 5
     NETMHCIIPAN_4_1 = 6
+    NETMHCIIPAN_4_3 = 7
 
 class Offset(IntEnum):
     """
@@ -1941,6 +2019,7 @@ class Offset(IntEnum):
     NETMHCIIPAN_3_1 = 3
     NETMHCIIPAN_4_0 = 2
     NETMHCIIPAN_4_1 = 3
+    NETMHCIIPAN_4_3 = 3
 
 class HLAIndex(IntEnum):
     """
