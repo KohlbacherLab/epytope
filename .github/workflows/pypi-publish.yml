@@ -9,7 +9,7 @@ jobs:
     name: Publish tagged release on PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
     - name: Install utilities
       run: sudo apt-get install -y mmv
     - name: Set up Python 3.7
@@ -37,11 +37,11 @@ jobs:
         mmv -v dist/'*.*.*-*' dist/'#1.#2.#3-'$timestamp'-#4'
         mmv -v dist/'*.tar.gz' dist/'#1-'$timestamp.tar.gz
     - name: Publish distribution package to PyPI (test)
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository_url: https://test.pypi.org/legacy/
     - name: Publish distribution package to PyPI (production)
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
