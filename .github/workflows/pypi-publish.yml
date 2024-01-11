@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install utilities
-      run: sudo apt-get install -y mmv
     - name: Set up Python 3.7
       uses: actions/setup-python@v4
       with:
@@ -30,12 +28,6 @@ jobs:
         --wheel
         --outdir dist/
         .
-    - name: Create timestamp
-      run: echo timestamp=$(date +%s) >> $GITHUB_ENV
-    - name: Rename built files to include timestamp
-      run: |
-        mmv -v dist/'*.*.*-*' dist/'#1.#2.#3-'$timestamp'-#4'
-        mmv -v dist/'*.tar.gz' dist/'#1-'$timestamp.tar.gz
     - name: Publish distribution package to PyPI (test)
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
