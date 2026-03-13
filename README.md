@@ -28,13 +28,13 @@ use the following commands:
 
 ### Python Packages
 
-- pandas
+- pandas>=2.1
 - pyomo>=4.0
-- svmlight
 - PyMySQL
 - biopython
-- pyVCF
-- h5py<=2.10.0
+- PyVCF3
+- requests
+- beautifulsoup4
 
 ### Third-Party Software (not installed through pip)
 
@@ -58,8 +58,7 @@ Currently **epytope** provides implementations of several prediction methods or 
   - Assembly with spacers by [Schubert et al.](https://pubmed.ncbi.nlm.nih.gov/26813686/)
 - Epitope Prediction
   - [SYFPEITHI](https://link.springer.com/article/10.1007/s002510050595)
-  - [MHCNuggets](https://pubmed.ncbi.nlm.nih.gov/31871119/) 2.0, 2.3.2
-  - [MHCflurry](https://pubmed.ncbi.nlm.nih.gov/29960884/) 1.2.2, 1.4.3
+  - [MHCflurry](https://pubmed.ncbi.nlm.nih.gov/29960884/) 1.2.2, 1.4.3, 2.0 (optional: `pip install epytope[mhcflurry]`)
   - [NetMHC](https://pubmed.ncbi.nlm.nih.gov/26515819/) 3.0, 3.4, 4.0
   - [NetMHCII](https://pubmed.ncbi.nlm.nih.gov/29315598/) 2.2, 2.3
   - [NetMHCpan](https://pubmed.ncbi.nlm.nih.gov/28978689/) 2.4, 2.8, 3.0, 4.0, 4.1

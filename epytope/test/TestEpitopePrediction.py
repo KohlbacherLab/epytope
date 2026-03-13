@@ -12,6 +12,15 @@ from epytope.Core import Peptide
 
 # Predictions
 from epytope.EpitopePrediction import EpitopePredictorFactory, AExternalEpitopePrediction
+from epytope.EpitopePrediction.ANN import AANNEpitopePrediction
+
+
+def _mhcflurry_available():
+    try:
+        import mhcflurry
+        return True
+    except ImportError:
+        return False
 
 
 class TestCaseEpitopePrediction(unittest.TestCase):
@@ -24,31 +33,39 @@ class TestCaseEpitopePrediction(unittest.TestCase):
         self.mhcII = [Allele("HLA-DRB1*07:01"), Allele("HLA-DRB1*15:01")]
         self.mouse = [Allele("H2-Kd"), Allele("H2-Kb")]
 
+    def _should_skip_model(self, model):
+        """Skip external predictors and ANN predictors when mhcflurry is not installed."""
+        if isinstance(model, AExternalEpitopePrediction):
+            return True
+        if isinstance(model, AANNEpitopePrediction) and not _mhcflurry_available():
+            return True
+        return False
+
     def test_multiple_peptide_input_mhcI(self):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
-                if not isinstance(model, AExternalEpitopePrediction):
+                if not self._should_skip_model(model):
                     if all(a in model.supportedAlleles for a in self.mhcI):
                         res = model.predict(self.peptides_mhcI, alleles=self.mhcI)
 
     def test_single_peptide_input_mhcI(self):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
-                if not isinstance(model, AExternalEpitopePrediction):
+                if not self._should_skip_model(model):
                     if all(a in model.supportedAlleles for a in self.mhcI):
                         res = model.predict(self.peptides_mhcI, alleles=self.mhcI)
 
     def test_multiple_peptide_input_mhcII(self):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
-                if not isinstance(model, AExternalEpitopePrediction):
+                if not self._should_skip_model(model):
                     if all(a in model.supportedAlleles for a in self.mhcII) and m != "MHCIIMulti":
                         res = model.predict(self.peptides_mhcII, alleles=self.mhcII)
 
     def test_single_peptide_input_mhcII(self):
             for m in EpitopePredictorFactory.available_methods():
                 model = EpitopePredictorFactory(m)
-                if not isinstance(model, AExternalEpitopePrediction):
+                if not self._should_skip_model(model):
                     if all(a in model.supportedAlleles for a in self.mhcII):
                         res = model.predict(self.peptides_mhcII, alleles=self.mhcII)
     
@@ -56,14 +73,21 @@ class TestCaseEpitopePrediction(unittest.TestCase):
         syfpeithi = EpitopePredictorFactory("Syfpeithi")
         res = syfpeithi.predict(self.peptides_mhcI, alleles=self.mouse)
 
-        mhcflurry = EpitopePredictorFactory("mhcflurry")
-        mhcnuggets = EpitopePredictorFactory("mhcnuggets-class-1")
         netmhc = EpitopePredictorFactory("netmhc")
         netmhcpan = EpitopePredictorFactory("netmhcpan")
 
         for allele in self.mouse:
-            for m in [mhcflurry, mhcnuggets, netmhc, netmhcpan]:
+            for m in [netmhc, netmhcpan]:
                 self.assertTrue(allele in m.supportedAlleles)
+
+    @unittest.skipUnless(
+        _mhcflurry_available(),
+        "mhcflurry not installed"
+    )
+    def test_mhcflurry_mouse_alleles(self):
+        mhcflurry = EpitopePredictorFactory("mhcflurry")
+        for allele in self.mouse:
+            self.assertTrue(allele in mhcflurry.supportedAlleles)
 
 if __name__ == '__main__':
     unittest.main()

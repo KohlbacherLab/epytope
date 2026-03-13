@@ -155,7 +155,7 @@ class PCM(APSSMCleavageSitePredictor):
         :return: Returns a :class:`~epytope.Core.Result.CleavageSitePredictionResult` object
         :rtype: :class:`~epytope.Core.Result.CleavageSitePredictionResult`
         """
-        return super(PCM, self).predict(peptides, lenght=length, **kwargs)
+        return super().predict(peptides, lenght=length, **kwargs)
 
 
 class ProteaSMMConsecutive(APSSMCleavageSitePredictor):
@@ -217,7 +217,7 @@ class ProteaSMMConsecutive(APSSMCleavageSitePredictor):
         :return: Returns a :class:`~epytope.Core.Result.CleavageSitePredictionResult` object
         :rtype: :class:`~epytope.Core.Result.CleavageSitePredictionResult`
         """
-        return super(ProteaSMMConsecutive, self).predict(peptides, length=length, **kwargs)
+        return super().predict(peptides, length=length, **kwargs)
 
 
 class ProteaSMMImmuno(APSSMCleavageSitePredictor):
@@ -280,7 +280,7 @@ class ProteaSMMImmuno(APSSMCleavageSitePredictor):
         :return: Returns a :class:`~epytope.Core.Result.CleavageSitePredictionResult` object
         :rtype: :class:`~epytope.Core.Result.CleavageSitePredictionResult`
         """
-        return super(ProteaSMMImmuno, self).predict(peptides, length=length, **kwargs)
+        return super().predict(peptides, length=length, **kwargs)
 
 
 class APSSMCleavageFragmentPredictor(ACleavageFragmentPrediction):
@@ -292,14 +292,16 @@ class APSSMCleavageFragmentPredictor(ACleavageFragmentPrediction):
         Implements predict functionality
     """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def trailingN(self):
         """
         The number of trailing residues at the N-terminal of the peptide used for prediction
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def tralingC(self):
         """
         The number of trailing residues at the C-terminal of the peptide used for prediction

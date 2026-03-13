@@ -23,7 +23,7 @@ import warnings
 COMPLEMENT = str.maketrans('atgcATGC', 'tacgTACG')
 
 
-class MetadataLogger(object):
+class MetadataLogger:
     """
     This class provides a simple interface for assigning additional metadata to
     any object in our data model. Examples: storing ANNOVAR columns like depth,
@@ -71,7 +71,7 @@ class APluginRegister(abc.ABCMeta):
     """
 
     def __init__(cls, name, bases, nmspc):
-        super(APluginRegister, cls).__init__(name, bases, nmspc)
+        super().__init__(name, bases, nmspc)
 
         if not hasattr(cls, 'registry'):
             cls.registry = dict()
@@ -94,28 +94,32 @@ class APluginRegister(abc.ABCMeta):
 
 
 class ACleavageSitePrediction(object, metaclass=APluginRegister):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self):
         """
         The name of the predictor
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def version(self):
         """
         Parameter specifying the version of the prediction method
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def supportedLength(self):
         """
         The supported lengths of the predictor
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def cleavagePos(self):
         """
         Parameter specifying the position of aa (within the prediction window) after which the sequence is cleaved
@@ -138,21 +142,24 @@ class ACleavageSitePrediction(object, metaclass=APluginRegister):
 
 
 class ACleavageFragmentPrediction(object, metaclass=APluginRegister):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self):
         """
         The name of the predictor
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def version(self):
         """
         Parameter specifying the version of the prediction method
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def supportedLength(self):
         """
         The supported lengths of the predictor
@@ -160,7 +167,8 @@ class ACleavageFragmentPrediction(object, metaclass=APluginRegister):
         raise NotImplementedError
 
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def cleavagePos(self):
         """
         Parameter specifying the position of aa (within the prediction window) after which the sequence is cleaved
@@ -181,26 +189,30 @@ class ACleavageFragmentPrediction(object, metaclass=APluginRegister):
 
 
 class AEpitopePrediction(object, metaclass=APluginRegister):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self):
         """
         The name of the predictor
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def version(cls):
         """The version of the predictor"""
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def supportedAlleles(self):
         """
         A list of valid allele models
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def supportedLength(self):
         """
         A list of supported peptide lengths
@@ -262,7 +274,8 @@ class AExternal(object, metaclass=abc.ABCMeta):
      Base class for external tools
     """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def command(self):
         """
         Defines the commandline call for external tool
@@ -325,21 +338,24 @@ class AExternal(object, metaclass=abc.ABCMeta):
 
 
 class ATAPPrediction(object, metaclass=APluginRegister):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self):
         """
         The name of the predictor
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def version(self):
         """
         Parameter specifying the version of the prediction method
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def supportedLength(self):
         """
         The supported lengths of the predictor
@@ -361,14 +377,16 @@ class ATAPPrediction(object, metaclass=APluginRegister):
 
 
 class AHLATyping(object, metaclass=APluginRegister):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self):
         """
         The name of the predictor
         """
         raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def version(self):
         """
         Parameter specifying the version of the prediction method

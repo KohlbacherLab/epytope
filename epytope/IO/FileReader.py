@@ -127,7 +127,7 @@ def read_annovar_exonic(annovar_file, gene_filter=None, experimentalDesig=None):
     #fgd3:nm_001083536:exon6:c.g823a:p.v275i,fgd3:nm_001286993:exon6:c.g823a:p.v275i,fgd3:nm_033086:exon6:c.g823a:p.v275i
     #RE = re.compile("\w+:(\w+):exon\d+:c.(\D*)(\d+)_*(\d*)(\D\w*):p.\w+:\D*->\D*:(\D).*?,")
     #RE = re.compile("\w+:(\w+):exon\d+:c.(\D*)(\d+)_*(\d*)(\D\w*):p.(\D*)(\d+)_*(\d*)(\D\w*):(\D).*?,")
-    RE = re.compile("((\w+):(\w+):exon\d+:c.\D*(\d+)\D\w*:p.\D*(\d+)\D\w*)")
+    RE = re.compile(r"((\w+):(\w+):exon\d+:c.\D*(\d+)\D\w*:p.\D*(\d+)\D\w*)")
     type_mapper = {('synonymous', 'snv'): VariationType.SNP,
                    ('nonsynonymous', 'snv'): VariationType.SNP,
                    ('stoploss', 'snv'): VariationType.SNP,

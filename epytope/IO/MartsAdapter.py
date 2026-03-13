@@ -7,13 +7,12 @@
 .. moduleauthor:: walzer, schubert
 """
 
-from imghdr import tests
 import warnings
 import logging
 import pymysql.cursors
 import requests
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util.retry import Retry
 import io
 import pandas as pd
 import re
@@ -123,11 +122,13 @@ co
         element.set(filter_value, value)
         return element
 
-    def __search_for_resources(self, xml_root):
+    def __search_for_resources(self, xml_root, attribute_ids=None):
         """
         Perform search (GET) using the given XML as query value
 
         :param ElementTree Element xml_root: The XML of the query
+        :param list attribute_ids: Optional list of attribute IDs to use as column names,
+            bypassing BioMart's display-name headers (which can be inconsistent)
 
         :return: The found resources as data frame
         :rtype: pandas.core.frame.DataFrame
@@ -137,6 +138,14 @@ co
         et.write(f, encoding="UTF-8", xml_declaration=True)
         response = self.__perform_request(self.biomart_url, {"query": f.getvalue().decode("utf8")})
         result = pd.read_csv(io.StringIO(response.content.decode('utf-8')), delimiter='\t')
+        if attribute_ids is not None:
+            if len(result.columns) == len(attribute_ids):
+                result.columns = attribute_ids
+            else:
+                raise RuntimeError(
+                    f"BioMart returned unexpected response ({len(result.columns)} columns, "
+                    f"expected {len(attribute_ids)}). This usually indicates a transient "
+                    f"BioMart server error. Response: {response.content[:500]}")
         return result
 
     def __chunks(self, lst, n):
@@ -211,7 +220,7 @@ co
         df = pd.read_csv(io.StringIO(
             datasets.content.decode('utf-8')), delimiter='\t', header=None)
         df_slice = df.iloc[:, [1, 2, 4, 7, 8]]
-        df_slice.dropna(how='all', inplace=True)
+        df_slice = df_slice.dropna(how='all')
         df_slice.columns = ['dataset_id', 'dataset_name',
                             'short_name', 'interface', 'date']
         return df_slice
@@ -311,7 +320,6 @@ co
         if product_id in self.sequence_proxy:
             return self.sequence_proxy[product_id]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -319,22 +327,15 @@ co
                           "value", str(product_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
 
         if result.empty:
             logging.warning(
                 "There seems to be no Protein sequence for " + str(product_id))
             return None
 
-        sequence = result.at[0, attributes["peptide"]]
+        sequence = result.at[0, "peptide"]
         self.sequence_proxy[product_id] = sequence[:-1] if sequence.endswith('*') else sequence
         return self.sequence_proxy[product_id]
 
@@ -377,29 +378,21 @@ co
         if transcript_id in self.gene_proxy:
             return self.gene_proxy[transcript_id]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
         self.__add_filter(dataset, "name", query_filter,"value", str(transcript_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
 
-        if result.empty or 'Sequence unavailable' in result.at[0, attributes["coding"]]:
+        if result.empty or 'Sequence unavailable' in result.at[0, "coding"]:
             logging.warning(
                 "No transcript sequence available for " + str(transcript_id))
             return None
 
-        self.sequence_proxy[transcript_id] = result.at[0, attributes["coding"]]
+        self.sequence_proxy[transcript_id] = result.at[0, "coding"]
         return self.sequence_proxy[transcript_id]
 
     def get_transcript_information(self, transcript_id, **kwargs):
@@ -442,31 +435,23 @@ co
         if transcript_id in self.ids_proxy:
             return self.ids_proxy[transcript_id]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
         self.__add_filter(dataset, "name", query_filter,"value", str(transcript_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
 
-        if result.empty or 'Sequence unavailable' in result.at[0, attributes["coding"]]:
+        if result.empty or 'Sequence unavailable' in result.at[0, "coding"]:
             logging.warning(
                 "No information available on transcript " + str(transcript_id))
             return None
 
-        self.ids_proxy[transcript_id] = {EAdapterFields.SEQ: result.at[0, attributes["coding"]],
-                                        EAdapterFields.GENE: result.at[0, attributes[EnsemblMartAttributes.EXTERNAL_GENE_NAME.value]],
-                                        EAdapterFields.STRAND: "-" if int(result.at[0, attributes['strand']]) < 0 else "+"}
+        self.ids_proxy[transcript_id] = {EAdapterFields.SEQ: result.at[0, "coding"],
+                                        EAdapterFields.GENE: result.at[0, EnsemblMartAttributes.EXTERNAL_GENE_NAME.value],
+                                        EAdapterFields.STRAND: "-" if int(result.at[0, "strand"]) < 0 else "+"}
         return self.ids_proxy[transcript_id]
 
     def get_transcript_position(self, transcript_id, start, stop, **kwargs):
@@ -519,7 +504,6 @@ co
         if str(start) + str(stop) + transcript_id in self.gene_proxy:
             return self.gene_proxy[str(start) + str(stop) + transcript_id]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -527,15 +511,8 @@ co
                           "value", str(transcript_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
 
         if result.empty:
             logging.warning(
@@ -543,16 +520,15 @@ co
             return None
 
         # filter out results without CDS annotation, sort by CDS Start(position in the CDS)
-        result_cds = result[result[attributes["cds_start"]
-                                   ].notnull() & result[attributes["cds_end"]]]
-        result_sorted = result_cds.sort_values(by=[attributes["cds_start"]])
+        result_cds = result[result["cds_start"].notnull() & result["cds_end"]]
+        result_sorted = result_cds.sort_values(by=["cds_start"])
 
         cds_sum = 0
         for index, row in result_sorted.iterrows():
-            sc = row[attributes["cds_start"]]
-            ec = row[attributes["cds_end"]]
-            se = row[attributes["exon_chrom_start"]]
-            ee = row[attributes["exon_chrom_end"]]
+            sc = row["cds_start"]
+            ec = row["cds_end"]
+            se = row["exon_chrom_start"]
+            ee = row["exon_chrom_end"]
 
             if not cds_sum < sc < ec:
                 logging.warning(
@@ -567,7 +543,7 @@ co
                     return None
                 else:
                     # strand dependent!!!
-                    if row[attributes["strand"]] < 0:  # reverse strand!!!
+                    if row["strand"] < 0:  # reverse strand!!!
                         self.gene_proxy[str(start) + str(stop) + transcript_id] =\
                             (ee - x + 1 + cds_sum, ee - y + 1 + cds_sum)
                     else:  # forward strand!!!
@@ -604,7 +580,6 @@ co
         filters = {"chromosome_name": chromosome, "start": start, "end": stop}
         attributes = {EnsemblMartAttributes.EXTERNAL_GENE_NAME.value: ""}
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -612,22 +587,15 @@ co
             self.__add_filter(dataset, "name", key, "value", str(value))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
         if result.empty:
             logging.warning(
                 "{} does not denote a known gene location'} ".format(','.join([str(chromosome), str(start), str(stop)])))
             return None
 
         self.gene_proxy[str(chromosome) + str(start) + str(stop)
-                        ] = result.at[0, attributes['external_gene_name']]
+                        ] = result.at[0, EnsemblMartAttributes.EXTERNAL_GENE_NAME.value]
         return self.gene_proxy[str(chromosome) + str(start) + str(stop)]
 
     def get_transcript_information_from_protein_id(self, protein_id, **kwargs):
@@ -668,7 +636,6 @@ co
         if protein_id in self.ids_proxy:
             return self.ids_proxy[protein_id]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -676,23 +643,16 @@ co
                         "value", str(protein_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
 
         if result.empty:
             warnings.warn("No entry found for id %s" % protein_id)
             return None
 
-        self.ids_proxy[protein_id] = {EAdapterFields.SEQ: result.at[0, attributes["coding"]],
-                                    EAdapterFields.GENE: result.at[0, attributes[EnsemblMartAttributes.EXTERNAL_GENE_NAME.value]],
-                                    EAdapterFields.STRAND: "-" if int(result.at[0, attributes['strand']]) < 0 else "+"}
+        self.ids_proxy[protein_id] = {EAdapterFields.SEQ: result.at[0, "coding"],
+                                    EAdapterFields.GENE: result.at[0, EnsemblMartAttributes.EXTERNAL_GENE_NAME.value],
+                                    EAdapterFields.STRAND: "-" if int(result.at[0, "strand"]) < 0 else "+"}
         return self.ids_proxy[protein_id]
 
     def get_variants_from_transcript_id(self, transcript_id, **kwargs):
@@ -733,7 +693,6 @@ co
         filters.update({query_filter: transcript_id})
         attributes.update({query_filter: ""})
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -741,15 +700,8 @@ co
             self.__add_filter(dataset, "name", key, "value", str(value))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
         if result.empty:
             warnings.warn("No entry found for id %s" % transcript_id)
             return None
@@ -797,32 +749,23 @@ co
         if gene_id in self.ids_proxy:
             return self.ids_proxy[gene_id]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
         self.__add_filter(dataset, "name", query_filter, "value", str(gene_id))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
         if result.empty:
             logging.warning("No entry found for id %s" % gene_id)
             return None
 
-        EnsemblMartAttributes.ENSEMBL_PEPTIDE_ID
         for index, row in result.iterrows():
-            self.ids_proxy[gene_id] = [{EAdapterFields.PROTID: row[attributes[EnsemblMartAttributes.ENSEMBL_PEPTIDE_ID.value]],
-                                        EAdapterFields.GENE: row[attributes[query_filter]],
-                                        EAdapterFields.TRANSID: row[attributes[EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID.value]],
-                                        EAdapterFields.STRAND: "-" if int(row[attributes['strand']]) < 0
+            self.ids_proxy[gene_id] = [{EAdapterFields.PROTID: row[EnsemblMartAttributes.ENSEMBL_PEPTIDE_ID.value],
+                                        EAdapterFields.GENE: row[query_filter],
+                                        EAdapterFields.TRANSID: row[EnsemblMartAttributes.ENSEMBL_TRANSCRIPT_ID.value],
+                                        EAdapterFields.STRAND: "-" if int(row["strand"]) < 0
                                         else "+"}]
         return self.ids_proxy[gene_id]
 
@@ -848,7 +791,6 @@ co
         if chromosome + start + stop in self.gene_proxy:
             return self.gene_proxy[chromosome + start + stop]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -856,15 +798,8 @@ co
             self.__add_filter(dataset, "name", key, "value", str(value))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
         if result.empty:
             warnings.warn(
                 f"No identifiers found for specified region {chromosome}:{start}:{stop}")
@@ -924,22 +859,16 @@ co
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
-        for attribute in attributes:
+        attribute_ids = list(attributes.keys())
+        for attribute in attribute_ids:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
         # to avoid errors because of too large Request-URI we split up the requests
         frames = []
         for t in transcripts_split:
             added_filters = self.__add_filter(
                 dataset, "name", query_filter, "value", ','.join(t))
-            frames.append(self.__search_for_resources(root))
+            frames.append(self.__search_for_resources(root, attribute_ids=attribute_ids))
             dataset.remove(added_filters)
 
         result = pd.concat(frames, ignore_index=True)
@@ -982,7 +911,6 @@ co
             if gene_id in self.ids_proxy:
                 return self.ids_proxy[gene_id]
 
-        dataset_attributes = self.get_dataset_attributes(_db)
         root = self.__create_biomart_header_xml(self.biomart_head)
         dataset = ElementTree.SubElement(root, "Dataset")
         dataset.attrib.update({"name": _db, "interface": "default"})
@@ -990,15 +918,8 @@ co
                           "value", ','.join(gene_ids))
         for attribute in attributes:
             self.__add_attribute(dataset, "name", attribute)
-            try:
-                attribute_name = self.get_attribute_name_for_id(dataset_attributes, attribute)
-                attributes.update({attribute: attribute_name})
-            except:
-                logging.error("Attribute {} not found for dataset {} on {}".format(
-                    attribute, _db, self.biomart_url))
-                sys.exit(1)
 
-        result = self.__search_for_resources(root)
+        result = self.__search_for_resources(root, attribute_ids=list(attributes.keys()))
         if result.empty:
             logging.warning("No entry found for id %s" % gene_id)
             return None

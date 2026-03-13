@@ -11,6 +11,15 @@ EpitopePrediction.External
     :show-inheritance:
     :inherited-members:
 
+EpitopePrediction.ANN
+---------------------
+
+.. automodule:: epytope.EpitopePrediction.ANN
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
+
 EpitopePrediction.PSSM
 ----------------------
 
@@ -34,7 +43,6 @@ Module contents
 
 .. automodule:: epytope.EpitopePrediction
     :members:
-    :undoc-members:
     :undoc-members:
     :show-inheritance:
     :inherited-members:

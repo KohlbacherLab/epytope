@@ -1,6 +1,7 @@
 __author__ = 'Schubert'
 
 import unittest
+from shutil import which
 
 
 from epytope.Core.Allele import Allele
@@ -9,6 +10,10 @@ from epytope.EpitopePrediction import EpitopePredictorFactory
 from epytope.EpitopeSelection.OptiTope import OptiTope
 
 
+_glpk_available = which("glpsol") is not None
+
+
+@unittest.skipUnless(_glpk_available, "GLPK solver (glpsol) not found in PATH")
 class OptiTopeTestCase(unittest.TestCase):
     """
         Unittest for OptiTope

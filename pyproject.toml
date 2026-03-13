@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epytope"
+version = "4.0.0"
+description = "A Framework for Epitope Detection and Vaccine Design"
+readme = "README.md"
+license = "BSD-3-Clause"
+requires-python = ">=3.11"
+authors = [
+    {name = "Benjamin Schubert", email = "benjamin.schubert@helmholtz-muenchen.de"},
+    {name = "Mathias Walzer", email = "walzer@ebi.ac.uk"},
+    {name = "Christopher Mohr", email = "contact.cmohr@gmail.com"},
+    {name = "Leon Kuchenbecker", email = "leon.kuchenbecker@uni-tuebingen.de"},
+]
+maintainers = [
+    {name = "Christopher Mohr", email = "contact.cmohr@gmail.com"},
+    {name = "Jonas Scheid", email = "jonas.scheid@uni-tuebingen.de"},
+]
+keywords = ["epitope", "prediction", "vaccine", "design", "HLA", "MHC"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "pandas>=2.1",
+    "pyomo>=4.0",
+    "PyMySQL",
+    "biopython",
+    "PyVCF3",
+    "requests",
+    "beautifulsoup4",
+    "urllib3",
+]
+
+[project.optional-dependencies]
+mhcflurry = ["mhcflurry>=2.0"]
+dev = ["pytest", "pytest-cov"]
+docs = ["sphinx", "sphinx-rtd-theme"]
+
+[project.urls]
+Homepage = "https://github.com/KohlbacherLab/epytope"
+Documentation = "https://epytope.readthedocs.io"
+
+[tool.pytest.ini_options]
+python_files = ["Test*.py", "test_*.py"]
+python_classes = ["TestCase*", "Test*"]
+python_functions = ["test_*"]
+
+[tool.setuptools.packages.find]
+include = ["epytope*"]
+
+[tool.setuptools.package-data]
+"epytope.Data.examples" = ["*.*"]
+"epytope.Data.svms.svmtap" = ["*"]
+"epytope.Data.svms.svmhc" = ["*"]
+"epytope.Data.svms.unitope" = ["*"]

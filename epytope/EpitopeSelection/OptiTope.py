@@ -42,7 +42,7 @@ from epytope.Core.Result import EpitopePredictionResult
 from epytope.Core.Peptide import Peptide
 from epytope.IO.Utils import capture_stdout
 
-class OptiTope(object):
+class OptiTope:
     """
     This class implements the epitope selection functionality
     of OptiTope published by Toussaint et al. [1].
@@ -196,13 +196,13 @@ class OptiTope(object):
         model = ConcreteModel()
 
         #set definition
-        model.Q = Set(initialize=variations)
+        model.Q = Set(initialize=sorted(variations))
 
-        model.E = Set(initialize=set(peps.keys()))
-        
-        model.A = Set(initialize=list(alleles_I.keys()))
-        model.E_var = Set(model.Q, initialize=lambda mode, v: epi_var[v])
-        model.A_I = Set(model.A, initialize=lambda model, a: alleles_I[a])
+        model.E = Set(initialize=sorted(peps.keys()))
+
+        model.A = Set(initialize=sorted(alleles_I.keys()))
+        model.E_var = Set(model.Q, initialize=lambda mode, v: sorted(epi_var[v]))
+        model.A_I = Set(model.A, initialize=lambda model, a: sorted(alleles_I[a]))
 
 
         #parameter definition

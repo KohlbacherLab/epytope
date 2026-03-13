@@ -3,14 +3,27 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v4.0.0 - 2026-03-06
+
+### `Changed`
+
+- **BREAKING**: Minimum Python version raised to 3.11, build via `pyproject.toml`
+- **BREAKING**: Removed `mhcnuggets` predictors; `mhcflurry` is now optional (`pip install epytope[mhcflurry]`)
+- Full pandas 3.0 compatibility
+- Added MHCFlurry 2.0 predictor class
+- Migrated CI to `pytest` with Python 3.11/3.12 matrix
+
+### `Fixed`
+
+- Fixed `MartsAdapter` `KeyError` caused by inconsistent BioMart display-name headers
+- Fixed nondeterministic OptiTope results due to unordered set inputs to Pyomo
+
 ## v3.4.0 - 2024-01-10
 
 ### `Added`
 
 -  [#93](https://github.com/KohlbacherLab/epytope/pull/93) Added NetMHCIIpan version 4.2 interface [#92](https://github.com/KohlbacherLab/epytope/issues/92)
 -  [#96](https://github.com/KohlbacherLab/epytope/pull/96) Added NetMHCIIpan version 4.3 interface [#95](https://github.com/KohlbacherLab/epytope/issues/95)
-
-### `Changed`
 
 ### `Fixed`
 
