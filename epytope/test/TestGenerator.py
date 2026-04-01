@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from epytope.IO import MartsAdapter, read_annovar_exonic
+from epytope.IO import read_annovar_exonic
+from epytope.IO.EnsemblRESTAdapter import EnsemblRESTAdapter
 from epytope.Core.Variant import VariationType
 from epytope.test.DummyAdapter import DummyAdapter
 from epytope.test.VariantsForTesting import *
@@ -34,7 +35,7 @@ class GeneratorTest(TestCase):
                                         "NM_001114377", 653, 217, "", "")
                                     }, False, True)
 
-        self.db_adapter = MartsAdapter(biomart="http://grch37.ensembl.org")
+        self.db_adapter = EnsemblRESTAdapter(server="https://grch37.rest.ensembl.org")
 
     def test__incorp_snp(self):
         ts = list("TESTSEQUENCE")
@@ -270,7 +271,7 @@ class GeneratorTest(TestCase):
         coding['NM_080751'] = MutationSyntax('NM_080751',2629,876,'c.2630C>T','p.Pro877Leu')
         var = Variant('line0',0,20,2621905,'C','T',coding,True,False)
         var.gene = 'TMC2'
-        ma = MartsAdapter(biomart="http://ensembl.org")
+        ma = EnsemblRESTAdapter(server="https://rest.ensembl.org")
 
         vars = [var, Variant("testInsertion", 2, 20, 2621899, "", "AAAAAA", {'NM_080751':MutationSyntax('NM_080751',2625,876,'c.2630C>T','p.Pro877Leu')}, True, False)]
 

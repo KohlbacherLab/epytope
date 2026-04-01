@@ -1,7 +1,6 @@
 from unittest import TestCase
 from epytope.Core import Allele
 from epytope.IO import FileReader
-from epytope.IO.MartsAdapter import MartsAdapter
 from epytope.IO.EnsemblRESTAdapter import EnsemblRESTAdapter
 from epytope.IO.EnsemblAdapter import EnsemblDB
 from epytope.IO.RefSeqAdapter import RefSeqAdapter
@@ -42,7 +41,7 @@ class TestIO(TestCase):
         self.vcf_path1 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile1.vcf")  # general
         self.vcf_path2 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile2.vcf")  # no annot
         self.vcf_path3 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile3.vcf")  # checkallvatiationtypesindetail
-        self.expected_biomart_mart_header = ["database","default","displayName","host", "includeDatasets","martUser","name","path","port","serverVirtualSchema","visible"]
+
 
     def test_read_lines(self):
         alleles = FileReader.read_lines(self.ale_path, in_type=Allele)
