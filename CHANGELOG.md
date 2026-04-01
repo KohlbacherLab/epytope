@@ -3,6 +3,17 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v4.1.0 - Unreleased
+
+### `Added`
+
+- [#107](https://github.com/KohlbacherLab/epytope/pull/107) Added `EnsemblRESTAdapter` and `PyEnsemblAdapter` as drop-in replacements for `MartsAdapter` [#103](https://github.com/KohlbacherLab/epytope/issues/103) [#106](https://github.com/KohlbacherLab/epytope/issues/106)
+
+### `Changed`
+
+- [#107](https://github.com/KohlbacherLab/epytope/pull/107) Switched CI tests from `MartsAdapter` (BioMart) to `EnsemblRESTAdapter` (REST API) to eliminate flaky BioMart failures
+- [#107](https://github.com/KohlbacherLab/epytope/pull/107) Restricted external tool CI tests to PRs targeting `main`/`master` only
+
 ## v4.0.0 - 2026-03-06
 
 ### `Changed`
