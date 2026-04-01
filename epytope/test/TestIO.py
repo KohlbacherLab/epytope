@@ -2,6 +2,7 @@ from unittest import TestCase
 from epytope.Core import Allele
 from epytope.IO import FileReader
 from epytope.IO.EnsemblRESTAdapter import EnsemblRESTAdapter
+from epytope.IO.PyEnsemblAdapter import PyEnsemblAdapter
 from epytope.IO.EnsemblAdapter import EnsemblDB
 from epytope.IO.RefSeqAdapter import RefSeqAdapter
 from epytope.IO.UniProtAdapter import UniProtDB
@@ -133,6 +134,35 @@ class TestIO(TestCase):
             self.assertEqual(adapter.get_protein_ids_from_transcripts(["ENST00000361221"])["uniprot_id"][0], "Q9HCE6")
             self.assertIsNotNone(adapter.get_variants_from_transcript_id('ENST00000361221'))
             self.assertEqual(adapter.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0],"TSPAN6")
+
+    def test_PyEnsemblAdapter(self):
+        """Test PyEnsemblAdapter against known GRCh37 values."""
+        adapter = PyEnsemblAdapter(release=75, species='human', auto_download=False)
+        # Transcript sequence
+        self.assertEqual(self.ENST00000361221[2], adapter.get_transcript_sequence(
+            'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
+        # Versioned ID
+        self.assertEqual(self.ENST00000000233_5[2], adapter.get_transcript_sequence(
+            'ENST00000000233.5', type=EIdentifierTypes.ENSEMBL))
+        # Transcript information
+        self.assertDictEqual(self.ENST00000361221, adapter.get_transcript_information(
+            'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
+        # Protein sequence
+        self.assertEqual(self.ENSP00000369497, adapter.get_product_sequence(
+            'ENSP00000369497', type=EIdentifierTypes.ENSEMBL))
+        # Transcript info from protein ID
+        self.assertEqual(self.ENST00000361221, adapter.get_transcript_information_from_protein_id(
+            'ENSP00000355060'))
+        # Gene by position
+        self.assertEqual("TP53", adapter.get_gene_by_position(17, 7566927, 7566927))
+        # Gene names from IDs
+        self.assertEqual(adapter.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0], "TSPAN6")
+        # Nonexistent transcript returns None
+        self.assertIsNone(adapter.get_transcript_information(
+            'ENST99999999999', type=EIdentifierTypes.ENSEMBL))
+        # RefSeq not supported, returns None
+        self.assertIsNone(adapter.get_product_sequence(
+            'NP_001005353', type=EIdentifierTypes.REFSEQ))
 
     def test_UniProtAdapter(self):
         up_adapter = UniProtDB("uniprot_adapter")
