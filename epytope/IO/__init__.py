@@ -9,3 +9,9 @@ from epytope.IO.RefSeqAdapter import RefSeqAdapter
 from epytope.IO.UniProtAdapter import UniProtDB
 from epytope.IO.EnsemblAdapter import EnsemblDB
 from epytope.IO.ADBAdapter import EIdentifierTypes, EAdapterFields
+from epytope.IO.EnsemblRESTAdapter import EnsemblRESTAdapter
+
+try:
+    from epytope.IO.PyEnsemblAdapter import PyEnsemblAdapter
+except ImportError:
+    pass

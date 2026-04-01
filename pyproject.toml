@@ -41,6 +41,7 @@ dependencies = [
 
 [project.optional-dependencies]
 mhcflurry = ["mhcflurry>=2.0"]
+pyensembl = ["pyensembl>=2.0"]
 dev = ["pytest", "pytest-cov"]
 docs = ["sphinx", "sphinx-rtd-theme"]
 
