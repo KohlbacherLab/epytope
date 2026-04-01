@@ -207,8 +207,8 @@ class BIMAS(APSSMEpitopePrediction):
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
         return EpitopePredictionResult(
-            super(BIMAS, self).predict(peptides, alleles=alleles,
-                                       **kwargs).applymap(lambda x: math.pow(math.e, x)))
+            super().predict(peptides, alleles=alleles,
+                           **kwargs).map(lambda x: math.pow(math.e, x)))
 
 
 class Epidemix(APSSMEpitopePrediction):
@@ -361,7 +361,7 @@ class SMM(APSSMEpitopePrediction):
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
         return EpitopePredictionResult(
-            super(SMM, self).predict(peptides, alleles=alleles, **kwargs).applymap(lambda x: math.pow(10, x)))
+            super().predict(peptides, alleles=alleles, **kwargs).map(lambda x: math.pow(10, x)))
 
 
 class SMMPMBEC(APSSMEpitopePrediction):
@@ -431,7 +431,7 @@ class SMMPMBEC(APSSMEpitopePrediction):
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
         return EpitopePredictionResult(
-            super(SMMPMBEC, self).predict(peptides, alleles=alleles, **kwargs).applymap(lambda x: math.pow(10, x)))
+            super().predict(peptides, alleles=alleles, **kwargs).map(lambda x: math.pow(10, x)))
 
 
 class ARB(APSSMEpitopePrediction):
@@ -613,9 +613,9 @@ class ComblibSidney2008(APSSMEpitopePrediction):
         :rtype: :class:`~epytope.Core.Result.EpitopePredictionResult`
         """
         return EpitopePredictionResult(
-            super(ComblibSidney2008, self).predict(peptides,
-                                                   alleles=alleles,
-                                                   **kwargs).applymap(lambda x: math.pow(10, x)))
+            super().predict(peptides,
+                           alleles=alleles,
+                           **kwargs).map(lambda x: math.pow(10, x)))
 
 
 class TEPITOPEpan(APSSMEpitopePrediction):

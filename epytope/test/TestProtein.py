@@ -79,7 +79,8 @@ class TestProteinClass(unittest.TestCase):
         dummy_vars = [var_10, var_11, var_12]
 
         proteins = []
-        t = list(generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ))
+        t = [trans for trans in generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ)
+             if trans.vars]
         for trans in t:
             # check gene id field:
             print(trans)

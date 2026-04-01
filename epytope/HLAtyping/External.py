@@ -240,8 +240,8 @@ class Seq2HLA_2_2(AExternalHLATyping):
         if "-2" not in options:
             ValueError("Seq2HLA only supports paired-end inputs. Please use the options "
                        "parameter to specify the second ngs file (e.g. options='-2 /path/to/ngs2.fq'")
-        return super(Seq2HLA_2_2, self).predict(ngsFile, output, command=command,
-                                                options=options, delete=delete, **kwargs)
+        return super().predict(ngsFile, output, command=command,
+                              options=options, delete=delete, **kwargs)
 
     def parse_external_result(self, output):
         """

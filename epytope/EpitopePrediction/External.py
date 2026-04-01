@@ -310,7 +310,7 @@ class NetMHC_3_4(AExternalEpitopePrediction):
         :return: The external version of the tool or None if tool does not support versioning
         :rtype: dict
         """
-        return super(NetMHC_3_4, self).get_external_version()
+        return super().get_external_version()
 
     def prepare_input(self, input, file):
         """
@@ -1493,7 +1493,7 @@ class NetMHCIIpan_4_0(NetMHCIIpan_3_1):
     """
     __name = "netmhcIIpan"
     __version = "4.0"
-    __supported_length = frozenset(list(range(9,57)))
+    __supported_length = frozenset(list(range(9, 57)))
     __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
@@ -1597,20 +1597,20 @@ class NetMHCIIpan_4_1(NetMHCIIpan_4_0):
 
         return result
 
+
 class NetMHCIIpan_4_2(NetMHCIIpan_4_1):
     """
     Implementation of NetMHCIIpan 4.2 adapter.
     """
     __name = "netmhcIIpan"
     __version = "4.2"
-    __supported_length = frozenset(list(range(9,57)))
+    __supported_length = frozenset(list(range(9, 57)))
     __allele_import_name = f"{__name}_{__version}".replace('.', '_')
     __alleles = getattr(__import__("epytope.Data.supportedAlleles.external." + __allele_import_name,
                                    fromlist=[__allele_import_name])
                         , __allele_import_name)
 
     __command = "netMHCIIpan -f {peptides} -inptype 1 -a {alleles} {options} -xls -xlsfile {out}"
-
 
     @property
     def version(self):
@@ -1631,7 +1631,7 @@ class NetMHCIIpan_4_3(NetMHCIIpan_4_2):
     """
     __name = "netmhcIIpan"
     __version = "4.3"
-    __supported_length = frozenset(list(range(9,57)))
+    __supported_length = frozenset(list(range(9, 57)))
 
     __command = "netMHCIIpan -f {peptides} -inptype 1 -a {alleles} {options} -xls -xlsfile {out}"
 
@@ -1646,7 +1646,7 @@ class NetMHCIIpan_4_3(NetMHCIIpan_4_2):
         Defines the commandline call for external tool
         """
         return self.__command
-    
+
     def parse_external_result(self, file):
         """
         Parses external results and returns the result containing the predictors string representation
@@ -1666,7 +1666,6 @@ class NetMHCIIpan_4_3(NetMHCIIpan_4_2):
             for i, a in enumerate(alleles):
                 scores[a][pep_seq] = float(row[ScoreIndex.NETMHCIIPAN_4_3 + i * Offset.NETMHCIIPAN_4_3])
                 ranks[a][pep_seq] = float(row[RankIndex.NETMHCIIPAN_4_3 + i * Offset.NETMHCIIPAN_4_3])
-                # Create dictionary with hierarchy: {'Allele1': {'Score': {'Pep1': Score1, 'Pep2': Score2,..}, 'Rank': {'Pep1': RankScore1, 'Pep2': RankScore2,..}}, 'Allele2':...}
         result = {allele: {metric:(list(scores.values())[j] if metric == "Score" else list(ranks.values())[j]) for metric in ["Score", "Rank"]} for j, allele in enumerate(alleles)}
 
         return result

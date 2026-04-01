@@ -1,5 +1,6 @@
 __author__ = 'schubert'
 import unittest
+from shutil import which
 
 
 from epytope.Core import Peptide, Allele
@@ -8,6 +9,10 @@ from epytope.EpitopePrediction import EpitopePredictorFactory
 from epytope.EpitopeAssembly import EpitopeAssembly, ParetoEpitopeAssembly
 
 
+_glpk_available = which("glpsol") is not None
+
+
+@unittest.skipUnless(_glpk_available, "GLPK solver (glpsol) not found in PATH")
 class EpitopeAssemblyTestCase(unittest.TestCase):
 
     def setUp(self):

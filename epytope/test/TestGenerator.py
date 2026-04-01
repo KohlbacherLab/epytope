@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from epytope.IO import MartsAdapter, read_annovar_exonic
+from epytope.IO import read_annovar_exonic
+from epytope.IO.EnsemblRESTAdapter import EnsemblRESTAdapter
 from epytope.Core.Variant import VariationType
 from epytope.test.DummyAdapter import DummyAdapter
 from epytope.test.VariantsForTesting import *
@@ -34,7 +35,7 @@ class GeneratorTest(TestCase):
                                         "NM_001114377", 653, 217, "", "")
                                     }, False, True)
 
-        self.db_adapter = MartsAdapter(biomart="http://grch37.ensembl.org")
+        self.db_adapter = EnsemblRESTAdapter(server="https://grch37.rest.ensembl.org")
 
     def test__incorp_snp(self):
         ts = list("TESTSEQUENCE")
@@ -65,7 +66,8 @@ class GeneratorTest(TestCase):
             [self.non_syn_hetero_snp, self.non_frame_shift_del, self.syn_homo_snp]
 
         trans = \
-            [t for t in Generator.generate_transcripts_from_variants(vars_, self.db_adapter, EIdentifierTypes.REFSEQ)]
+            [t for t in Generator.generate_transcripts_from_variants(vars_, self.db_adapter, EIdentifierTypes.REFSEQ)
+             if t.vars]
 
         self.assertTrue(len(trans) == 2**sum(not v.isHomozygous for v in vars_))
 
@@ -84,17 +86,17 @@ class GeneratorTest(TestCase):
 
         # INSERTIONS:
         dummy_vars = [var_3]
-        trans = next(Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ))
+        trans = next(t for t in Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ) if t.vars)
         self.assertEqual(str(trans), "AAAAACCTTCCCGGGGG")
 
         # SNPs:
         dummy_vars = [var_1]
-        trans = next(Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ))
+        trans = next(t for t in Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ) if t.vars)
         self.assertEqual(str(trans), "ATAAACCCCCGGGGG")
 
         # DELETIONS:
         dummy_vars = [var_4]
-        trans = next(Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ))
+        trans = next(t for t in Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ) if t.vars)
         self.assertEqual(str(trans), "AAAAAGGGGG")
 
     def test_offset_single(self):
@@ -111,13 +113,13 @@ class GeneratorTest(TestCase):
 
         # 1) INS, SNP, DEL
         dummy_vars = [var_3, var_7, var_6]
-        trans = next(Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ))
+        trans = next(t for t in Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ) if t.vars)
 
         self.assertEqual(str(trans), "AAAAACCTTCTGGGG")
 
         # 2.) INS, DEL, INS
         dummy_vars = [var_9, var_4, var_8]
-        trans = next(Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ))
+        trans = next(t for t in Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ) if t.vars)
         self.assertEqual(str(trans), "AATTAAAGGGGGTTT")
 
     def test_heterozygous_variants(self):
@@ -148,7 +150,7 @@ class GeneratorTest(TestCase):
         # 1) INS, SNP, DEL
         dummy_vars = [var_10, var_11, var_12]
         trans_gener = Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ)
-        trans = [t for t in trans_gener]
+        trans = [t for t in trans_gener if t.vars]
 
         trans = list(map(str, trans))
 
@@ -270,7 +272,7 @@ class GeneratorTest(TestCase):
         coding['NM_080751'] = MutationSyntax('NM_080751',2629,876,'c.2630C>T','p.Pro877Leu')
         var = Variant('line0',0,20,2621905,'C','T',coding,True,False)
         var.gene = 'TMC2'
-        ma = MartsAdapter(biomart="http://ensembl.org")
+        ma = EnsemblRESTAdapter(server="https://rest.ensembl.org")
 
         vars = [var, Variant("testInsertion", 2, 20, 2621899, "", "AAAAAA", {'NM_080751':MutationSyntax('NM_080751',2625,876,'c.2630C>T','p.Pro877Leu')}, True, False)]
 
@@ -327,7 +329,7 @@ class GeneratorTest(TestCase):
         dummy_vars = [var_10, var_11, var_12]
         exp_prot = set(['KFG', 'KNLG', 'KFPPG', 'KNFPRG', 'GFK', 'GGLK', 'GFPPK', 'GFPPK', 'GGFPQK'])
         prot = set([str(x) for x in Generator.generate_proteins_from_transcripts(
-                           Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ))]
+                           (t for t in Generator.generate_transcripts_from_variants(dummy_vars, dummy_db, EIdentifierTypes.REFSEQ) if t.vars))]
                    )
         self.assertTrue(len(prot-exp_prot) == 0)
         self.assertTrue(len(exp_prot-prot) == 0)

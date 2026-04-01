@@ -2,5 +2,5 @@
 This is epytope
 """
 
-__all__ = ["Core", "EpitopeSelection", "HLAtyping", "IO", "Prediction", "Distance2Self"
-           "unittest"]
+__all__ = ["Core", "EpitopePrediction", "CleavagePrediction", "TAPPrediction",
+           "EpitopeSelection", "EpitopeAssembly", "HLAtyping", "IO"]

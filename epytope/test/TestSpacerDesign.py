@@ -1,6 +1,7 @@
 __author__ = 'schubert'
 
 import unittest
+from shutil import which
 
 from epytope.Core.Allele import Allele
 from epytope.Core.Peptide import Peptide
@@ -9,6 +10,10 @@ from epytope.CleavagePrediction import CleavageSitePredictorFactory
 from epytope.EpitopeAssembly.EpitopeAssembly import EpitopeAssemblyWithSpacer
 
 
+_glpk_available = which("glpsol") is not None
+
+
+@unittest.skipUnless(_glpk_available, "GLPK solver (glpsol) not found in PATH")
 class SpacerDesignTestCase(unittest.TestCase):
     """
         Unittest for OptiTope
