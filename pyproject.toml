@@ -42,7 +42,7 @@ dependencies = [
 [project.optional-dependencies]
 mhcflurry = ["mhcflurry>=2.0"]
 pyensembl = ["pyensembl>=2.0"]
-dev = ["pytest", "pytest-cov"]
+dev = ["pytest", "pytest-cov", "pyensembl>=2.0"]
 docs = ["sphinx", "sphinx-rtd-theme"]
 
 [project.urls]
