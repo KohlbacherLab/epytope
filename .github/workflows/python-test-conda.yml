@@ -25,6 +25,7 @@ jobs:
     - name: Install epytope
       shell: bash -el {0}
       run: |
+        pip install "numpy<2"
         pip install ".[dev]"
     - name: Install Test dependencies
       shell: bash -el {0}
