@@ -3,15 +3,21 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v4.0.0 - 2026-03-06
+## v4.0.0 - 2026-04-01
+
+### `Added`
+
+- [#107](https://github.com/KohlbacherLab/epytope/pull/107) Added `EnsemblRESTAdapter` and `PyEnsemblAdapter` as drop-in replacements for `MartsAdapter` [#103](https://github.com/KohlbacherLab/epytope/issues/103) [#106](https://github.com/KohlbacherLab/epytope/issues/106)
+- Added MHCFlurry 2.0 predictor class
 
 ### `Changed`
 
 - **BREAKING**: Minimum Python version raised to 3.11, build via `pyproject.toml`
 - **BREAKING**: Removed `mhcnuggets` predictors; `mhcflurry` is now optional (`pip install epytope[mhcflurry]`)
 - Full pandas 3.0 compatibility
-- Added MHCFlurry 2.0 predictor class
 - Migrated CI to `pytest` with Python 3.11/3.12 matrix
+- [#107](https://github.com/KohlbacherLab/epytope/pull/107) Switched CI tests from `MartsAdapter` (BioMart) to `EnsemblRESTAdapter` (REST API) to eliminate flaky BioMart failures
+- [#107](https://github.com/KohlbacherLab/epytope/pull/107) Restricted external tool CI tests to PRs targeting `main`/`master` only
 
 ### `Fixed`
 

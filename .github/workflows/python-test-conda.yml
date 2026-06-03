@@ -25,12 +25,16 @@ jobs:
     - name: Install epytope
       shell: bash -el {0}
       run: |
-        pip install .
+        pip install "numpy<2"
+        pip install ".[dev]"
     - name: Install Test dependencies
       shell: bash -el {0}
       run: |
-        pip install pytest
         conda install -c conda-forge glpk
+    - name: Download PyEnsembl data
+      shell: bash -el {0}
+      run: |
+        pyensembl install --release 75 --species human
     - name: Run Tests
       shell: bash -el {0}
       run: pytest epytope/test/ --ignore=epytope/test/external -v

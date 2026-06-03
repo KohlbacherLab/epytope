@@ -362,6 +362,13 @@ def generate_transcripts_from_variants(vars, dbadapter, id_type, db="hsapiens_ge
         if not _check_for_problematic_variants(vs):
             warnings.warn("Intersecting variants found for Transcript %s"%tId)
             continue
+        # Always yield the unmodified reference transcript (wildtype).
+        # The variant combination generator only produces a no-variant path
+        # when heterozygous variants create branching. When all variants are
+        # homozygous (e.g. forced to prevent 2^N combinatorial explosion),
+        # no wildtype transcript would be generated otherwise.
+        yield Transcript("".join(tSeq), geneid, tId + ":epytope_wt", vars={})
+
         generate_transcripts_from_variants.transOff = 0
         for tId, varSeq, varComb in _generate_combinations(tId, vs, list(tSeq), {}, 0, isReverse=strand == REVERS):
             yield Transcript("".join(varSeq), geneid, tId, vars=varComb)

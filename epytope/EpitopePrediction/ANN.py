@@ -349,7 +349,8 @@ class MHCFlurryPredictor_2_0(MHCFlurryPredictor_1_4_3):
                 )
                 for p, row in zip(peps, df.itertuples()):
                     affinity = row.affinity
-                    percentile = row.affinity_percentile
+                    percentile = getattr(row, 'presentation_percentile',
+                                         getattr(row, 'affinity_percentile', None))
                     if binary:
                         scores[a][p] = 1.0 if affinity <= 500 else 0.0
                     else:

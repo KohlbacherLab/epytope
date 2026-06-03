@@ -1,7 +1,8 @@
 from unittest import TestCase
 from epytope.Core import Allele
 from epytope.IO import FileReader
-from epytope.IO.MartsAdapter import MartsAdapter
+from epytope.IO.EnsemblRESTAdapter import EnsemblRESTAdapter
+from epytope.IO.PyEnsemblAdapter import PyEnsemblAdapter
 from epytope.IO.EnsemblAdapter import EnsemblDB
 from epytope.IO.RefSeqAdapter import RefSeqAdapter
 from epytope.IO.UniProtAdapter import UniProtDB
@@ -41,7 +42,7 @@ class TestIO(TestCase):
         self.vcf_path1 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile1.vcf")  # general
         self.vcf_path2 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile2.vcf")  # no annot
         self.vcf_path3 = os.path.join(os.path.dirname(inspect.getfile(epytope)), "Data/examples/vcftestfile3.vcf")  # checkallvatiationtypesindetail
-        self.expected_biomart_mart_header = ["database","default","displayName","host", "includeDatasets","martUser","name","path","port","serverVirtualSchema","visible"]
+
 
     def test_read_lines(self):
         alleles = FileReader.read_lines(self.ale_path, in_type=Allele)
@@ -90,55 +91,78 @@ class TestIO(TestCase):
         self.assertEqual(ed.get_transcript_information("ENSP00000337602", type=EIdentifierTypes.ENSEMBL)[0],
                          self.ENSEMBL_ensg)
 
-    def test_MartsAdapter(self):
-        # test most recent and stable GRCh37 Mart version
-        urls = ["https://www.ensembl.org", "https://grch37.ensembl.org"]
+    def test_EnsemblRESTAdapter(self):
+        # test GRCh38 and GRCh37 REST API servers
+        servers = ["https://rest.ensembl.org", "https://grch37.rest.ensembl.org"]
         self.maxDiff = None
-        for url in urls:
-            ma = MartsAdapter(biomart=url)
-            if "grch37" in url:
-                self.assertEqual((1515, 1529), ma.get_transcript_position(
-                    'ENST00000361221', 17953929, 17953943, type=EIdentifierTypes.ENSEMBL))
-                self.assertEqual("TP53", ma.get_gene_by_position(17, 7566927, 7566927))
-                self.assertEqual(self.ENST00000361221[2], ma.get_transcript_sequence(
+        for server in servers:
+            adapter = EnsemblRESTAdapter(server=server)
+            if "grch37" in server:
+                self.assertEqual("TP53", adapter.get_gene_by_position(17, 7566927, 7566927))
+                self.assertEqual(self.ENST00000361221[2], adapter.get_transcript_sequence(
                 'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
-                self.assertIsNone(ma.get_transcript_sequence(
+                self.assertIsNone(adapter.get_transcript_sequence(
                 "ENST00000614237", type=EIdentifierTypes.ENSEMBL))
-                self.assertEqual(self.ENST00000000233_5[2], ma.get_transcript_sequence(
+                self.assertEqual(self.ENST00000000233_5[2], adapter.get_transcript_sequence(
                 "ENST00000000233.5", type=EIdentifierTypes.ENSEMBL))
-                self.assertDictEqual(self.ENST00000361221, ma.get_transcript_information(
+                self.assertDictEqual(self.ENST00000361221, adapter.get_transcript_information(
                 'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
-                self.assertIsNone(ma.get_transcript_information(
+                self.assertIsNone(adapter.get_transcript_information(
                 "ENST00000614237", type=EIdentifierTypes.ENSEMBL))
-                self.assertEqual(self.ENST00000361221, ma.get_transcript_information_from_protein_id('ENSP00000355060'))
-                self.assertEqual(ma.get_ensembl_ids_from_gene("TP53")[0][EAdapterFields.PROTID], ma.get_ensembl_ids_from_gene("ENSG00000141510.11", type=EIdentifierTypes.ENSEMBL)[0][EAdapterFields.PROTID])
+                self.assertEqual(self.ENST00000361221, adapter.get_transcript_information_from_protein_id('ENSP00000355060'))
+                self.assertEqual(adapter.get_ensembl_ids_from_gene("TP53")[0][EAdapterFields.PROTID], adapter.get_ensembl_ids_from_gene("ENSG00000141510.11", type=EIdentifierTypes.ENSEMBL)[0][EAdapterFields.PROTID])
             else:
-                self.assertEqual((1054.0, 1054.0),ma.get_transcript_position(
-                    "ENST00000614237", 7566927, 7566927, type=EIdentifierTypes.ENSEMBL))
-                self.assertEqual("SENP3", ma.get_gene_by_position(17, 7566927, 7566927))
-                self.assertEqual(self.ENST00000361221_grch38[2], ma.get_transcript_sequence(
+                self.assertEqual("SENP3-EIF4A1", adapter.get_gene_by_position(17, 7566927, 7566927))
+                self.assertEqual(self.ENST00000361221_grch38[2], adapter.get_transcript_sequence(
                 'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
-                self.assertIsNotNone(ma.get_transcript_sequence(
+                self.assertIsNotNone(adapter.get_transcript_sequence(
                 "ENST00000614237", type=EIdentifierTypes.ENSEMBL))
-                self.assertDictEqual(self.ENST00000361221_grch38, ma.get_transcript_information(
+                self.assertDictEqual(self.ENST00000361221_grch38, adapter.get_transcript_information(
                 'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
-                self.assertIsNotNone(ma.get_transcript_information(
+                self.assertIsNotNone(adapter.get_transcript_information(
                 "ENST00000614237", type=EIdentifierTypes.ENSEMBL))
-                self.assertEqual(self.ENST00000361221_grch38, ma.get_transcript_information_from_protein_id('ENSP00000355060'))
-            self.assertIsNone(ma.get_product_sequence(
+                self.assertEqual(self.ENST00000361221_grch38, adapter.get_transcript_information_from_protein_id('ENSP00000355060'))
+            self.assertIsNone(adapter.get_product_sequence(
                 "Q15942", type=EIdentifierTypes.UNIPROT))
-            self.assertEqual(self.NP_001005353, ma.get_product_sequence(
+            self.assertEqual(self.NP_001005353, adapter.get_product_sequence(
                 "NP_001005353", type=EIdentifierTypes.REFSEQ))
-            self.assertEqual(self.ENSP00000369497, ma.get_product_sequence(
+            self.assertEqual(self.ENSP00000369497, adapter.get_product_sequence(
                 "ENSP00000369497", type=EIdentifierTypes.ENSEMBL))
-            self.assertIsNotNone(ma.get_ensembl_ids_from_gene("TP53"))
-            self.assertIsNotNone(ma.get_genes_from_location("1","100000","200000"))
-            self.assertIsNotNone(ma.get_protein_ids_from_transcripts(["ENST00000361221"]))
-            self.assertEqual(ma.get_protein_ids_from_transcripts(["ENST00000361221"])["uniprot_id"][0], "Q9HCE6")
-            self.assertIsNotNone(ma.get_variants_from_transcript_id('ENST00000361221'))
-            self.assertTrue(all(ma.get_marts().columns == self.expected_biomart_mart_header))
-            self.assertIsNotNone(ma.get_datasets("ENSEMBL_MART_ENSEMBL"))
-            self.assertEqual(ma.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0],"TSPAN6")
+            self.assertIsNotNone(adapter.get_ensembl_ids_from_gene("TP53"))
+            self.assertIsNotNone(adapter.get_genes_from_location("1","100000","200000"))
+            self.assertIsNotNone(adapter.get_protein_ids_from_transcripts(["ENST00000361221"]))
+            self.assertEqual(adapter.get_protein_ids_from_transcripts(["ENST00000361221"])["uniprot_id"][0], "Q9HCE6")
+            self.assertIsNotNone(adapter.get_variants_from_transcript_id('ENST00000361221'))
+            self.assertEqual(adapter.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0],"TSPAN6")
+
+    def test_PyEnsemblAdapter(self):
+        """Test PyEnsemblAdapter against known GRCh37 values."""
+        adapter = PyEnsemblAdapter(release=75, species='human', auto_download=False)
+        # Transcript sequence
+        self.assertEqual(self.ENST00000361221[2], adapter.get_transcript_sequence(
+            'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
+        # Versioned ID
+        self.assertEqual(self.ENST00000000233_5[2], adapter.get_transcript_sequence(
+            'ENST00000000233.5', type=EIdentifierTypes.ENSEMBL))
+        # Transcript information
+        self.assertDictEqual(self.ENST00000361221, adapter.get_transcript_information(
+            'ENST00000361221', type=EIdentifierTypes.ENSEMBL))
+        # Protein sequence
+        self.assertEqual(self.ENSP00000369497, adapter.get_product_sequence(
+            'ENSP00000369497', type=EIdentifierTypes.ENSEMBL))
+        # Transcript info from protein ID
+        self.assertEqual(self.ENST00000361221, adapter.get_transcript_information_from_protein_id(
+            'ENSP00000355060'))
+        # Gene by position
+        self.assertEqual("TP53", adapter.get_gene_by_position(17, 7566927, 7566927))
+        # Gene names from IDs
+        self.assertEqual(adapter.get_gene_names_from_ids(["ENSG00000000003"])["gene_name"][0], "TSPAN6")
+        # Nonexistent transcript returns None
+        self.assertIsNone(adapter.get_transcript_information(
+            'ENST99999999999', type=EIdentifierTypes.ENSEMBL))
+        # RefSeq not supported, returns None
+        self.assertIsNone(adapter.get_product_sequence(
+            'NP_001005353', type=EIdentifierTypes.REFSEQ))
 
     def test_UniProtAdapter(self):
         up_adapter = UniProtDB("uniprot_adapter")

@@ -1,10 +1,8 @@
 name: Unit tests external tools
 
 on:
-  push:
-    branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, master ]
 
 jobs:
   tests-external:
