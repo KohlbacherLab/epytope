@@ -9,3 +9,8 @@ dist/*
 .idea
 *.pyc
 epytope/tutorials/.ipynb_checkpoints/*
+
+# Local agent/workspace files (never commit)
+CLAUDE.md
+.claude/
+docs/superpowers/
