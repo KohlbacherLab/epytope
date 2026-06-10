@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### `Fixed`
+
+- [#117](https://github.com/KohlbacherLab/epytope/issues/117) `EnsemblRESTAdapter` now raises `EnsemblRateLimitError` / `EnsemblConnectionError` on definitive transient failures (rate-limit retries exhausted, connection error, timeout) instead of silently returning `None`, which previously caused silently truncated variant→peptide results under rate limiting. Added a configurable client-side rate limiter (`max_requests_per_second`, `max_requests_per_hour`) and a unit-tested `_request` failure path.
+
 ## v4.0.0 - 2026-04-01
 
 ### `Added`
