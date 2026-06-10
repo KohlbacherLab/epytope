@@ -9,6 +9,7 @@
 
 import logging
 import time
+from collections import deque
 
 import pandas as pd
 import requests
@@ -16,6 +17,47 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from epytope.IO.ADBAdapter import ADBAdapter, EAdapterFields, EIdentifierTypes
+
+
+class EnsemblRESTError(Exception):
+    """Definitive failure talking to the Ensembl REST API (not a 'not found')."""
+
+
+class EnsemblRateLimitError(EnsemblRESTError):
+    """429 rate-limit retries exhausted."""
+
+
+class EnsemblConnectionError(EnsemblRESTError):
+    """Connection error or timeout talking to the Ensembl REST API."""
+
+
+class _RateLimiter:
+    """Sliding-window limiter enforcing several (max_calls, period_seconds) caps.
+
+    Blocks in ``acquire()`` until making a call would not breach any window.
+    Not thread-safe (the adapter is used single-threaded).
+    """
+
+    def __init__(self, limits):
+        # limits: iterable of (max_calls, period_seconds)
+        self._windows = [(n, p, deque()) for n, p in limits]
+
+    def acquire(self):
+        while True:
+            now = time.monotonic()
+            wait = 0.0
+            for n, p, hits in self._windows:
+                while hits and hits[0] <= now - p:
+                    hits.popleft()
+                if len(hits) >= n:
+                    wait = max(wait, hits[0] + p - now)
+            if wait <= 0:
+                break
+            time.sleep(wait)
+        now = time.monotonic()
+        for _, _, hits in self._windows:
+            hits.append(now)
+
 
 _DB_TO_SPECIES = {
     "hsapiens_gene_ensembl": "homo_sapiens",
