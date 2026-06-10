@@ -49,3 +49,110 @@ class TestRateLimiter(TestCase):
             for _ in range(5):
                 limiter.acquire()
         self.assertEqual(sleeps, [])
+
+
+class FakeResponse:
+    def __init__(self, status_code=200, json_data=None, text="", headers=None):
+        self.status_code = status_code
+        self._json = json_data
+        self.text = text
+        self.headers = headers or {}
+
+    @property
+    def ok(self):
+        return self.status_code < 400
+
+    def json(self):
+        return self._json
+
+    def raise_for_status(self):
+        if not self.ok:
+            raise requests.exceptions.HTTPError(str(self.status_code))
+
+
+class FakeSession:
+    """Returns queued FakeResponses (or raises queued exceptions) per call.
+
+    If more than one outcome remains it pops the next; the last outcome
+    repeats indefinitely (so a single 429 means 'always 429').
+    """
+
+    def __init__(self, outcomes):
+        self._outcomes = list(outcomes)
+        self.calls = []
+
+    def _next(self, *args, **kwargs):
+        self.calls.append((args, kwargs))
+        outcome = self._outcomes.pop(0) if len(self._outcomes) > 1 else self._outcomes[0]
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+    def get(self, *args, **kwargs):
+        return self._next(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        return self._next(*args, **kwargs)
+
+
+def _adapter_with(outcomes):
+    adapter = EnsemblRESTAdapter()
+    adapter._session = FakeSession(outcomes)
+    return adapter
+
+
+class TestRequestFailureMapping(TestCase):
+    def setUp(self):
+        # 429 path sleeps on Retry-After; patch it so tests stay fast.
+        self._sleep_patch = mock.patch(
+            "epytope.IO.EnsemblRESTAdapter.time.sleep", lambda s: None)
+        self._sleep_patch.start()
+
+    def tearDown(self):
+        self._sleep_patch.stop()
+
+    def test_429_exhausted_raises_ratelimit(self):
+        adapter = _adapter_with([FakeResponse(429, headers={"Retry-After": "0"})])
+        with self.assertRaises(EnsemblRateLimitError):
+            adapter._request("/lookup/id/ENST1")
+
+    def test_connection_error_raises_connection(self):
+        adapter = _adapter_with([requests.exceptions.ConnectionError("boom")])
+        with self.assertRaises(EnsemblConnectionError):
+            adapter._request("/lookup/id/ENST1")
+
+    def test_timeout_raises_connection(self):
+        adapter = _adapter_with([requests.exceptions.Timeout("slow")])
+        with self.assertRaises(EnsemblConnectionError):
+            adapter._request("/lookup/id/ENST1")
+
+    def test_retryerror_raises_base_rest_error(self):
+        adapter = _adapter_with([requests.exceptions.RetryError("5xx exhausted")])
+        with self.assertRaises(EnsemblRESTError) as ctx:
+            adapter._request("/lookup/id/ENST1")
+        self.assertNotIsInstance(
+            ctx.exception, (EnsemblRateLimitError, EnsemblConnectionError))
+
+    def test_400_returns_none(self):
+        adapter = _adapter_with([FakeResponse(400)])
+        self.assertIsNone(adapter._request("/lookup/id/BAD"))
+
+    def test_404_returns_none(self):
+        adapter = _adapter_with([FakeResponse(404)])
+        self.assertIsNone(adapter._request("/lookup/id/MISSING"))
+
+    def test_200_json_returns_parsed(self):
+        adapter = _adapter_with([FakeResponse(200, json_data={"id": "ENST1"})])
+        self.assertEqual(adapter._request("/lookup/id/ENST1"), {"id": "ENST1"})
+
+    def test_200_text_returns_text(self):
+        adapter = _adapter_with([FakeResponse(200, text="MEEPQS")])
+        self.assertEqual(
+            adapter._request("/sequence/id/ENSP1", content_type="text/plain"), "MEEPQS")
+
+    def test_429_then_success(self):
+        adapter = _adapter_with([
+            FakeResponse(429, headers={"Retry-After": "0"}),
+            FakeResponse(200, json_data={"id": "ENST1"}),
+        ])
+        self.assertEqual(adapter._request("/lookup/id/ENST1"), {"id": "ENST1"})
