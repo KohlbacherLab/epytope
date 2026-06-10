@@ -29,9 +29,9 @@ class TestRateLimiter(TestCase):
             clock["t"] += secs
 
         limiter = _RateLimiter([(2, 10.0)])
-        with mock.patch("epytope.IO.EnsemblRESTAdapter.time.monotonic",
+        with mock.patch("time.monotonic",
                         lambda: clock["t"]), \
-             mock.patch("epytope.IO.EnsemblRESTAdapter.time.sleep", fake_sleep):
+             mock.patch("time.sleep", fake_sleep):
             limiter.acquire()   # 1st call: fits
             limiter.acquire()   # 2nd call: fits
             limiter.acquire()   # 3rd call: window full -> must wait 10s
@@ -42,9 +42,9 @@ class TestRateLimiter(TestCase):
         clock = {"t": 500.0}
         sleeps = []
         limiter = _RateLimiter([(5, 1.0)])
-        with mock.patch("epytope.IO.EnsemblRESTAdapter.time.monotonic",
+        with mock.patch("time.monotonic",
                         lambda: clock["t"]), \
-             mock.patch("epytope.IO.EnsemblRESTAdapter.time.sleep",
+             mock.patch("time.sleep",
                         lambda s: sleeps.append(s)):
             for _ in range(5):
                 limiter.acquire()
@@ -52,22 +52,24 @@ class TestRateLimiter(TestCase):
 
 
 class FakeResponse:
-    def __init__(self, status_code=200, json_data=None, text="", headers=None):
+    def __init__(self, status_code=200, json_data=None, text="", headers=None,
+                 json_error=False):
         self.status_code = status_code
         self._json = json_data
         self.text = text
         self.headers = headers or {}
+        self._json_error = json_error
 
     @property
     def ok(self):
         return self.status_code < 400
 
     def json(self):
+        if self._json_error:
+            # Mimic requests' JSONDecodeError (a ValueError subclass) on an
+            # empty/malformed body.
+            raise ValueError("No JSON could be decoded")
         return self._json
-
-    def raise_for_status(self):
-        if not self.ok:
-            raise requests.exceptions.HTTPError(str(self.status_code))
 
 
 class FakeSession:
@@ -105,7 +107,7 @@ class TestRequestFailureMapping(TestCase):
     def setUp(self):
         # 429 path sleeps on Retry-After; patch it so tests stay fast.
         self._sleep_patch = mock.patch(
-            "epytope.IO.EnsemblRESTAdapter.time.sleep", lambda s: None)
+            "time.sleep", lambda s: None)
         self._sleep_patch.start()
 
     def tearDown(self):
@@ -132,6 +134,19 @@ class TestRequestFailureMapping(TestCase):
             adapter._request("/lookup/id/ENST1")
         self.assertNotIsInstance(
             ctx.exception, (EnsemblRateLimitError, EnsemblConnectionError))
+
+    def test_non_retryable_error_status_raises_base_rest_error(self):
+        # A non-2xx, non-429, non-400/404 status (e.g. 403) is a definitive
+        # failure: raise the base error, not a rate-limit/connection subtype.
+        adapter = _adapter_with([FakeResponse(403)])
+        with self.assertRaises(EnsemblRESTError) as ctx:
+            adapter._request("/lookup/id/FORBIDDEN")
+        self.assertNotIsInstance(
+            ctx.exception, (EnsemblRateLimitError, EnsemblConnectionError))
+
+    def test_200_unparseable_json_returns_none(self):
+        adapter = _adapter_with([FakeResponse(200, json_error=True)])
+        self.assertIsNone(adapter._request("/lookup/id/EMPTY"))
 
     def test_400_returns_none(self):
         adapter = _adapter_with([FakeResponse(400)])

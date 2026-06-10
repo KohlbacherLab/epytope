@@ -154,12 +154,12 @@ class EnsemblRESTAdapter(ADBAdapter):
         url = self._server + endpoint
         headers = {"Content-Type": content_type, "Accept": content_type}
 
-        for attempt in range(self._max_rate_limit_retries + 1):
+        for _ in range(self._max_rate_limit_retries + 1):
             self._rate_limiter.acquire()
             try:
                 if method == 'POST':
                     resp = self._session.post(
-                        url, headers={**headers, "Content-Type": "application/json"},
+                        url, headers=headers | {"Content-Type": "application/json"},
                         json=data, timeout=30)
                 else:
                     resp = self._session.get(
@@ -191,7 +191,12 @@ class EnsemblRESTAdapter(ADBAdapter):
 
             if content_type == 'text/plain':
                 return resp.text
-            return resp.json()
+            try:
+                return resp.json()
+            except ValueError:
+                # Empty/invalid 2xx body -> treat as 'no data' (not a transient
+                # failure), consistent with the not-found contract.
+                return None
 
         raise EnsemblRateLimitError(
             f"Ensembl REST API rate limit retries exhausted for {endpoint}")
