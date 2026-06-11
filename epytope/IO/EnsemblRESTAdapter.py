@@ -9,6 +9,7 @@
 
 import logging
 import time
+from collections import deque
 
 import pandas as pd
 import requests
@@ -16,6 +17,47 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from epytope.IO.ADBAdapter import ADBAdapter, EAdapterFields, EIdentifierTypes
+
+
+class EnsemblRESTError(Exception):
+    """Definitive failure talking to the Ensembl REST API (not a 'not found')."""
+
+
+class EnsemblRateLimitError(EnsemblRESTError):
+    """429 rate-limit retries exhausted."""
+
+
+class EnsemblConnectionError(EnsemblRESTError):
+    """Connection error or timeout talking to the Ensembl REST API."""
+
+
+class _RateLimiter:
+    """Sliding-window limiter enforcing several (max_calls, period_seconds) caps.
+
+    Blocks in ``acquire()`` until making a call would not breach any window.
+    Not thread-safe (the adapter is used single-threaded).
+    """
+
+    def __init__(self, limits):
+        # limits: iterable of (max_calls, period_seconds)
+        self._windows = [(n, p, deque()) for n, p in limits]
+
+    def acquire(self):
+        while True:
+            now = time.monotonic()
+            wait = 0.0
+            for n, p, hits in self._windows:
+                while hits and hits[0] <= now - p:
+                    hits.popleft()
+                if len(hits) >= n:
+                    wait = max(wait, hits[0] + p - now)
+            if wait <= 0:
+                break
+            time.sleep(wait)
+        now = time.monotonic()
+        for _, _, hits in self._windows:
+            hits.append(now)
+
 
 _DB_TO_SPECIES = {
     "hsapiens_gene_ensembl": "homo_sapiens",
@@ -41,11 +83,15 @@ class EnsemblRESTAdapter(ADBAdapter):
     :param str species: Species name (default: 'homo_sapiens')
     """
 
-    def __init__(self, server='https://rest.ensembl.org', species='homo_sapiens'):
+    def __init__(self, server='https://rest.ensembl.org', species='homo_sapiens',
+                 max_requests_per_second=13, max_requests_per_hour=50000,
+                 max_rate_limit_retries=3):
         self._server = server.rstrip('/')
         self._species = species
+        self._max_rate_limit_retries = max_rate_limit_retries
 
         self._session = requests.Session()
+        # 429 is handled in _request (Retry-After); urllib3 covers 5xx + connection.
         retry = Retry(
             total=3,
             status_forcelist=[500, 502, 503, 504],
@@ -54,6 +100,11 @@ class EnsemblRESTAdapter(ADBAdapter):
         )
         self._session.mount('https://', HTTPAdapter(max_retries=retry))
         self._session.mount('http://', HTTPAdapter(max_retries=retry))
+
+        self._rate_limiter = _RateLimiter([
+            (max_requests_per_second, 1.0),
+            (max_requests_per_hour, 3600.0),
+        ])
 
         self._ids_cache = {}
         self._sequence_cache = {}
@@ -90,46 +141,61 @@ class EnsemblRESTAdapter(ADBAdapter):
     def _request(self, endpoint, params=None, content_type='application/json',
                  method='GET', data=None):
         """
-        Make a rate-limit-aware request to the Ensembl REST API.
+        Make a rate-limited request to the Ensembl REST API.
 
-        Returns parsed JSON (dict/list) or raw text string depending on content_type.
-        Returns None on error.
+        :return: parsed JSON (dict/list) or raw text for 2xx; None for a genuine
+                 'not found' (HTTP 400/404).
+        :raises EnsemblRateLimitError: 429 rate-limit retries exhausted.
+        :raises EnsemblConnectionError: connection error or timeout.
+        :raises EnsemblRESTError: other definitive HTTP failure (e.g. 5xx exhausted).
         """
         url = self._server + endpoint
         headers = {"Content-Type": content_type, "Accept": content_type}
 
-        for attempt in range(4):  # 1 initial + 3 retries
+        for _ in range(self._max_rate_limit_retries + 1):
+            self._rate_limiter.acquire()
             try:
                 if method == 'POST':
-                    headers["Content-Type"] = "application/json"
-                    headers["Accept"] = content_type
-                    resp = self._session.post(url, headers=headers, json=data, timeout=30)
+                    resp = self._session.post(
+                        url, headers=headers | {"Content-Type": "application/json"},
+                        json=data, timeout=30)
                 else:
-                    resp = self._session.get(url, headers=headers, params=params, timeout=30)
-
-                # Handle rate limiting
-                if resp.status_code == 429:
-                    retry_after = float(resp.headers.get("Retry-After", 1.0))
-                    logging.warning("Rate limited by Ensembl REST API, sleeping %.1fs", retry_after)
-                    time.sleep(retry_after)
-                    continue
-
-                if resp.status_code == 400:
-                    logging.warning("Bad request to Ensembl REST API: %s", endpoint)
-                    return None
-
-                resp.raise_for_status()
-
-                if content_type == 'text/plain':
-                    return resp.text
-                return resp.json()
-
+                    resp = self._session.get(
+                        url, headers=headers, params=params, timeout=30)
+            except (requests.exceptions.ConnectionError,
+                    requests.exceptions.Timeout) as e:
+                raise EnsemblConnectionError(
+                    f"Ensembl REST request to {endpoint} failed: {e}") from e
             except requests.exceptions.RequestException as e:
-                logging.warning("Ensembl REST API request failed: %s", e)
+                # Includes RetryError raised when urllib3 exhausts 5xx retries.
+                raise EnsemblRESTError(
+                    f"Ensembl REST request to {endpoint} failed: {e}") from e
+
+            if resp.status_code == 429:
+                retry_after = float(resp.headers.get("Retry-After", 1.0))
+                logging.warning(
+                    "Rate limited by Ensembl REST API, sleeping %.1fs", retry_after)
+                time.sleep(retry_after)
+                continue
+
+            if resp.status_code in (400, 404):
+                logging.warning("Ensembl REST API: no entry for %s (HTTP %d)",
+                                endpoint, resp.status_code)
                 return None
 
-        logging.warning("Ensembl REST API rate limit retries exhausted for %s", endpoint)
-        return None
+            if not resp.ok:
+                raise EnsemblRESTError(
+                    f"Ensembl REST API error {resp.status_code} for {endpoint}")
+
+            if content_type == 'text/plain':
+                return resp.text
+            try:
+                return resp.json()
+            except ValueError:
+                return None  # empty/invalid 2xx body -> 'no data'
+
+        raise EnsemblRateLimitError(
+            f"Ensembl REST API rate limit retries exhausted for {endpoint}")
 
     def get_product_sequence(self, product_id, **kwargs):
         """

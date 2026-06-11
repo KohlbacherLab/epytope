@@ -24,9 +24,12 @@ jobs:
         auto-activate-base: false
     - name: Install epytope
       shell: bash -el {0}
+      # --no-cache-dir avoids a corrupt runner pip cache making a present
+      # package look unavailable ("from versions: none"); retries/timeout
+      # harden against transient PyPI index hiccups.
       run: |
-        pip install "numpy<2"
-        pip install ".[dev]"
+        pip install --no-cache-dir --retries 5 --timeout 60 "numpy<2"
+        pip install --no-cache-dir --retries 5 --timeout 60 ".[dev]"
     - name: Install Test dependencies
       shell: bash -el {0}
       run: |
