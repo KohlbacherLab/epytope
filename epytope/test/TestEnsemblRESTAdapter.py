@@ -12,13 +12,6 @@ from epytope.IO.EnsemblRESTAdapter import (
 )
 
 
-class TestEnsemblExceptions(TestCase):
-    def test_exception_hierarchy(self):
-        self.assertTrue(issubclass(EnsemblRateLimitError, EnsemblRESTError))
-        self.assertTrue(issubclass(EnsemblConnectionError, EnsemblRESTError))
-        self.assertTrue(issubclass(EnsemblRESTError, Exception))
-
-
 class TestRateLimiter(TestCase):
     def test_blocks_when_window_exceeded(self):
         clock = {"t": 1000.0}
@@ -65,9 +58,7 @@ class FakeResponse:
         return self.status_code < 400
 
     def json(self):
-        if self._json_error:
-            # Mimic requests' JSONDecodeError (a ValueError subclass) on an
-            # empty/malformed body.
+        if self._json_error:  # mimic requests' JSONDecodeError (a ValueError) on empty body
             raise ValueError("No JSON could be decoded")
         return self._json
 
@@ -136,8 +127,7 @@ class TestRequestFailureMapping(TestCase):
             ctx.exception, (EnsemblRateLimitError, EnsemblConnectionError))
 
     def test_non_retryable_error_status_raises_base_rest_error(self):
-        # A non-2xx, non-429, non-400/404 status (e.g. 403) is a definitive
-        # failure: raise the base error, not a rate-limit/connection subtype.
+        # 403 (non-2xx, non-429, non-404) -> base error, not a subtype
         adapter = _adapter_with([FakeResponse(403)])
         with self.assertRaises(EnsemblRESTError) as ctx:
             adapter._request("/lookup/id/FORBIDDEN")

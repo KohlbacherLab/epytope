@@ -91,9 +91,7 @@ class EnsemblRESTAdapter(ADBAdapter):
         self._max_rate_limit_retries = max_rate_limit_retries
 
         self._session = requests.Session()
-        # urllib3 Retry handles 5xx + connection only; 429 is owned by the
-        # manual loop in _request so it can honor Retry-After and raise a
-        # precisely-typed exception on exhaustion.
+        # 429 is handled in _request (Retry-After); urllib3 covers 5xx + connection.
         retry = Retry(
             total=3,
             status_forcelist=[500, 502, 503, 504],
@@ -194,9 +192,7 @@ class EnsemblRESTAdapter(ADBAdapter):
             try:
                 return resp.json()
             except ValueError:
-                # Empty/invalid 2xx body -> treat as 'no data' (not a transient
-                # failure), consistent with the not-found contract.
-                return None
+                return None  # empty/invalid 2xx body -> 'no data'
 
         raise EnsemblRateLimitError(
             f"Ensembl REST API rate limit retries exhausted for {endpoint}")
